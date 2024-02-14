@@ -1,0 +1,340 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "rgName": {
+            "type": "string",
+            "metadata": {
+                "description": "Provide a name for the resource group containing the resources."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Select the location for the resources in this deployment."
+            }
+        },
+        "prefix": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide a prefix for the resources in this deployment."
+            }
+        },
+        "userAssignedIdentity": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the object ID of the user-assigned identity to be used to access the Key Vault data plane."
+            }
+        },
+        "kvNwLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]",
+            "metadata": {
+                "description": "Provide region for networking resources (private endpoints)"
+            }
+        },
+        "kvSubnetId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the resource Id of the existing subnet that will be used for the Azure Open AI instance that will be created"
+            }
+        },
+        "stCmkKeyName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide a name for the customer-managed key that will be used for storage encryption."
+            }
+        },
+        "aiCmkKeyName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide a name for the customer-managed key that will be used for storage encryption."
+            }
+        },
+        "kvKeyExpiration": {
+            "type": "int",
+            "defaultValue": "[dateTimeToEpoch(dateTimeAdd(utcNow(), 'P30D'))]",
+            "metadata": {
+                "description": "Expiration time of the key [dateTimeToEpoch(dateTimeAdd(utcNow(), 'P30D'))]"
+            }
+        },
+        "kvDisableNetworkAccess": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No"
+        },
+        "kvRbacAuthZ": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes"
+        },
+        "kvPurgeProtection": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No"
+        },
+        "kvSoftDelete": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No"
+        },
+        "kvSoftDeleteRetention": {
+            "type": "int",
+            "defaultValue": 90
+        },
+        "kvExpiryTime": {
+            "type": "int",
+            "defaultValue": "[dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]",
+            "metadata": {
+                "description": "Expiration time of the key [dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]"
+            }
+        },
+        "kvTimeAfterCreate": {
+            "type": "int",
+            "defaultValue": "[dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]",
+            "metadata": {
+                "description": "Expiration time of the key [dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]"
+            }
+        },
+        "kvTimeBeforeExpiry": {
+            "type": "int",
+            "defaultValue": "[dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]",
+            "metadata": {
+                "description": "Expiration time of the key [dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]"
+            }
+        },
+        "kvMonCreation": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No"
+        }
+    },
+    "variables": {
+        "name-compliant-keyvault": "[concat(parameters('prefix'), '-', parameters('location'), '-kv')]",
+        "name-compliant-keyvault-pe": "[concat(parameters('prefix'), '-keyvault-pe')]",
+        "name-compliant-keyvault-asg": "[concat(parameters('prefix'), '-keyvault-asg')]",
+        "name-compliant-keyvault-st-cmk-name": "[format('{0}/{1}', variables('name-compliant-keyvault'), parameters('stCmkKeyName'))]",
+        "no-st-cmk-name": "[format('{0}/{1}', variables('name-compliant-keyvault'), 'nostcmk')]",
+        "name-compliant-keyvault-ai-cmk-name": "[format('{0}/{1}', variables('name-compliant-keyvault'), parameters('aiCmkKeyName'))]",
+        "no-ai-cmk-name": "[format('{0}/{1}', variables('name-compliant-keyvault'), 'noaicmk')]",
+        "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
+        "denyFwAcls": {
+            "bypass": "AzureServices",
+            "defaultAction": "Deny",
+            "ipRules": [],
+            "virtualNetworkRules": []
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2018-05-01",
+            "location": "[parameters('location')]",
+            "name": "[parameters('rgName')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "keyvault",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.KeyVault/vaults",
+                            "apiVersion": "2022-11-01",
+                            "name": "[variables('name-compliant-keyvault')]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "sku": {
+                                    "family": "A",
+                                    "name": "Premium"
+                                },
+                                "tenantId": "[subscription().tenantId]",
+                                "networkAcls": "[if(equals(parameters('kvDisableNetworkAccess'), 'Yes'), variables('denyFwAcls'), json('null'))]",
+                                "enabledForDeployment": false,
+                                "enabledForDiskEncryption": false,
+                                "enabledForTemplateDeployment": false,
+                                "enableSoftDelete": "[if(equals(parameters('kvSoftDelete'), 'Yes'), bool('true'), bool('false'))]",
+                                "softDeleteRetentionInDays": "[parameters('kvSoftDeleteRetention')]",
+                                "enableRbacAuthorization": "[if(equals(parameters('kvRbacAuthZ'), 'Yes'), bool('true'), bool('false'))]",
+                                "enablePurgeProtection": "[if(equals(parameters('kvPurgeProtection'), 'Yes'), bool('true'), bool('false'))]",
+                                "publicNetworkAccess": "[if(equals(parameters('kvDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]"
+                            }
+                        },
+                        {
+                            "condition": "[equals(parameters('kvMonCreation'), 'Yes')]",
+                            "type": "Microsoft.KeyVault/vaults/providers/diagnosticSettings",
+                            "apiVersion": "2021-05-01-preview",
+                            "name": "[concat(variables('name-compliant-keyvault'), '/', 'Microsoft.Insights/diag')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.KeyVault/vaults/', variables('name-compliant-keyvault'))]"
+                            ],
+                            "properties": {
+                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', variables('name-compliant-azMon'))]",
+                                "logs": [
+                                    {
+                                        "categoryGroup": "allLogs",
+                                        "enabled": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "condition": "[not(empty(parameters('userAssignedIdentity')))]",
+                            "type": "Microsoft.Authorization/roleAssignments",
+                            "apiVersion": "2022-04-01",
+                            "name": "[guid(deployment().name)]",
+                            "dependsOn": [
+                                "[concat('Microsoft.KeyVault/vaults/', variables('name-compliant-keyvault'))]"
+                            ],
+                            "properties": {
+                                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'e147488a-f6f5-4113-8e2d-b22465e65bf6')]",
+                                "principalId": "[parameters('userAssignedIdentity')]",
+                                "principalType": "ServicePrincipal"
+                            }
+                        },
+                        {
+                            "condition": "[and(equals(parameters('kvDisableNetworkAccess'), 'Yes'), not(empty(parameters('kvSubnetId'))))]",
+                            "type": "Microsoft.Network/applicationSecurityGroups",
+                            "apiVersion": "2023-04-01",
+                            "name": "[variables('name-compliant-keyvault-asg')]",
+                            "location": "[parameters('kvNwLocation')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.KeyVault/vaults/', variables('name-compliant-keyvault'))]"
+                            ],
+                            "properties": {}
+                        },
+                        {
+                            "condition": "[and(equals(parameters('kvDisableNetworkAccess'), 'Yes'), not(empty(parameters('kvSubnetId'))))]",
+                            "type": "Microsoft.Network/privateEndpoints",
+                            "apiVersion": "2021-03-01",
+                            "name": "[variables('name-compliant-keyvault-pe')]",
+                            "location": "[parameters('kvNwLocation')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.Network/applicationSecurityGroups/', variables('name-compliant-keyvault-asg'))]",
+                                "[concat('Microsoft.KeyVault/vaults/', variables('name-compliant-keyvault'))]"
+                            ],
+                            "properties": {
+                                "privateLinkServiceConnections": [
+                                    {
+                                        "name": "[variables('name-compliant-keyvault-pe')]",
+                                        "properties": {
+                                            "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.KeyVault/vaults/', variables('name-compliant-keyvault'))]",
+                                            "groupIds": [
+                                                "vault"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "subnet": {
+                                    "id": "[parameters('kvSubnetId')]"
+                                },
+                                "applicationSecurityGroups": [
+                                    {
+                                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.Network/applicationSecurityGroups/', variables('name-compliant-keyvault-asg'))]"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "condition": "[not(empty(parameters('stCmkKeyName')))]",
+                            "type": "Microsoft.KeyVault/vaults/keys",
+                            "apiVersion": "2021-10-01",
+                            "name": "[if(not(empty(parameters('stCmkKeyName'))), variables('name-compliant-keyvault-st-cmk-name'), variables('no-st-cmk-name'))]",
+                            "dependsOn": [
+                                "[concat('Microsoft.KeyVault/vaults/', variables('name-compliant-keyvault'))]",
+                                "[concat('Microsoft.Network/privateEndpoints/', variables('name-compliant-keyvault-pe'))]"
+                            ],
+                            "properties": {
+                                "kty": "RSA",
+                                "keyOps": [],
+                                "keySize": 2048,
+                                "curveName": "P-256",
+                                "attributes": {
+                                    "enabled": true,
+                                    "exp": "[parameters('kvKeyExpiration')]"
+                                },
+                                "rotationPolicy": {
+                                    "attributes": {
+                                        "expiryTime": "[parameters('kvExpiryTime')]"
+                                    },
+                                    "lifetimeActions": [
+                                        {
+                                            "action": {
+                                                "type": "notify"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "condition": "[not(empty(parameters('aiCmkKeyName')))]",
+                            "type": "Microsoft.KeyVault/vaults/keys",
+                            "apiVersion": "2021-10-01",
+                            "name": "[if(not(empty(parameters('aiCmkKeyName'))), variables('name-compliant-keyvault-ai-cmk-name'), variables('no-ai-cmk-name'))]",
+                            "dependsOn": [
+                                "[concat('Microsoft.KeyVault/vaults/', variables('name-compliant-keyvault'))]",
+                                "[concat('Microsoft.Network/privateEndpoints/', variables('name-compliant-keyvault-pe'))]"
+                            ],
+                            "properties": {
+                                "kty": "RSA",
+                                "keyOps": [],
+                                "keySize": 2048,
+                                "curveName": "P-256",
+                                "attributes": {
+                                    "enabled": true,
+                                    "exp": "[parameters('kvKeyExpiration')]"
+                                },
+                                "rotationPolicy": {
+                                    "attributes": {
+                                        "expiryTime": "[parameters('kvExpiryTime')]"
+                                    },
+                                    "lifetimeActions": [
+                                        {
+                                            "action": {
+                                                "type": "notify"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

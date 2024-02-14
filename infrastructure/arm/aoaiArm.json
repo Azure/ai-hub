@@ -1,0 +1,1268 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Select the Azure Region where the workload will be created. This should be the same as the deployment location"
+            }
+        },
+        "prefix": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide a prefix that will be used for naming convention for the resources that will be created"
+            }
+        },
+        "userIdentity": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the user identity (object ID) that will be assigned to the Azure Open AI instance that will be created"
+            }
+        },
+        "kvNwLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]",
+            "metadata": {
+                "description": "Provide region for networking resources (private endpoints)"
+            }
+        },
+        "kvSubnetId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the resource Id of the existing subnet that will be used for the Azure Open AI instance that will be created"
+            }
+        },
+        "stCmkKeyName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide a name for the customer-managed key that will be used for storage encryption."
+            }
+        },
+        "aiCmkKeyName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide a name for the customer-managed key that will be used for Azure Open AI."
+            }
+        },
+        "kvKeyExpiration": {
+            "type": "int",
+            "defaultValue": "[dateTimeToEpoch(dateTimeAdd(utcNow(), 'P30D'))]",
+            "metadata": {
+                "description": "Expiration time of the key [dateTimeToEpoch(dateTimeAdd(utcNow(), 'P30D'))]"
+            }
+        },
+        "kvDisableNetworkAccess": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No"
+        },
+        "kvRbacAuthZ": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes"
+        },
+        "kvPurgeProtection": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes"
+        },
+        "kvSoftDelete": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No"
+        },
+        "kvSoftDeleteRetention": {
+            "type": "int",
+            "defaultValue": 90
+        },
+        "kvExpiryTime": {
+            "type": "int",
+            "defaultValue": "[dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]",
+            "metadata": {
+                "description": "Expiration time of the key [dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]"
+            }
+        },
+        "kvTimeAfterCreate": {
+            "type": "int",
+            "defaultValue": "[dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]",
+            "metadata": {
+                "description": "Expiration time of the key [dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]"
+            }
+        },
+        "kvTimeBeforeExpiry": {
+            "type": "int",
+            "defaultValue": "[dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]",
+            "metadata": {
+                "description": "Expiration time of the key [dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))]"
+            }
+        },
+        "stHttpsOnly": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "stSubnetId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "stDisableNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "stNwLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]"
+        },
+        "stRbacAuthz": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiRbacAuthz": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiSubnetId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "aiDisableNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiNwLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]"
+        },
+        "aiSystemIdentity": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiRestrictOutboundNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiModelDeployment": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiModelDeploymentName": {
+            "type": "string",
+            "defaultValue": ""
+        },       
+        "aiModelVersion": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "aiContentFilter": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No"
+        },
+        "aiContentFilterName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "aiContentHateFilterPrompt": {
+            "type": "string",
+            "defaultValue": "medium",
+            "allowedValues": [
+                "low",
+                "medium",
+                "high"
+            ]
+        },
+        "aiContentSexualFilterPrompt": {
+            "type": "string",
+            "defaultValue": "medium",
+            "allowedValues": [
+                "low",
+                "medium",
+                "high"
+            ]
+        },
+        "aiContentViolenceFilterPrompt": {
+            "type": "string",
+            "defaultValue": "medium",
+            "allowedValues": [
+                "low",
+                "medium",
+                "high"
+            ]
+        },
+        "aiContentHarmFilterPrompt": {
+            "type": "string",
+            "defaultValue": "medium",
+            "allowedValues": [
+                "low",
+                "medium",
+                "high"
+            ]
+        },
+        "aiContentHateFilterCompletion": {
+            "type": "string",
+            "defaultValue": "medium",
+            "allowedValues": [
+                "low",
+                "medium",
+                "high"
+            ]
+        },
+        "aiContentHarmFilterCompletion": {
+            "type": "string",
+            "defaultValue": "medium",
+            "allowedValues": [
+                "low",
+                "medium",
+                "high"
+            ]
+        },
+        "aiContentSexualFilterCompletion": {
+            "type": "string",
+            "defaultValue": "medium",
+            "allowedValues": [
+                "low",
+                "medium",
+                "high"
+            ]
+        },
+        "aiContentViolenceFilterCompletion": {
+            "type": "string",
+            "defaultValue": "medium",
+            "allowedValues": [
+                "low",
+                "medium",
+                "high"
+            ]
+        },
+        "aiProtectedMaterialText": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No"
+        },
+        "aiProtectedMaterialCode": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No"
+        },
+        "aiProtectedJailbreak": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No"
+        },
+        "aiSearchSubnetId": {
+            "type": "string",
+            "metadata": {
+                "description": "Provide the subnet id where the Azure Open AI instance that will be connected"
+            },
+            "defaultValue": ""
+        },
+        "aiSearchSystemIdentity": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiSearchNwLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]"
+        },
+        "aiSearchDisableNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiSearchRbacAuthz": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiSearchEncryption": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiUseCaseDeployment": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "kvMonCreation": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "stMonCreation": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiMonCreation": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiSearchMonCreation": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "visionRbacAuthz": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "visionSubnetId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "visionDisableNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "visionNwLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]"
+        },
+        "visionSystemIdentity": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "visionRestrictOutboundNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "visionMonCreation": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "aiUseCaseSelection": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "aiMultiLocation": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "templateUris": {
+            "managedIdentityUri": "[uri(deployment().properties.templateLink.uri, 'managedIdentity.json')]",
+            "azMonTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azMon.json')]",
+            "keyVaultTemplateUri": "[uri(deployment().properties.templateLink.uri, 'keyVault.json')]",
+            "storageTemplateUri": "[uri(deployment().properties.templateLink.uri, 'storageAccount.json')]",
+            "azureOpenAiTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureOpenAi.json')]",
+            "rgKeyVersionTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgKey.json')]",
+            "rgAzureOpenAiObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureAiObjectId.json')]",
+            "rgAzureAiSearchObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureAiSearchObjectId.json')]",
+            "rgRbacTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgRbac.json')]",
+            "azureOpenAiCmkTemplateUri": "[uri(deployment().properties.templateLink.uri, 'cmkAzureOpenAi.json')]",
+            "azureOpenAiModelTemplateUri": "[uri(deployment().properties.templateLink.uri, 'modelDeployment.json')]",
+            "azureOpenAiContentFilterTemplateUri": "[uri(deployment().properties.templateLink.uri, 'contentFilter.json')]",
+            "azureAiSearchTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureAiSearch.json')]",
+            "azureComputerVisionTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureComputerVision.json')]"
+        },
+        "deploymentSuffix": "[concat('-', deployment().location, guid(parameters('prefix')))]",
+        "deploymentNames": {
+            "managedIdentityDeploymentName": "[take(concat(parameters('prefix'), '-mi', variables('deploymentSuffix')), 64)]",
+            "azMonDeploymentName": "[take(concat(parameters('prefix'), '-azmon', variables('deploymentSuffix')), 64)]",
+            "keyVaultDeploymentName": "[take(concat(parameters('prefix'), '-kv', variables('deploymentSuffix')), 64)]",
+            "storageDeploymentName": "[take(concat(parameters('prefix'), '-sa', variables('deploymentSuffix')), 64)]",
+            "azureOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-aoai', variables('deploymentSuffix')), 64)]",
+            "rgKeyVersionDeploymentName": "[take(concat(parameters('prefix'), '-key', variables('deploymentSuffix')), 64)]",
+            "rgAzureAiObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-ai-objectId', variables('deploymentSuffix')), 64)]",
+            "rgAzureAiSearchObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-search-objectId', variables('deploymentSuffix')), 64)]",
+            "rgRbac1DeploymentName": "[take(concat(parameters('prefix'), '-rbac1', variables('deploymentSuffix')), 64)]",
+            "rgRbac2DeploymentName": "[take(concat(parameters('prefix'), '-rbac2', variables('deploymentSuffix')), 64)]",
+            "rgRbac3DeploymentName": "[take(concat(parameters('prefix'), '-rbac3', variables('deploymentSuffix')), 64)]",
+            "rgRbac4DeploymentName": "[take(concat(parameters('prefix'), '-rbac4', variables('deploymentSuffix')), 64)]",
+            "rgRbac5DeploymentName": "[take(concat(parameters('prefix'), '-rbac5', variables('deploymentSuffix')), 64)]",
+            "rgRbac6DeploymentName": "[take(concat(parameters('prefix'), '-rbac6', variables('deploymentSuffix')), 64)]",
+            "rgRbac7DeploymentName": "[take(concat(parameters('prefix'), '-rbac7', variables('deploymentSuffix')), 64)]",
+            "azureOpenAiFinalDeploymentName": "[take(concat(parameters('prefix'), '-aoaicmk', variables('deploymentSuffix')), 64)]",
+            "azureOpenAiModelDeploymentName": "[take(concat(parameters('prefix'), '-aoaiModel', variables('deploymentSuffix')), 64)]",
+            "azureOpenAIContentFilterDeploymentName": "[take(concat(parameters('prefix'), '-aoaiContentFilter', variables('deploymentSuffix')), 64)]",
+            "azureAiSearchDeploymentName": "[take(concat(parameters('prefix'), 'aaisearch', variables('deploymentSuffix')), 64)]",
+            "azureComputerVisionDeploymentName": "[take(concat(parameters('prefix'), 'aicomputervision', variables('deploymentSuffix')), 64)]"
+        },
+        "resourceNames": {
+            "rgName": "[concat(parameters('prefix'), '-rg-', parameters('location'))]"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').managedIdentityDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').managedIdentityUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[or(equals(parameters('kvMonCreation'), 'Yes'), equals(parameters('stMonCreation'), 'Yes'), equals(parameters('aiMonCreation'), 'Yes'), equals(parameters('aiSearchMonCreation'), 'Yes'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azMonDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').managedIdentityDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azMonTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').keyVaultDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').managedIdentityDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').keyVaultTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "userAssignedIdentity": {
+                        "value": "[reference(variables('deploymentNames').managedIdentityDeploymentName).outputs.identityObjectId.value]"
+                    },
+                    "kvsubnetId": {
+                        "value": "[parameters('kvSubnetId')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "stCmkKeyName": {
+                        "value": "[parameters('stCmkKeyName')]"
+                    },
+                    "aiCmkKeyName": {
+                        "value": "[parameters('aiCmkKeyName')]"
+                    },
+                    "kvKeyExpiration": {
+                        "value": "[parameters('kvKeyExpiration')]"
+                    },
+                    "kvExpiryTime": {
+                        "value": "[parameters('kvExpiryTime')]"
+                    },
+                    "kvTimeAfterCreate": {
+                        "value": "[parameters('kvTimeAfterCreate')]"
+                    },
+                    "kvTimeBeforeExpiry": {
+                        "value": "[parameters('kvTimeBeforeExpiry')]"
+                    },
+                    "kvNwLocation": {
+                        "value": "[parameters('kvNwLocation')]"
+                    },
+                    "kvSoftDelete": {
+                        "value": "[parameters('kvSoftDelete')]"
+                    },
+                    "kvSoftDeleteRetention": {
+                        "value": "[parameters('kvSoftDeleteRetention')]"
+                    },
+                    "kvPurgeProtection": {
+                        "value": "[parameters('kvPurgeProtection')]"
+                    },
+                    "kvRbacAuthZ": {
+                        "value": "[parameters('kvRbacAuthZ')]"
+                    },
+                    "kvDisableNetworkAccess": {
+                        "value": "[parameters('kvDisableNetworkAccess')]"
+                    },
+                    "kvMonCreation": {
+                        "value": "[parameters('kvMonCreation')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgKeyVersionDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgKeyVersionTemplateUri]"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "aiCmkKeyName": {
+                        "value": "[parameters('aiCmkKeyName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').storageDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').storageTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "userAssignedIdentityResourceId": {
+                        "value": "[if(equals(parameters('aiSystemIdentity'), 'Yes'), reference(variables('deploymentNames').managedIdentityDeploymentName).outputs.identityResourceId.value, '')]"
+                    },
+                    "stSubnetId": {
+                        "value": "[parameters('stSubnetId')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "stCmkKeyName": {
+                        "value": "[parameters('stCmkKeyName')]"
+                    },
+                    "stNwLocation": {
+                        "value": "[parameters('stNwLocation')]"
+                    },
+                    "stRbacAuthz": {
+                        "value": "[parameters('stRbacAuthz')]"
+                    },
+                    "stDisableNetworkAccess": {
+                        "value": "[parameters('stDisableNetworkAccess')]"
+                    },
+                    "stHttpsOnly": {
+                        "value": "[parameters('stHttpsOnly')]"
+                    },
+                    "stMonCreation": {
+                        "value": "[parameters('stMonCreation')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azureOpenAiDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azureOpenAiTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "userIdentity": {
+                        "value": "[parameters('userIdentity')]"
+                    },
+                    "aiRbacAuthz": {
+                        "value": "[parameters('aiRbacAuthz')]"
+                    },
+                    "aiSubnetId": {
+                        "value": "[parameters('aiSubnetId')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "aiNwLocation": {
+                        "value": "[parameters('aiNwLocation')]"
+                    },
+                    "aiDisableNetworkAccess": {
+                        "value": "[parameters('aiDisableNetworkAccess')]"
+                    },
+                    "aiSystemIdentity": {
+                        "value": "[parameters('aiSystemIdentity')]"
+                    },
+                    "aiRestrictOutboundNetworkAccess": {
+                        "value": "[parameters('aiRestrictOutboundNetworkAccess')]"
+                    },
+                    "aiMonCreation": {
+                        "value": "[parameters('aiMonCreation')]"
+                    }
+                }
+            }
+        },
+        // Deploying Azure AI Search
+        {
+            "condition": "[equals(parameters('aiUseCaseDeployment'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azureAiSearchDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azureAiSearchTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "aiSearchRbacAuthz": {
+                        "value": "[parameters('aiSearchRbacAuthz')]"
+                    },
+                    "aiSearchSubnetId": {
+                        "value": "[parameters('aiSearchSubnetId')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "aiSearchNwLocation": {
+                        "value": "[parameters('aiSearchNwLocation')]"
+                    },
+                    "aiSearchDisableNetworkAccess": {
+                        "value": "[parameters('aiSearchDisableNetworkAccess')]"
+                    },
+                    "aiSearchSystemIdentity": {
+                        "value": "[parameters('aiSearchSystemIdentity')]"
+                    },
+                    "aiSearchEncryption": {
+                        "value": "[parameters('aiSearchEncryption')]"
+                    },
+                    "aiSearchMonCreation": {
+                        "value": "[parameters('aiSearchMonCreation')]"
+                    }
+                }
+            }
+        },
+        // Deploying Azure AI Vision
+        {
+            "condition": "[equals(parameters('aiUseCaseSelection'), 'vision')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azureComputerVisionDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azureComputerVisionTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "visionRbacAuthz": {
+                        "value": "[parameters('visionRbacAuthz')]"
+                    },
+                    "visionSubnetId": {
+                        "value": "[parameters('visionSubnetId')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "visionNwLocation": {
+                        "value": "[parameters('visionNwLocation')]"
+                    },
+                    "visionDisableNetworkAccess": {
+                        "value": "[parameters('visionDisableNetworkAccess')]"
+                    },
+                    "visionSystemIdentity": {
+                        "value": "[parameters('visionSystemIdentity')]"
+                    },
+                    "visionRestrictOutboundNetworkAccess": {
+                        "value": "[parameters('visionRestrictOutboundNetworkAccess')]"
+                    },
+                    "visionMonCreation": {
+                        "value": "[parameters('visionMonCreation')]"
+                    }
+                }
+            }
+        },
+        // Retrieving objectId of the AOAI System Identity
+        {
+            "condition": "[equals(parameters('aiSystemIdentity'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgAzureAiObjectIdDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgAzureOpenAiObjectIdTemplateUri]"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        // Retrieving objectId of the AI Search System Identity
+        {
+            "condition": "[and(equals(parameters('aiSearchSystemIdentity'), 'Yes'), equals(parameters('aiSystemIdentity'), 'Yes'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgAzureAiSearchObjectIdDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureAiSearchDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgAzureAiSearchObjectIdTemplateUri]"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        // Consider to remove this deployment
+        {
+            "condition": "[equals(parameters('aiSystemIdentity'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgRbac1DeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureAiObjectIdDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "21090545-7ca7-4776-b22c-e363652d74d2"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(equals(parameters('aiSystemIdentity'), 'Yes'), reference(variables('deploymentNames').rgAzureAiObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
+        // Creating Role Assignment for AOAI on Key Vault for Key Vault Crypto Service Encryption User role
+        {
+            "condition": "[equals(parameters('aiSystemIdentity'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgRbac2DeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureAiObjectIdDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "e147488a-f6f5-4113-8e2d-b22465e65bf6"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(equals(parameters('aiSystemIdentity'), 'Yes'), reference(variables('deploymentNames').rgAzureAiObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
+        // Creating Role Assignment for AOAI on AI Search using Search Index Data Reader role
+        {
+            "condition": "[and(equals(parameters('aiSearchSystemIdentity'), 'Yes'), equals(parameters('aiSystemIdentity'), 'Yes'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgRbac3DeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureAiObjectIdDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureAiSearchObjectIdDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "1407120a-92aa-4202-b7e9-c0e197c71c8f"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(and(equals(parameters('aiSearchSystemIdentity'), 'Yes'), equals(parameters('aiSystemIdentity'), 'Yes')), reference(variables('deploymentNames').rgAzureAiObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
+        // Creating Role Assignment for AOAI on AI Search using Search Service Contributor role
+        {
+            "condition": "[and(equals(parameters('aiSearchSystemIdentity'), 'Yes'), equals(parameters('aiSystemIdentity'), 'Yes'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgRbac4DeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureAiObjectIdDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureAiSearchDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "7ca78c08-252a-4471-8644-bb5ff32d4ba0"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(and(equals(parameters('aiSearchSystemIdentity'), 'Yes'), equals(parameters('aiSystemIdentity'), 'Yes')), reference(variables('deploymentNames').rgAzureAiObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
+        // Creating Role Assignment for AI Search on AOAI using Cognitive Services Open AI Contributor role
+        {
+            "condition": "[and(equals(parameters('aiSearchSystemIdentity'), 'Yes'), equals(parameters('aiSystemIdentity'), 'Yes'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgRbac5DeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureAiObjectIdDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureAiSearchDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "a001fd3d-188f-4b5d-821b-7da978bf7442"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(and(equals(parameters('aiSystemIdentity'), 'Yes'), equals(parameters('aiSearchSystemIdentity'), 'Yes')), reference(variables('deploymentNames').rgAzureAiSearchObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
+        // Creating Role Assignment for AOAI on Storage Account using Storage Blob Data Contributor role
+        {
+            "condition": "[equals(parameters('aiSystemIdentity'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgRbac6DeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureAiObjectIdDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "ba92f5b4-2d11-453d-a403-e96b0029c9fe"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(equals(parameters('aiSystemIdentity'), 'Yes'), reference(variables('deploymentNames').rgAzureAiObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
+        // Creating Role Assignment for AI Search on Storage Account using Storage Blob Data Contributor role
+        {
+            "condition": "[equals(parameters('aiSearchSystemIdentity'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgRbac7DeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureAiSearchObjectIdDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "ba92f5b4-2d11-453d-a403-e96b0029c9fe"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(equals(parameters('aiSearchSystemIdentity'), 'Yes'), reference(variables('deploymentNames').rgAzureAiSearchObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[not(empty(parameters('aiCmkKeyName')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azureOpenAiFinalDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgRbac1DeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgRbac2DeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azureOpenAiCmkTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "aiCmkKeyVersion": {
+                        "value": "[if(not(empty(parameters('aiCmkKeyName'))), reference(variables('deploymentNames').rgKeyVersionDeploymentName).outputs.keyVersion.value, '')]"
+                    },
+                    "aiRbacAuthz": {
+                        "value": "[parameters('aiRbacAuthz')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "aiDisableNetworkAccess": {
+                        "value": "[parameters('aiDisableNetworkAccess')]"
+                    },
+                    "aiCmkKeyName": {
+                        "value": "[parameters('aiCmkKeyName')]"
+                    },
+                    "aiSystemIdentity": {
+                        "value": "[parameters('aiSystemIdentity')]"
+                    },
+                    "aiRestrictOutboundNetworkAccess": {
+                        "value": "[parameters('aiRestrictOutboundNetworkAccess')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('aiModelDeployment'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azureOpenAiModelDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]"
+
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azureOpenAiModelTemplateUri]"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "aiModelDeploymentName": {
+                        "value": "[parameters('aiModelDeploymentName')]"
+                    },
+                    "aiModelVersion": {
+                        "value": "[parameters('aiModelVersion')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('aiContentFilter'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azureOpenAIContentFilterDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiModelDeploymentName)]"
+
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azureOpenAiContentFilterTemplateUri]"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "aiContentFilterName": {
+                        "value": "[parameters('aiContentFilterName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "aiContentHateFilterPrompt": {
+                        "value": "[parameters('aiContentHateFilterPrompt')]"
+                    },
+                    "aiContentSexualFilterPrompt": {
+                        "value": "[parameters('aiContentSexualFilterPrompt')]"
+                    },
+                    "aiContentViolenceFilterPrompt": {
+                        "value": "[parameters('aiContentViolenceFilterPrompt')]"
+                    },
+                    "aiContentHarmFilterPrompt": {
+                        "value": "[parameters('aiContentHarmFilterPrompt')]"
+                    },
+                    "aiContentHateFilterCompletion": {
+                        "value": "[parameters('aiContentHateFilterCompletion')]"
+                    },
+                    "aiContentHarmFilterCompletion": {
+                        "value": "[parameters('aiContentHarmFilterCompletion')]"
+                    },
+                    "aiContentSexualFilterCompletion": {
+                        "value": "[parameters('aiContentSexualFilterCompletion')]"
+                    },
+                    "aiContentViolenceFilterCompletion": {
+                        "value": "[parameters('aiContentViolenceFilterCompletion')]"
+                    },
+                    "aiProtectedMaterialText": {
+                        "value": "[parameters('aiProtectedMaterialText')]"
+                    },
+                    "aiProtectedMaterialCode": {
+                        "value": "[parameters('aiProtectedMaterialCode')]"
+                    },
+                    "aiProtectedJailbreak": {
+                        "value": "[parameters('aiProtectedJailbreak')]"
+                    }
+                }
+            }
+        }
+    ]
+}
