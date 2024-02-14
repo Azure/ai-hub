@@ -1,0 +1,1986 @@
+{
+    "$schema": "<relative path to createFormUI.schema.json>",
+    "view": {
+        "kind": "Form",
+        "properties": {
+            "title": "Secure and Compliant Generative AI on Azure",
+            "steps": [
+                {
+                    "name": "basics",
+                    "label": "Deployment location",
+                    "elements": [
+                        {
+                            "name": "overviewSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Overview",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "aiDeploymentText",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": true,
+                            "options": {
+                                "text": "The 'Secure and Compliant Generative AI on Azure' accelerator helps organizations to expedite the composition and deployment of a well-architected Azure Open AI workload, with the required pre-requisites to ensure encryption in transit and at rest, secure network connectivity, central authorization, and to comply with regulated industries at scale.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://learn.microsoft.com/azure/ai-services/openai/overview"
+                                }
+                            }
+                        },
+                        {
+                            "name": "deploymentSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Deployment Instructions",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "aiDeploymentInfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": true,
+                            "options": {
+                                "text": "Select an Azure subscription that has been enabled for Azure Open AI and required features such as Customer-Managed Keys, Bring-your-own-Storage, and eventually ChatGPT4. Ensure you are selecting an Azure region where Azure Open AI is available before proceeding with the deployment.",
+                                "link": {
+                                    "label": "Request Access to Azure OpenAI Service",
+                                    "uri": "https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu"
+                                }
+                            }
+                        },
+                        {
+                            "name": "resourceScope",
+                            "type": "Microsoft.Common.ResourceScope",
+                            "location": {
+                                "resourceTypes": []
+                            }
+                        },
+                        {
+                            "name": "prefix",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Azure Open AI Workload Prefix",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true,
+                                "regex": "^[a-z0-9A-Z-]{1,10}$",
+                                "validationMessage": "The prefix must be 1-10 characters."
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "aiIntentionText",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": true,
+                            "options": {
+                                "text": "Select the architecture setup for the Azure Open AI workload. You can select if you want to deploy a single instance into a single region, or create multiple instances across multiple regions using API Management for load balancing and distribution of traffic.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://learn.microsoft.com/azure/ai-services/openai/overview"
+                                }
+                            }
+                        },
+						{
+                            "name": "aiIntention",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Architecture setup",
+                            "placeholder": "",
+                            "defaultValue": "Deploy Azure Open AI to a single Azure region into a single subscription.",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the architecture for this deployment.",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Deploy Azure Open AI to a single Azure region into a single subscription.",
+                                        "description": "Deploy the Azure Open AI workload fondation with optional services into a single Azure region.",
+                                        "value": "Single"
+                                    },
+                                    {
+                                        "label": "Deploy Azure Open AI to multiple Azure regions using API Management.",
+                                        "description": "Deploy Azure Open AI workload foundation across multiple Azure region, and optionally across multple subscriptions, using APIM for load balancing and distribution of traffic.",
+                                        "value": "Multiple"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "aiMultiLocationsApi",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "locations?api-version=2019-11-01"
+                            }
+                        },
+                        {
+                            "name": "aiMultiLocation",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Select the additional Azure region for the Azure Open AI workload",
+                            "filter": true,
+                            "toolTip": "Select the additional Azure region for the Azure Open AI workload",
+                            "constraints": {
+                                "allowedValues": "[map(steps('basics').aiMultiLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
+                                "required": true
+                            },
+                            "visible": "[equals(steps('basics').aiIntention, 'Multiple')]"
+                        },
+                        {
+                            "name": "aoAiMulti",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[equals(steps('basics').aiIntention, 'Multiple')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "<b> </b><img src='https://raw.githubusercontent.com/microsoft/industry/main/fsi/docs/aoai_multi_region.svg'>"
+                            }
+                        },
+                        {
+                            "name": "aoAiSingle",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[equals(steps('basics').aiIntention, 'Single')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "<b> </b><img src='https://raw.githubusercontent.com/microsoft/industry/main/fsi/docs/aoai_single_region.svg'>"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "kvSettings",
+                    "label": "Key Vault Configuration",
+                    "subLabel": {
+                        "preValidation": "",
+                        "postValidation": "Done"
+                    },
+                    "bladeTitle": "Kv settings",
+                    "elements": [
+                        {
+                            "name": "kvInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "icon": "None",
+                                "text": "Centralizing storage of application secrets in Azure Key Vault allows you to control their distribution. Key Vault greatly reduces the chances that secrets may be accidentally leaked. When application developers use Key Vault, they no longer need to store security information in their application. Use Azure Key Vault to enable Customer-Managed keys scenarios for Azure Open AI workload compositions",
+                                "uri": "https://www.microsoft.com"
+                            }
+                        },
+                        {
+                            "name": "kvDeleteSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Deletion and Purge Protection Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "kvSoftDelete",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Soft Delete",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "kvSoftDeleteRetention",
+                            "type": "Microsoft.Common.Slider",
+                            "min": 7,
+                            "max": 90,
+                            "label": "Soft Delete Retention (in days)",
+                            "subLabel": "Days",
+                            "defaultValue": 7,
+                            "showStepMarkers": false,
+                            "toolTip": "Select soft delete retention days for Key Vaults. Default is 30 days.",
+                            "constraints": {
+                                "required": false
+                            },
+                            "visible": "[equals(steps('kvSettings').kvSoftDelete, 'Yes')]"
+                        },
+                        {
+                            "name": "kvPurgeProtection",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Purge Protection",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "authzSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Authorization Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "kvRbacAuthz",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Azure RBAC authorization",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No, use local authorization with Vault access policies",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "kvMonSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure Monitor Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "kvMonCreation",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Diagnostic Settings for logging and threat detection",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "nwSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Network Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "kvDisableNetworkAccess",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Disable Public Network Access",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "kvNwLocationOption",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Deploy the Private Endpoint for Key Vault into the same region as the Key Vault",
+                            "defaultValue": "Yes",
+                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes')]"
+                        },
+                        {
+                            "name": "kvLocationsApi",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "locations?api-version=2019-11-01"
+                            }
+                        },
+                        {
+                            "name": "kvNwLocation",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Select region for the Private Endpoint",
+                            "filter": true,
+                            "toolTip": "Select the target region for the Private Endpoint",
+                            "constraints": {
+                                "allowedValues": "[map(steps('kvSettings').kvLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
+                                "required": true
+                            },
+                            "visible": "[and(not(equals(steps('kvSettings').kvNwLocationOption, 'Yes')), equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "kvSubnetId",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true
+                            },
+                            "visible": "[equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes')]"
+                        },
+                        {
+                            "name": "kvCmkSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Customer-Managed Key Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "kvKeyCreation",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Use Customer-Managed Keys to encrypt data for Storage Account and Azure Open AI",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        }
+                    ]
+                },
+                {
+                    "name": "stSettings",
+                    "label": "Storage Configuration",
+                    "subLabel": {
+                        "preValidation": "",
+                        "postValidation": "Done"
+                    },
+                    "bladeTitle": "St settings",
+                    "elements": [
+                        {
+                            "name": "stInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "icon": "None",
+                                "text": "Bring your own storage that you can use to train Azure Open AI on internal, highly confidential data fully encrypted by Customer-Managed Keys.",
+                                "uri": "https://www.microsoft.com"
+                            }
+                        },
+                        {
+                            "name": "stEncryptionSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Encryption in transit and at rest Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "stHttpsOnly",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enforce HTTPS only",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "stCmkKeyName",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Customer-Managed Key Name",
+                            "placeholder": "CMK-Storage",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true,
+                                "regex": "^[a-z0-9A-Z-]{1,10}$",
+                                "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1-10 characters long."
+                            },
+                            "visible": "[equals(steps('kvSettings').kvKeyCreation, 'Yes')]"
+                        },
+                        {
+                            "name": "networkSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Network Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "stDisableNetworkAccess",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Disable Public Network Access",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "stNwLocationOption",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Deploy the Private Endpoint for Storage Account into the same region as the Storage Account",
+                            "defaultValue": "Yes",
+                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('stSettings').stDisableNetworkAccess, 'Yes')]"
+                        },
+                        {
+                            "name": "stLocationsApi",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "locations?api-version=2019-11-01"
+                            }
+                        },
+                        {
+                            "name": "stNwLocation",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Select region for the Private Endpoint",
+                            "filter": true,
+                            "toolTip": "Select the target region for the Private Endpoint",
+                            "constraints": {
+                                "allowedValues": "[map(steps('stSettings').stLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
+                                "required": true
+                            },
+                            "visible": "[and(not(equals(steps('stSettings').stNwLocationOption, 'Yes')), equals(steps('stSettings').stDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "stSubnetId",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true
+                            },
+                            "visible": "[equals(steps('stSettings').stDisableNetworkAccess, 'Yes')]"
+                        },
+                        {
+                            "name": "authzSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Authorization Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "stRbacAuthz",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Azure RBAC authorization",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No, use Shared Key authorization/SAS",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "stMonSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure Monitor Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "stMonCreation",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Diagnostic Settings for logging and threat detection",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        }
+                    ]
+                },
+                {
+                    "name": "aiSettings",
+                    "label": "Azure Open AI Configuration",
+                    "subLabel": {
+                        "preValidation": "",
+                        "postValidation": "Done"
+                    },
+                    "bladeTitle": "ai settings",
+                    "elements": [
+                        {
+                            "name": "aiInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "icon": "None",
+                                "text": "Azure OpenAI Service provides REST API access to OpenAI's powerful language models including the GPT-4, GPT-35-Turbo, and Embeddings model series. In addition, the new GPT-4 and gpt-35-turbo model series have now reached general availability. These models can be easily adapted to your specific task including but not limited to content generation, summarization, semantic search, and natural language to code translation. Users can access the service through REST APIs, Python SDK, or our web-based interface in the Azure OpenAI Studio.",
+                                "uri": "https://www.microsoft.com"
+                            }
+                        },
+                        {
+                            "name": "aiEncryptionSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Encryption in transit and at rest Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "aiCmkKeyName",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Customer-Managed Key Name",
+                            "placeholder": "CMK-Azure-Open-AI",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true,
+                                "regex": "^[a-z0-9A-Z-]{1,10}$",
+                                "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1-10 characters long."
+                            },
+                            "visible": "[equals(steps('kvSettings').kvKeyCreation, 'Yes')]"
+                        },
+                        {
+                            "name": "networkSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Network Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "aiDisableNetworkAccess",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Disable Public Network Access",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "aiRestrictOutboundNetworkAccess",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Restric Outbound Network Access for Azure Open AI",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes')]"
+                        },
+                        {
+                            "name": "aiNwLocationOption",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Deploy the Private Endpoint for Azure Open AI into the same region as the Azure Open AI service",
+                            "defaultValue": "Yes",
+                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes')]"
+                        },
+                        {
+                            "name": "aiLocationsApi",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "locations?api-version=2019-11-01"
+                            }
+                        },
+                        {
+                            "name": "aiNwLocation",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Select region for the Private Endpoint",
+                            "filter": true,
+                            "toolTip": "Select the target region for the Private Endpoint",
+                            "constraints": {
+                                "allowedValues": "[map(steps('aiSettings').aiLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
+                                "required": true
+                            },
+                            "visible": "[and(not(equals(steps('aiSettings').aiNwLocationOption, 'Yes')), equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiSubnetId",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes')]"
+                        },
+                        {
+                            "name": "authzSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Authorization Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "aiRbacAuthz",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Azure RBAC authorization",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No, use local authorization with API key",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "aiSystemIdentity",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Managed Identity (System-assigned) for Azure Open AI",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "When enabling Managed Identity and usage of Customer-Managed keys, this identity will have RBAC permission to retrieve the associated Key Vault secret.",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "aiMonSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure Monitor Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "aiMonCreation",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Diagnostic Settings for logging and threat detection",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        }
+                    ]
+                },
+                {
+                    "name": "aiModelSettings",
+                    "label": "Model Deployment and Content Filters",
+                    "subLabel": {
+                        "preValidation": "",
+                        "postValidation": "Done"
+                    },
+                    "bladeTitle": "Model settings",
+                    "elements": [
+                        {
+                            "name": "aiInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "icon": "None",
+                                "text": "Deployments provide endpoints to the Azure OpenAI base models, or your fine-tuned models, configured with settings to meet your needs, including the content moderation model, version handling, and deployment size. From this page, you can create new deployments.",
+                                "uri": "https://www.microsoft.com"
+                            }
+                        },
+                        {
+                            "name": "aiModelSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Model Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "aiModelText",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": true,
+                            "options": {
+                                "text": "Azure OpenAI Service is powered by a diverse set of models with different capabilities and price points. Model availability varies by region.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://learn.microsoft.com/azure/ai-services/openai/concepts/legacy-models"
+                                }
+                            }
+                        },
+                        {
+                            "name": "aiModelDeployment",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Create Model Deployments",
+                            "defaultValue": "Yes",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "aiModelDeploymentName",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Deployment Name",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true,
+                                "regex": "^[a-z0-9A-Z-]{1,10}$",
+                                "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1-10 characters long."
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiModelDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiModelVersion",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Select the Model you want to deploy",
+                            "placeholder": "",
+                            "defaultValue": "GPT-4",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the models you want to deploy to you Azure Open AI service",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "GPT-4",
+                                        "description": "GPT-4 can solve difficult problems with greater accuracy than any of OpenAI's previous models. Like GPT-3.5 Turbo, GPT-4 is optimized for chat and works well for traditional completions tasks. Use the Chat Completions API to use GPT-4.",
+                                        "value": "gpt-4"
+                                    },
+                                    {
+                                        "label": "GPT-4-32k",
+                                        "description": "GPT-4 can solve difficult problems with greater accuracy than any of OpenAI's previous models. Like GPT-3.5 Turbo, GPT-4 is optimized for chat and works well for traditional completions tasks. Use the Chat Completions API to use GPT-4.",
+                                        "value": "gpt-4-32k"
+                                    },
+                                    {
+                                        "label": "GPT-4-Vision",
+                                        "description": "GPT-4 Turbo with Vision is a large multimodal model (LMM) developed by OpenAI that can analyze images and provide textual responses to questions about them. It incorporates both natural language processing and visual understanding.The GPT-4 Turbo with Vision model answers general questions about what's present in the images. You can also show it video if you use Vision enhancement.",
+                                        "value": "gpt-4-vision"
+                                    },
+                                    {
+                                        "label": "Embeddings",
+                                        "description": "OpenAI offers a powerful second-generation embedding model (denoted by -002 in the model ID). It’s better, cheaper, and simpler to use than previous embeddings models.",
+                                        "value": "text-embedding-ada-002"
+                                    },
+                                    {
+                                        "label": "GPT-35-Turbo",
+                                        "description": "GPT-3.5 models can understand and generate natural language or code. The most capable and cost effective model in the GPT-3.5 family is GPT-3.5 Turbo, which has been optimized for chat and works well for traditional completions tasks as well.",
+                                        "value": "gpt-35-turbo"
+                                    },
+                                    {
+                                        "label": "GPT-35-Turbo-16k",
+                                        "description": "GPT-3.5 models can understand and generate natural language or code. The most capable and cost effective model in the GPT-3.5 family is GPT-3.5 Turbo, which has been optimized for chat and works well for traditional completions tasks as well.",
+                                        "value": "gpt-35-turbo-16k"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiModelDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiContentSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Content Filter Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "aiContentText",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": true,
+                            "options": {
+                                "text": "The default content filtering configuration is set to filter at the medium severity threshold for all four content harms categories for both, prompts and completions. This means that content that is detected at severity level medium or high is filtered, while content detected at severity level low is not filtered by the content filters. Customers are responsible for ensuring that applications integrating Azure OpenAI comply with the Code of Conduct.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://learn.microsoft.com/azure/ai-services/openai/concepts/content-filter?tabs=warning%2Cpython"
+                                }
+                            }
+                        },
+                        {
+                            "name": "aiContentFilter",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Create Content Filter",
+                            "defaultValue": "Yes",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "aiContentFilterName",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Content Filter Name",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true,
+                                "regex": "^[a-z0-9A-Z-]{1,10}$",
+                                "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1-10 characters long."
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiContentPromptThreshold",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Prompt",
+                            "elements": [],
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiContentHateFilterPrompt",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Hate Severity Threshold",
+                            "placeholder": "",
+                            "defaultValue": "Medium",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the severity threshold",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Low",
+                                        "description": "Block Low, Medium and High",
+                                        "value": "low"
+                                    },
+                                    {
+                                        "label": "Medium",
+                                        "description": "Allow Low / Block Medium and High.",
+                                        "value": "medium"
+                                    },
+                                    {
+                                        "label": "High",
+                                        "description": "Allow Low, Medium / Block High",
+                                        "value": "high"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiContentSexualFilterPrompt",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Sexual Severity Threshold",
+                            "placeholder": "",
+                            "defaultValue": "Medium",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the severity threshold",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Low",
+                                        "description": "Block Low, Medium and High",
+                                        "value": "low"
+                                    },
+                                    {
+                                        "label": "Medium",
+                                        "description": "Allow Low / Block Medium and High.",
+                                        "value": "medium"
+                                    },
+                                    {
+                                        "label": "High",
+                                        "description": "Allow Low, Medium / Block High",
+                                        "value": "high"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiContentHarmFilterPrompt",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Self-harm Severity Threshold",
+                            "placeholder": "",
+                            "defaultValue": "Medium",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the severity threshold",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Low",
+                                        "description": "Block Low, Medium and High",
+                                        "value": "low"
+                                    },
+                                    {
+                                        "label": "Medium",
+                                        "description": "Allow Low / Block Medium and High.",
+                                        "value": "medium"
+                                    },
+                                    {
+                                        "label": "High",
+                                        "description": "Allow Low, Medium / Block High",
+                                        "value": "high"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiContentViolenceFilterPrompt",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Violence Severity Threshold",
+                            "placeholder": "",
+                            "defaultValue": "Medium",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the severity threshold",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Low",
+                                        "description": "Block Low, Medium and High",
+                                        "value": "low"
+                                    },
+                                    {
+                                        "label": "Medium",
+                                        "description": "Allow Low / Block Medium and High.",
+                                        "value": "medium"
+                                    },
+                                    {
+                                        "label": "High",
+                                        "description": "Allow Low, Medium / Block High",
+                                        "value": "high"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiContentCompletionThreshold",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Completion",
+                            "elements": [],
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiContentHateFilterCompletion",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Hate Severity Threshold",
+                            "placeholder": "",
+                            "defaultValue": "Medium",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the severity threshold",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Low",
+                                        "description": "Block Low, Medium and High",
+                                        "value": "low"
+                                    },
+                                    {
+                                        "label": "Medium",
+                                        "description": "Allow Low / Block Medium and High.",
+                                        "value": "medium"
+                                    },
+                                    {
+                                        "label": "High",
+                                        "description": "Allow Low, Medium / Block High",
+                                        "value": "high"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiContentSexualFilterCompletion",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Sexual Severity Threshold",
+                            "placeholder": "",
+                            "defaultValue": "Medium",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the severity threshold",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Low",
+                                        "description": "Block Low, Medium and High",
+                                        "value": "low"
+                                    },
+                                    {
+                                        "label": "Medium",
+                                        "description": "Allow Low / Block Medium and High.",
+                                        "value": "medium"
+                                    },
+                                    {
+                                        "label": "High",
+                                        "description": "Allow Low, Medium / Block High",
+                                        "value": "high"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiContentHarmFilterCompletion",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Self-harm Severity Threshold",
+                            "placeholder": "",
+                            "defaultValue": "Medium",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the severity threshold",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Low",
+                                        "description": "Block Low, Medium and High",
+                                        "value": "low"
+                                    },
+                                    {
+                                        "label": "Medium",
+                                        "description": "Allow Low / Block Medium and High.",
+                                        "value": "medium"
+                                    },
+                                    {
+                                        "label": "High",
+                                        "description": "Allow Low, Medium / Block High",
+                                        "value": "high"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiContentViolenceFilterCompletion",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Violence Severity Threshold",
+                            "placeholder": "",
+                            "defaultValue": "Medium",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the severity threshold",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Low",
+                                        "description": "Block Low, Medium and High",
+                                        "value": "low"
+                                    },
+                                    {
+                                        "label": "Medium",
+                                        "description": "Allow Low / Block Medium and High.",
+                                        "value": "medium"
+                                    },
+                                    {
+                                        "label": "High",
+                                        "description": "Allow Low, Medium / Block High",
+                                        "value": "high"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiAddContentSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Additional Content Filter Settings (Preview)",
+                            "elements": [],
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiAddContentText",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]",
+                            "options": {
+                                "text": "Enable additional content safety models that can be run on top of the main content filters. These models are optional.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://learn.microsoft.com/azure/ai-services/openai/concepts/content-filter?tabs=warning%2Cpython"
+                                }
+                            }
+                        },
+                        {
+                            "name": "aiAddContentFilter",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable additional content safety models",
+                            "defaultValue": "Yes",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiModelSettings').aiContentFilter, 'Yes')]"
+                        },
+                        {
+                            "name": "aiProtectedJailbreak",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Jailbreak",
+                            "placeholder": "",
+                            "defaultValue": "No",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Enable or disable the setting",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "description": "An AI model that detects jailbreak attempts, a user interaction strategy that gets the model to bypass desired behavior that was set by the model developer in order to violate content policies or safety policies originally set. Runs on prompts.",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "description": "The model will not detect jailbreak attempts.",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiModelSettings').aiContentFilter, 'Yes'), equals(steps('aiModelSettings').aiAddContentFilter, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiProtectedMaterialText",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Protected Material Text",
+                            "placeholder": "",
+                            "defaultValue": "No",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Enable or disable the setting",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "description": "A model that helps detect and protect against regurgitation of language that matches known text content (e.g song lyrics, articles, recipes, selected web content). Runs on completions.",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "description": "The model will not detect and protect against regurgitation of language that matches known text content.",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiModelSettings').aiContentFilter, 'Yes'), equals(steps('aiModelSettings').aiAddContentFilter, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiProtectedMaterialCode",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Protected Material Code",
+                            "placeholder": "",
+                            "defaultValue": "No",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Enable or disable the setting",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "description": "A model that helps detect source code that matches a set of source code from public repositories, and provide example citation and license information in annotations. Runs on completions.",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "description": "The model will not detect ource code that matches a set of source code from public repositories, and provide example citation and license information in annotations.",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiModelSettings').aiContentFilter, 'Yes'), equals(steps('aiModelSettings').aiAddContentFilter, 'Yes'))]"
+                        }
+                    ]
+                },
+                {
+                    "name": "aiAuxiliarySettings",
+                    "label": "Use Cases and Additional Services",
+                    "subLabel": {
+                        "preValidation": "",
+                        "postValidation": "Done"
+                    },
+                    "bladeTitle": "Auxiliary services",
+                    "elements": [
+                        {
+                            "name": "aiAuxiliaryText",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "icon": "None",
+                                "text": "Subject to your initial use cases, you can enable additional Azure services for the complete Generative AI architecture on Azure.",
+                                "uri": "https://www.microsoft.com"
+                            }
+                        },
+                        {
+                            "name": "aiUseCaseSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Use Cases",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "aiUseCaseText",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": true,
+                            "options": {
+                                "text": "Technology is advancing at an unprecedented pace, and businesses are seeking innovative ways to maintain a competitive edge. Nowhere is this truer than in the realms of generative AI. From generating realistic images and videos to enhancing customer experiences, generative AI has proven to be a versatile tool across various industries.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://azure.microsoft.com/en-us/blog/azure-openai-service-10-ways-generative-ai-is-transforming-businesses/"
+                                }
+                            }
+                        },
+                        {
+                            "name": "aiUseCaseDeployment",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Create required Azure services for the initial use cases",
+                            "defaultValue": "No",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "aiUseCaseSelection",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Select the initial use case you want to deploy",
+                            "placeholder": "",
+                            "defaultValue": "Image and video recognition",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the initial use case you want to start with.",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Content creation and design",
+                                        "description": "Content creation and design: Effective content creation and design are crucial for attracting and engaging customers.",
+                                        "value": "content"
+                                    },
+                                    {
+                                        "label": "Accelerated automation",
+                                        "description": "Automating IT tasks improves employee experiences, enhances customer interactions, and drives more efficiency within a company’s developer community.",
+                                        "value": "automation"
+                                    },
+                                    {
+                                        "label": "Personalized marketing",
+                                        "description": "Personalization increases the chances of customer engagement and conversion and can significantly improve marketing ROI..",
+                                        "value": "marketing"
+                                    },
+                                    {
+                                        "label": "Chatbots and virtual agents",
+                                        "description": "Chatbots and virtual assistants powered by generative AI provide instant and accurate responses to customer queries.",
+                                        "value": "chatbots"
+                                    },
+                                    {
+                                        "label": "Language translation and natural language processing",
+                                        "description": "In a globalized world, language barriers can hinder communication and business growth.",
+                                        "value": "language"
+                                    },
+                                    {
+                                        "label": "Image and video recognition",
+                                        "description": "Analyze images and provide textual responses to questions about them. It incorporates both natural language processing and visual understanding.",
+                                        "value": "vision"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiAddServicesSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Required services for the selected use case",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure AI Search",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchInfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "Azure AI Search, an AI-powered information retrieval platform, helps developers build rich search experiences and generative AI apps that combine large language models with enterprise data. Implement search functionality for any mobile or search application within your organization or as part of software as a service (SaaS) apps.",
+                                "uri": "https://www.microsoft.com"
+                            }
+                        },
+                        {
+                            "name": "aiSearchNetworkSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Network Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchDisableNetworkAccess",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Disable Public Network Access",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchPrivateEndpointInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "To allow access to your Azure AI Search resource from Azure OpenAI resource, you need to submit an application form. The application will be reviewed in 10 business days and you will be contacted via email about the results. If you are eligible, we will provision the private endpoint in Microsoft managed virtual network, and send a private endpoint connection request to your search service, and you will need to approve the request.",
+                                "uri": "https://forms.office.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbRw_T3EIZ1KNCuv_1duLJBgpUMUcwV1Y5QjI3UTVTMkhSVUo3R09NNVQxSyQlQCN0PWcu"
+                            }
+                        },
+                        {
+                            "name": "aiSearchNwLocationOption",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Deploy the Private Endpoint for Azure AI Search into the same region as the Azure AI Search service",
+                            "defaultValue": "Yes",
+                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiSearchLocationsApi",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "locations?api-version=2019-11-01"
+                            }
+                        },
+                        {
+                            "name": "aiSearchNwLocation",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Select region for the Private Endpoint",
+                            "filter": true,
+                            "toolTip": "Select the target region for the Private Endpoint",
+                            "constraints": {
+                                "allowedValues": "[map(steps('aiAuxiliarySettings').aiSearchLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
+                                "required": true
+                            },
+                            "visible": "[and(not(equals(steps('aiAuxiliarySettings').aiSearchNwLocationOption, 'Yes')), equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiSearchSubnetId",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "authzSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Authorization Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchRbacAuthz",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Azure RBAC authorization",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No, use local authorization with API key",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchSystemIdentity",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Managed Identity (System-assigned) for Azure AI Search",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "When enabling Managed Identity and usage of Customer-Managed keys, this identity will have RBAC permission access the Azure Open AI instance.",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchMonSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure Monitor Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchMonCreation",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Diagnostic Settings for logging and threat detection",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiAddServicesSectionVision",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Required services for the selected use case",
+                            "elements": [],
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'))]"
+                        },
+                        {
+                            "name": "aiVisionSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure AI Vision",
+                            "elements": [],
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'))]"
+                        },
+                        {
+                            "name": "aiVisionInfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'))]",
+                            "options": {
+                                "icon": "None",
+                                "text": "Azure AI Vision is a unified service that offers innovative computer vision capabilities. Give your apps the ability to analyze images, read text, and detect faces with prebuilt image tagging, text extraction with optical character recognition (OCR), and responsible facial recognition. Incorporate vision features into your projects with no machine learning experience required.",
+                                "uri": "https://www.microsoft.com"
+                            }
+                        },
+                        {
+                            "name": "aiVisionNetworkSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Network Settings",
+                            "elements": [],
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiVisionDisableNetworkAccess",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Disable Public Network Access",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'))]"
+                        },
+                        {
+                            "name": "aiVisionRestrictOutboundNetworkAccess",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Restric Outbound Network Access for AI Vision",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes')]"
+                        },
+                        {
+                            "name": "aiVisionNwLocationOption",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Deploy the Private Endpoint for Azure AI Vision into the same region as the Azure AI Vision service",
+                            "defaultValue": "Yes",
+                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiVisionLocationsApi",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "locations?api-version=2019-11-01"
+                            }
+                        },
+                        {
+                            "name": "aiVisionNwLocation",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Select region for the Private Endpoint",
+                            "filter": true,
+                            "toolTip": "Select the target region for the Private Endpoint",
+                            "constraints": {
+                                "allowedValues": "[map(steps('aiAuxiliarySettings').aiVisionLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
+                                "required": true
+                            },
+                            "visible": "[and(not(equals(steps('aiAuxiliarySettings').aiVisionNwLocationOption, 'Yes')), equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiVisionSubnetId",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiVisionauthzSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Authorization Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
+                        },
+                        {
+                            "name": "aiVisionRbacAuthz",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Azure RBAC authorization",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No, use local authorization with API key",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
+                        },
+                        {
+                            "name": "aiVisionSystemIdentity",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Managed Identity (System-assigned) for Azure AI Vision",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "When enabling Managed Identity and usage of Customer-Managed keys, this identity will have RBAC permission access the Azure Open AI instance.",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
+                        },
+                        {
+                            "name": "aiVisionMonSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure Monitor Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
+                        },
+                        {
+                            "name": "aiVisionMonCreation",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Diagnostic Settings for logging and threat detection",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
+                        }
+                    ]
+                }
+            ]
+        },
+        "outputs": {
+            "parameters": {
+                "prefix": "[steps('basics').prefix]",
+                "kvSoftDelete": "[steps('kvSettings').kvSoftDelete]",
+                "kvSoftDeleteRetention": "[steps('kvSettings').kvSoftDeleteRetention]",
+                "kvPurgeProtection": "[steps('kvSettings').kvPurgeProtection]",
+                "kvRbacAuthz": "[steps('kvSettings').kvRbacAuthz]",
+                "kvDisableNetworkAccess": "[steps('kvSettings').kvDisableNetworkAccess]",
+                "kvSubnetId": "[steps('kvSettings').kvSubnetId]",
+                "kvNwLocation": "[if(equals(steps('kvSettings').kvNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('kvSettings').kvNwLocation)]",
+                "stCmkKeyName": "[steps('stSettings').stCmkKeyName]",
+                "stHttpsOnly": "[steps('stSettings').stHttpsOnly]",
+                "stDisableNetworkAccess": "[steps('stSettings').stDisableNetworkAccess]",
+                "stNwLocation": "[if(equals(steps('stSettings').stNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('stSettings').stNwLocation)]",
+                "stSubnetId": "[steps('stSettings').stSubnetId]",
+                "stRbacAuthz": "[steps('stSettings').stRbacAuthz]",
+                "aiRbacAuthz": "[steps('aiSettings').aiRbacAuthz]",
+                "aiDisableNetworkAccess": "[steps('aiSettings').aiDisableNetworkAccess]",
+                "aiSubnetId": "[steps('aiSettings').aiSubnetId]",
+                "aiCmkKeyName": "[steps('aiSettings').aiCmkKeyName]",
+                "aiRestrictOutboundNetworkAccess": "[steps('aiSettings').aiRestrictOutboundNetworkAccess]",
+                "aiSystemIdentity": "[steps('aiSettings').aiSystemIdentity]",
+                "aiNwLocation": "[if(equals(steps('aiSettings').aiNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('aiSettings').aiNwLocation)]",
+                "location": "[steps('basics').resourceScope.location.name]",
+                "aiModelDeployment": "[steps('aiModelSettings').aiModelDeployment]",
+                "aiModelDeploymentName": "[steps('aiModelSettings').aiModelDeploymentName]",
+                "aiModelVersion": "[steps('aiModelSettings').aiModelVersion]",
+                "aiContentFilter": "[steps('aiModelSettings').aiContentFilter]",
+                "aiContentFilterName": "[steps('aiModelSettings').aiContentFilterName]",
+                "aiProtectedJailbreak": "[steps('aiModelSettings').aiProtectedJailbreak]",
+                "aiProtectedMaterialText": "[steps('aiModelSettings').aiProtectedMaterialText]",
+                "aiProtectedMaterialCode": "[steps('aiModelSettings').aiProtectedMaterialCode]",
+                "aiContentHarmFilterPrompt": "[steps('aiModelSettings').aiContentHarmFilterPrompt]",
+                "aiContentHateFilterPrompt": "[steps('aiModelSettings').aiContentHateFilterPrompt]",
+                "aiContentSexualFilterPrompt": "[steps('aiModelSettings').aiContentSexualFilterPrompt]",
+                "aiContentViolenceFilterPrompt": "[steps('aiModelSettings').aiContentViolenceFilterPrompt]",
+                "aiContentHarmFilterCompletion": "[steps('aiModelSettings').aiContentHarmFilterCompletion]",
+                "aiContentHateFilterCompletion": "[steps('aiModelSettings').aiContentHateFilterCompletion]",
+                "aiContentSexualFilterCompletion": "[steps('aiModelSettings').aiContentSexualFilterCompletion]",
+                "aiContentViolenceFilterCompletion": "[steps('aiModelSettings').aiContentViolenceFilterCompletion]",
+                "aiSearchDisableNetworkAccess": "[steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess]",
+                "aiSearchNwLocation": "[if(equals(steps('aiAuxiliarySettings').aiSearchNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('aiAuxiliarySettings').aiSearchNwLocation)]",
+                "aiSearchRbacAuthz": "[steps('aiAuxiliarySettings').aiSearchRbacAuthz]",
+                "aiSearchSubnetId": "[steps('aiAuxiliarySettings').aiSearchSubnetId]",
+                "aiSearchSystemIdentity": "[steps('aiAuxiliarySettings').aiSearchSystemIdentity]",
+                "aiUseCaseDeployment": "[steps('aiAuxiliarySettings').aiUseCaseDeployment]",
+                "kvMonCreation": "[steps('kvSettings').kvMonCreation]",
+                "stMonCreation": "[steps('stSettings').stMonCreation]",
+                "aiMonCreation": "[steps('aiSettings').aiMonCreation]",
+                "aiSearchMonCreation": "[steps('aiAuxiliarySettings').aiSearchMonCreation]",
+                "visionDisableNetworkAccess": "[steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess]",
+                "visionRbacAuthz": "[steps('aiAuxiliarySettings').aiVisionRbacAuthz]",
+                "visionNwLocation": "[if(equals(steps('aiAuxiliarySettings').aiVisionNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('aiAuxiliarySettings').aiVisionNwLocation)]",
+                "visionSubnetId": "[steps('aiAuxiliarySettings').aiVisionSubnetId]",
+                "visionSystemIdentity": "[steps('aiAuxiliarySettings').aiVisionSystemIdentity]",
+                "visionMonCreation": "[steps('aiAuxiliarySettings').aiVisionMonCreation]",
+                "visionRestrictOutboundNetworkAccess": "[steps('aiAuxiliarySettings').aiVisionRestrictOutboundNetworkAccess]",
+                "aiUseCaseSelection": "[steps('aiAuxiliarySettings').aiUseCaseSelection]",
+                "aiMultiLocation": "[steps('basics').aiMultiLocation]"
+            },
+            "kind": "Subscription",
+            "location": "[steps('basics').resourceScope.location.name]",
+            "subscriptionId": "[steps('basics').resourceScope.subscription.id]"
+        }
+    }
+}
