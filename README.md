@@ -1,8 +1,8 @@
-# Secure and Compliant Generative AI hub on Azure
+# AI hub on Azure
 
 ![Benefits](./docs/ai-overview.png)
 
-Welcome to the "Secure and Compliant Generative AI Hub on Azure"! This repository is your ultimate guide to the exciting world of Generative AI on the Azure platform. Whether you are a seasoned AI enthusiast or just starting your journey, this hub is designed to provide an easy, fun, and immersive learning experience, and ideally accelerate the path from whiteboard to proof of concept, and from proof of concept to production.
+Welcome to the secure and compliant generative "AI hub on Azure"! This repository is your ultimate guide to the exciting world of Generative AI on the Azure platform. Whether you are a seasoned AI enthusiast or just starting your journey, this hub is designed to provide an easy, fun, and immersive learning experience, and ideally accelerate the path from whiteboard to proof of concept, and from proof of concept to production.
    
 Our primary goal is to empower you to explore a multitude of use cases with relevant Azure services. We've carefully structured this repository to provide an intuitive understanding of how best to leverage the power of Azure services for your AI needs. Through a series of real-world examples, and playbooks you'll gain practical insights into using Azure to solve complex problems and develop cutting-edge AI solutions.  
    
@@ -12,14 +12,14 @@ Dive in and start exploring! Every step you take with us in this Generative AI h
 
 ## Table of Contents
 
-- [What is Secure and Compliant Generative AI hub on Azure?](#what-is-secure-and-compliant-generative-ai-hub-on-azure)
+- [What is secure and compliant generative AI hub on Azure?](#what-is-secure-and-compliant-generative-ai-hub-on-azure)
 - [Reference Implementations](#reference-implementations)
 - [Use cases](#use-cases)
 - [Contributing](#contributing)
 - [Roadmap](#roadmap)
 ---
 
-### Reference implementations for Secure and Compliant Generative AI hub on Azure
+### Reference implementations for secure and compliant generative AI hub on Azure
 
 You can deploy the following reference implementations to your Azure subscription.
 
