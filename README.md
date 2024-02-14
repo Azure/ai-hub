@@ -1,14 +1,33 @@
-# Project
+# Secure and Compliant Generative AI hub on Azure
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+![Benefits](./docs/ai-overview.png)
 
-As the maintainer of this project, please make a few updates:
+Welcome to the "Secure and Compliant Generative AI Hub on Azure"! This repository is your ultimate guide to the exciting world of Generative AI on the Azure platform. Whether you are a seasoned AI enthusiast or just starting your journey, this hub is designed to provide an easy, fun, and immersive learning experience, and ideally accelerate the path from whiteboard to proof of concept, and from proof of concept to production.
+   
+Our primary goal is to empower you to explore a multitude of use cases with relevant Azure services. We've carefully structured this repository to provide an intuitive understanding of how best to leverage the power of Azure services for your AI needs. Through a series of real-world examples, and playbooks you'll gain practical insights into using Azure to solve complex problems and develop cutting-edge AI solutions.  
+   
+But we don't stop at just exploring. This AI hub also serves as a comprehensive library of use cases based on proven patterns. We understand the importance of best practices in driving successful AI initiatives. Therefore, every use case in our library aligns with the highest industry standards and promotes best practices. You'll learn not just the 'how', but also the 'why' behind each pattern, giving you a solid grounding in the principles of secure and compliant AI development.  
+   
+Dive in and start exploring! Every step you take with us in this Generative AI hub on Azure is a step towards mastering the art and science of AI.
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+## Table of Contents
+
+- [What is Secure and Compliant Generative AI hub on Azure?](#what-is-secure-and-compliant-generative-ai-hub-on-azure)
+- [Reference Implementations](#reference-implementations)
+- [Use cases](#use-cases)
+- [Contributing](#contributing)
+- [Roadmap](#roadmap)
+---
+
+### Reference implementations for Secure and Compliant Generative AI hub on Azure
+
+You can deploy the following reference implementations to your Azure subscription.
+
+| Reference Implementation | Description | Deploy | Instructions
+|:----------------------|:------------|--------|--------------|
+| Secure and Compliant Generative AI hub on Azure | Secure and Compliant Generative AI hub provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into the landing zones |[![Deploy To Microsoft Cloud](./docs/deploytomicrosoftcloud.svg)](https://aka.ms/DeploySecureGenAI) | [User Guide](./docs/fsiAOAI.md)
+
+### Use cases
 
 ## Contributing
 
