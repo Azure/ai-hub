@@ -135,7 +135,7 @@
                             "visible": "[equals(steps('basics').aiIntention, 'Multiple')]",
                             "options": {
                                 "icon": "None",
-                                "text": "<b> </b><img src='https://raw.githubusercontent.com/microsoft/industry/main/fsi/docs/aoai_multi_region.svg'>"
+                                "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/aoai_multi_region.svg'>"
                             }
                         },
                         {
@@ -144,7 +144,7 @@
                             "visible": "[equals(steps('basics').aiIntention, 'Single')]",
                             "options": {
                                 "icon": "None",
-                                "text": "<b> </b><img src='https://raw.githubusercontent.com/microsoft/industry/main/fsi/docs/aoai_single_region.svg'>"
+                                "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/aoai_single_region.svg'>"
                             }
                         }
                     ]
