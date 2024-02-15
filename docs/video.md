@@ -4,7 +4,6 @@ Using the Video Retrieval API together with Azure OpenAI Vision.
 
 ![Video](./media/video.png)
 
-
 The Video Retrieval API from Azure AI services offers a range of functionalities to users. These include creating an index, retrieving an index, updating an index, deleting an index, listing all indexes, creating an ingestion, getting the ingestion status, listing all ingestions, retrieving all documents, and performing a text-based search.
 
 Here's a brief overview of how to use this API:
