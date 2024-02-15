@@ -2,6 +2,8 @@
 
 ![Benefits](./docs/ai-overview.png)
 
+## Overview
+
 Welcome to the secure and compliant generative "AI hub on Azure"! This repository is your ultimate guide to the exciting world of Generative AI on the Azure platform. Whether you are a seasoned AI enthusiast or just starting your journey, this hub is designed to provide an easy, fun, and immersive learning experience, and ideally accelerate the path from whiteboard to proof of concept, and from proof of concept to production.
    
 Our primary goal is to empower you to explore a multitude of use cases with relevant Azure services. We've carefully structured this repository to provide an intuitive understanding of how best to leverage the power of Azure services for your AI needs. Through a series of real-world examples, and playbooks you'll gain practical insights into using Azure to solve complex problems and develop cutting-edge AI solutions.  
@@ -12,14 +14,23 @@ Dive in and start exploring! Every step you take with us in this Generative AI h
 
 ## Table of Contents
 
-- [What is secure and compliant generative AI hub on Azure?](#what-is-secure-and-compliant-generative-ai-hub-on-azure)
-- [Reference Implementations](#reference-implementations)
-- [Use cases](#use-cases)
+- [AI hub on Azure reference implementations](#ai-hub-on-azure-reference-implementations)
+    - [Architecture and design](#letter-a)
+    - [Security and compliance](#letter-b)
+- [Prescriptive use cases](#use-cases)
 - [Contributing](#contributing)
 - [Roadmap](#roadmap)
 ---
 
-### Reference implementations for secure and compliant generative AI hub on Azure
+### AI hub on Azure reference implementations
+   
+The AI hub reference implementation is not just a learning resource; it's a comprehensive foundation for all your AI applications and use cases. It provides a robust infrastructure that allows you to build, test, and deploy AI models with ease. With our extensive library of use cases, you can dive right into practical applications of AI, learning by doing and gaining invaluable hands-on experience.
+
+One of the key strengths of AI hub is its uncompromising focus on security, scalability, and reliability (if you decide to lead with our recommendations). We understand that these are non-negotiable requirements for any AI initiative. Therefore, we've embedded these principles right into the core of the AI hub. Our platform is designed to ensure that your AI applications are not only powerful and flexible, but also secure and reliable.   
+  
+Scalability is another critical aspect of AI development. As your skills grow and your needs evolve, the AI hub is ready to scale with you, supporting everything from simple proof-of-concept models to complex, enterprise-wide AI solutions.  
+   
+So why wait? Start your journey with Generative AI on Azure today. Dive into the AI hub on Azure reference implementation, and discover the incredible potential of AI. Let's create the future together!
 
 You can deploy the following reference implementations to your Azure subscription.
 
@@ -27,7 +38,29 @@ You can deploy the following reference implementations to your Azure subscriptio
 |:----------------------|:------------|--------|--------------|
 | Secure and Compliant Generative AI hub on Azure | Secure and Compliant Generative AI hub provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into the landing zones |[![Deploy To Microsoft Cloud](./docs/deploytomicrosoftcloud.svg)](https://aka.ms/DeploySecureGenAI) | [User Guide](./docs/fsiAOAI.md)
 
-### Use cases
+<a id="letter-a"></a>![The letter A](./docs/a.png) [Architecture and design](./docs/architecture.md)
+
+The architecture and design is proven, prescriptive, with security and governance being front and center - but not at the expense of autonomy and developer freedom for innovation and exploration. It does not leave any room for interpretation, as its been validated with our largest and most complex customers in highly regulated industries. Yet, it provides a flexible starting point for the less complex, and smaller customers, and can scale alongside the organization, business requirements, use cases, and the Azure platform itself due to the design principles and patterns that are employed alongside with the alignment with the overall Azure platform roadmap.
+
+<a id="letter-b"></a>![The letter B](./docs/b.png) [Security and compliance](./docs/security.md)
+
+Customers in regulated industries must define and enforce required controls in order to meet compliance and security requirements while empowering application teams with sufficient freedom to innovate and deploy Azure AI services in a safe and secure manner. To ensure the right balance for the central platform and the application teams, AI hub on Azure will provide a secure and compliant foundation for AI workloads, while also providing a secure-by-default Azure Open AI workload composition into the designated Azure subscriptions.
+
+### Prescriptive use cases
+
+#### Image and Video recognition
+
+#### Content creation and design
+
+#### Accelerated automation
+
+#### Personalized marketing
+
+#### Language translation and natural language processing
+
+#### Chatbots and virtual agents
+
+#### ChatGPT on your Enterprise data
 
 ## Contributing
 
@@ -50,3 +83,7 @@ trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
+
+## Microsoft Sponsorship
+
+The AI hub project was created by the **Microsoft Strategic Workload Acceleration Team (SWAT)** in partnership with several Microsoft engineering teams who continue to actively sponsor the sustained evolution of the project through the creation of additional reference implementations for common artificial intelligence and machine learning scenarios.
