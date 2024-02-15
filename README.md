@@ -60,7 +60,7 @@ Customers in regulated industries must define and enforce required controls in o
 
 #### Chatbots and virtual agents
 
-#### ChatGPT on your Enterprise data
+#### ChatGPT on your Enterprise data (./doc)
 
 ## Contributing
 

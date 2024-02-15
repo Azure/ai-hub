@@ -20,6 +20,8 @@ Search and Retrieval: Azure AI Search retrieves the most relevant results based 
 Post-processing with OpenAI: The search results can be further processed by OpenAI's GPT-4 for better presentation. For example, GPT-4 could generate a natural language summary of the search results.
 Monitoring and Maintenance: The performance and usage of the search service can be tracked using Azure Monitor and Azure Log Analytics. The search indices, data sources, and other resources can be managed using the Azure portal, REST APIs, or .NET SDK.
 
+## RAG pattern on Azure
+
 ![RAG](./media/aoaiendtoend.png)
 
 1. Data Ingestion: Azure Cognitive Search supports numerous data connectors that allow you to ingest data from various sources. For instance, you can use Azure SQL Database, Azure Blob Storage, Azure Data Lake Store, or Azure Cosmos DB. It also supports connectors for popular SaaS platforms like SharePoint and Salesforce, and for on-premises or other cloud data sources through Azure Data Factory.
