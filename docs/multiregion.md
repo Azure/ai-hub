@@ -38,9 +38,10 @@ Start by setting up Azure OpenAI in your primary region. Use the provoded templa
 2. Set Up Azure API Management:
 In the same region where you've deployed your AI services, set up Azure API Management. This service allows you to manage APIs, handle retry logic and monitor their performance. In the Azure portal, create a new API Management service. Again, specify the region, subscription, resource group, and name.
 3. Spesify OpenAI API:
-Once your API Management service is set up, add the Azure OpenAI API.
+Once your API Management service is set up, add the Azure OpenAI APIs for each region to backends.
 4. Configure API Policies:
 After importing the API, you'll need to configure policies for rate limiting, quotas, and transformations. These policies help manage traffic and ensure fair usage. Azure provides a policy editor to facilitate this process.
+5. In case you are using PTU's and are exceeding your capacity, the API will respond a 429 message. This message contains a header with the recomended wait time for your next retry.
 
 ### Using API Management for aditional logging metrics
 
