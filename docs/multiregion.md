@@ -17,7 +17,6 @@ Single instance of the required services.
 
 ![Multi region](./aoai_multi_region.svg)
 
-
 ### Using Azure API Management with your AI workload
 
 Azure API Management provides several advantages when used in conjunction with Azure OpenAI:
