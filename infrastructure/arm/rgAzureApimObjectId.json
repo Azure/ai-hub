@@ -1,0 +1,22 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "name-compliant-azureOpenAi": "[concat(parameters('prefix'), '-', parameters('location'), '-apim')]"
+    },
+    "resources": [],
+    "outputs": {
+        "systemIdentityId": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.ApiManagement/service', variables('name-compliant-azureOpenAi')), '2023-03-01-preview', 'Full').identity.principalId]"
+        }
+    }
+}
