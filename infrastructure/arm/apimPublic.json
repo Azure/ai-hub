@@ -1,0 +1,173 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "rgName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "policyUrl": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/Azure/ai-hub/main/infrastructure/arm/xml/lbaoai.xml",
+            "metadata": {
+                "description": "The URL of the policy definition"
+            }
+        },
+        "aoaiEndpoint1": {
+            "type": "string",
+            "defaultValue": "https://swi-switzerlandnorth-azopenai.openai.azure.com/"
+        },
+        "aoaiEndpoint2": {
+            "type": "string",
+            "defaultValue": "https://knmove.openai.azure.com/"
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[deployment().location]"
+        },
+        "openApiSpecUrl": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/cognitiveservices/data-plane/AzureOpenAI/inference/preview/2024-02-15-preview/inference.json"
+        }
+    },
+    "variables": {
+        "name-compliant-azureApim": "[concat(parameters('prefix'), '-', parameters('location'), '-apim')]",
+        "azure-openai-service-api": "azure-openai-service-api",
+        "policy": "policy"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "name": "[parameters('rgName')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "apim",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', parameters('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.ApiManagement/service",
+                            "apiVersion": "2023-03-01-preview",
+                            "name": "[variables('name-compliant-azureApim')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                            ],
+                            "sku": {
+                                "name": "StandardV2",
+                                "capacity": 1
+                            },
+                            "identity": {
+                                "type": "SystemAssigned"
+                            },
+                            "properties": {
+                                "publisherEmail": "krnese@microsoft.com",
+                                "publisherName": "AI hub on Azure",
+                                "customProperties": {
+                                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": false,
+                                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": false,
+                                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": false,
+                                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": false,
+                                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": false,
+                                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": false,
+                                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168": false,
+                                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30": false
+                                },
+                                "publicNetworkAccess": "Enabled",
+                                "apiVersionConstraint": {
+                                    "minApiVersion": "2019-12-01"
+                                }
+                            }
+                        },
+                        {
+                            "type": "Microsoft.ApiManagement/service/namedValues",
+                            "apiVersion": "2023-03-01-preview",
+                            "name": "[concat(variables('name-compliant-azureApim'), '/backend1')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.ApiManagement/service/', variables('name-compliant-azureApim'))]"
+                            ],
+                            "properties": {
+                                "displayName": "backend1",
+                                "value": "[parameters('aoaiEndpoint1')]",
+                                "tags": [],
+                                "secret": false
+                            }
+                        },
+                        {
+                            "type": "Microsoft.ApiManagement/service/namedValues",
+                            "apiVersion": "2023-03-01-preview",
+                            "name": "[concat(variables('name-compliant-azureApim'), '/backend2')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.ApiManagement/service/', variables('name-compliant-azureApim'))]"
+                            ],
+                            "properties": {
+                                "displayName": "backend2",
+                                "value": "[parameters('aoaiEndpoint2')]",
+                                "tags": [],
+                                "secret": false
+                            }
+                        },
+                        {
+                            "type": "Microsoft.ApiManagement/service/apis",
+                            "apiVersion": "2023-03-01-preview",
+                            "name": "[concat(variables('name-compliant-azureApim'), '/', variables('azure-openai-service-api'))]",
+                            "dependsOn": [
+                                "[concat('Microsoft.ApiManagement/service/', variables('name-compliant-azureApim'))]"
+                            ],
+                            "properties": {
+                                "displayName": "Azure OpenAI Service API",
+                                "apiRevision": "1",
+                                "description": "Azure OpenAI APIs for completions and search",
+                                "subscriptionRequired": true,
+                                "serviceUrl": "https://azure.com/openai",
+                                "path": "openai",
+                                "protocols": [
+                                    "https"
+                                ],
+                                "format": "openapi-link",
+                                "value": "[parameters('openApiSpecUrl')]",
+                                "authenticationSettings": {
+                                    "oAuth2AuthenticationSettings": [],
+                                    "openidAuthenticationSettings": []
+                                },
+                                "subscriptionKeyParameterNames": {
+                                    "header": "Ocp-Apim-Subscription-Key",
+                                    "query": "subscription-key"
+                                },
+                                "isCurrent": true
+                            }
+                        },
+                        {
+                            "type": "Microsoft.ApiManagement/service/apis/policies",
+                            "apiVersion": "2023-03-01-preview",
+                            "name": "[concat(variables('name-compliant-azureApim'), '/', variables('azure-openai-service-api'), '/', variables('policy'))]",
+                            "dependsOn": [
+                                "[concat('Microsoft.ApiManagement/service/', variables('name-compliant-azureApim'), '/apis/', variables('azure-openai-service-api'))]"
+                            ],
+                            "properties": {
+                                "format": "rawxml-link",
+                                "value": "[parameters('policyUrl')]"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
