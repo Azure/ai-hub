@@ -95,14 +95,14 @@
                             "constraints": {
                                 "allowedValues": [
                                     {
-                                        "label": "Proof of Concept",
-                                        "description": "Explore and validate Azure AI hub in a single or multiple Azure regions.",
-                                        "value": "PoC"
-                                    },
-                                    {
                                         "label": "Production",
                                         "description": "Deploy Azure AI hub into a production environment.",
                                         "value": "Production"
+                                    },
+                                    {
+                                        "label": "Proof of Concept",
+                                        "description": "Explore and validate Azure AI hub in a single or multiple Azure regions.",
+                                        "value": "PoC"
                                     }
                                 ],
                                 "required": true
@@ -159,13 +159,12 @@
                             "visible": "[equals(steps('basics').aiIntention, 'Multiple')]"
                         },
                         {
-                            "name": "aiVnetWarning",
+                            "name": "aiPoCMultiRegionInfo",
                             "type": "Microsoft.Common.InfoBox",
                             "visible": "[equals(steps('basics').aiIntention, 'Multiple')]",
                             "options": {
                                 "icon": "warning",
-                                "text": "For AI hub in Azure in a multi-region setup, all Azure services will be configured using public endpoint. Private endpoint support for both PoC and Production deployment will be enabled soon.",
-                                "uri": "https://forms.office.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbRw_T3EIZ1KNCuv_1duLJBgpUMUcwV1Y5QjI3UTVTMkhSVUo3R09NNVQxSyQlQCN0PWcu"
+                                "text": "For AI hub in Azure in a multi-region setup, all Azure services will be configured using Public Endpoints. Private Endpoint support for both PoC and Production deployment will be enabled soon."
                             }
                         },
                         {
@@ -184,6 +183,15 @@
                             "options": {
                                 "icon": "None",
                                 "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/aoai_single_region.svg'>"
+                            }
+                        },
+                        {
+                            "name": "aiProdMultiRegionInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[equals(steps('basics').aiDeployOption, 'Production')]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "Currently AI hub on Azure can only be deployed to a single Azure region supporting Private Endpoints. Support for multi-region setup with Private Endpoints will be enabled soon."
                             }
                         },
                         {
