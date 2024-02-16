@@ -349,7 +349,7 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Network Settings",
                             "elements": [],
-                            "visible": true
+                            "visible": "[not(equals(steps('basics').aiIntention, 'Multiple'))]"
                         },
                         {
                             "name": "kvDisableNetworkAccess",
@@ -370,7 +370,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": true
+                            "visible": "[not(equals(steps('basics').aiIntention, 'Multiple'))]"
                         },
                         {
                             "name": "kvNwLocationOption",
@@ -391,7 +391,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes')]"
+                            "visible": "[and(equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "kvLocationsApi",
@@ -423,7 +423,7 @@
                             "constraints": {
                                 "required": true
                             },
-                            "visible": "[equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes')]"
+                            "visible": "[and(equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "kvCmkSection",
@@ -521,7 +521,7 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Network Settings",
                             "elements": [],
-                            "visible": true
+                            "visible": "[not(equals(steps('basics').aiIntention, 'Multiple'))]"
                         },
                         {
                             "name": "stDisableNetworkAccess",
@@ -542,7 +542,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": true
+                            "visible": "[not(equals(steps('basics').aiIntention, 'Multiple'))]"
                         },
                         {
                             "name": "stNwLocationOption",
@@ -563,7 +563,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('stSettings').stDisableNetworkAccess, 'Yes')]"
+                            "visible": "[and(equals(steps('stSettings').stDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "stLocationsApi",
@@ -595,7 +595,7 @@
                             "constraints": {
                                 "required": true
                             },
-                            "visible": "[equals(steps('stSettings').stDisableNetworkAccess, 'Yes')]"
+                            "visible": "[and(equals(steps('stSettings').stDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "authzSection",
@@ -700,7 +700,7 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Network Settings",
                             "elements": [],
-                            "visible": true
+                            "visible": "[not(equals(steps('basics').aiIntention, 'Multiple'))]"
                         },
                         {
                             "name": "aiDisableNetworkAccess",
@@ -721,7 +721,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": true
+                            "visible": "[not(equals(steps('basics').aiIntention, 'Multiple'))]"
                         },
                         {
                             "name": "aiRestrictOutboundNetworkAccess",
@@ -742,7 +742,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes')]"
+                            "visible": "[and(equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "aiNwLocationOption",
@@ -795,7 +795,7 @@
                             "constraints": {
                                 "required": true
                             },
-                            "visible": "[equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes')]"
+                            "visible": "[and(equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "authzSection",
@@ -1604,7 +1604,7 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Network Settings",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "aiSearchDisableNetworkAccess",
@@ -1625,7 +1625,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "aiSearchPrivateEndpointInfo",
@@ -1772,19 +1772,19 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Required services for the selected use case",
                             "elements": [],
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'))]"
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
                         },
                         {
                             "name": "aiVisionSection",
                             "type": "Microsoft.Common.Section",
                             "label": "Azure AI Vision",
                             "elements": [],
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'))]"
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
                         },
                         {
                             "name": "aiVisionInfo",
                             "type": "Microsoft.Common.TextBlock",
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'))]",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]",
                             "options": {
                                 "icon": "None",
                                 "text": "Azure AI Vision is a unified service that offers innovative computer vision capabilities. Give your apps the ability to analyze images, read text, and detect faces with prebuilt image tagging, text extraction with optical character recognition (OCR), and responsible facial recognition. Incorporate vision features into your projects with no machine learning experience required.",
@@ -1796,7 +1796,7 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Network Settings",
                             "elements": [],
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'))]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "aiVisionDisableNetworkAccess",
@@ -1817,7 +1817,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'))]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "aiVisionRestrictOutboundNetworkAccess",
@@ -1838,7 +1838,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "aiVisionNwLocationOption",
