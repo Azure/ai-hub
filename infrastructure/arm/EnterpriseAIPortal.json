@@ -21,7 +21,7 @@
                             "type": "Microsoft.Common.TextBlock",
                             "visible": true,
                             "options": {
-                                "text": "The 'Secure and Compliant Generative AI on Azure' accelerator helps organizations to expedite the composition and deployment of a well-architected Azure Open AI workload, with the required pre-requisites to ensure encryption in transit and at rest, secure network connectivity, central authorization, and to comply with regulated industries at scale.",
+                                "text": "The 'Secure and Compliant Generative AI on Azure' accelerator helps organizations to expedite the composition and deployment of a well-architected Azure OpenAI workload, with the required pre-requisites to ensure encryption in transit and at rest, secure network connectivity, central authorization, and to comply with regulated industries at scale.",
                                 "link": {
                                     "label": "Learn more",
                                     "uri": "https://learn.microsoft.com/azure/ai-services/openai/overview"
@@ -40,7 +40,7 @@
                             "type": "Microsoft.Common.TextBlock",
                             "visible": true,
                             "options": {
-                                "text": "Select an Azure subscription that has been enabled for Azure Open AI and required features such as Customer-Managed Keys, Bring-your-own-Storage, and eventually ChatGPT4. Ensure you are selecting an Azure region where Azure Open AI is available before proceeding with the deployment.",
+                                "text": "Select an Azure subscription that has been enabled for Azure OpenAI. Ensure you are selecting an Azure region where Azure OpenAI is available before proceeding with the deployment.",
                                 "link": {
                                     "label": "Request Access to Azure OpenAI Service",
                                     "uri": "https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu"
@@ -57,7 +57,7 @@
                         {
                             "name": "prefix",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Azure Open AI Workload Prefix",
+                            "label": "Azure OpenAI Workload Prefix",
                             "placeholder": "",
                             "defaultValue": "",
                             "toolTip": "Use only allowed characters",
@@ -73,19 +73,19 @@
                             "type": "Microsoft.Common.TextBlock",
                             "visible": true,
                             "options": {
-                                "text": "Select the architecture setup for the Azure Open AI workload. You can select if you want to deploy a single instance into a single region, or create multiple instances across multiple regions using API Management for load balancing and distribution of traffic.",
+                                "text": "Select the architecture setup for the Azure OpenAI workload. You can select if you want to deploy a single instance into a single region, or create multiple instances across multiple regions using API Management for load balancing and distribution of traffic.",
                                 "link": {
                                     "label": "Learn more",
                                     "uri": "https://learn.microsoft.com/azure/ai-services/openai/overview"
                                 }
                             }
                         },
-						{
-                            "name": "aiIntention",
+                        {
+                            "name": "aiDeployOption",
                             "type": "Microsoft.Common.DropDown",
-                            "label": "Architecture setup",
+                            "label": "Intent of deployment",
                             "placeholder": "",
-                            "defaultValue": "Deploy Azure Open AI to a single Azure region into a single subscription.",
+                            "defaultValue": "Production",
                             "toolTip": "",
                             "multiselect": false,
                             "multiLine": true,
@@ -95,19 +95,48 @@
                             "constraints": {
                                 "allowedValues": [
                                     {
-                                        "label": "Deploy Azure Open AI to a single Azure region into a single subscription.",
-                                        "description": "Deploy the Azure Open AI workload fondation with optional services into a single Azure region.",
-                                        "value": "Single"
+                                        "label": "Proof of Concept",
+                                        "description": "Explore and validate Azure AI hub in a single or multiple Azure regions.",
+                                        "value": "PoC"
                                     },
                                     {
-                                        "label": "Deploy Azure Open AI to multiple Azure regions using API Management.",
-                                        "description": "Deploy Azure Open AI workload foundation across multiple Azure region, and optionally across multple subscriptions, using APIM for load balancing and distribution of traffic.",
-                                        "value": "Multiple"
+                                        "label": "Production",
+                                        "description": "Deploy Azure AI hub into a production environment.",
+                                        "value": "Production"
                                     }
                                 ],
                                 "required": true
                             },
                             "visible": true
+                        },
+						{
+                            "name": "aiIntention",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Architecture setup",
+                            "placeholder": "",
+                            "defaultValue": "Deploy to a single Azure region",
+                            "toolTip": "",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "defaultDescription": "Select the architecture for this deployment.",
+                            "filter": true,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Deploy to a single Azure region",
+                                        "description": "Deploy the Azure OpenAI workload fondation with optional services into a single Azure region.",
+                                        "value": "Single"
+                                    },
+                                    {
+                                        "label": "Deploy to multiple Azure regions",
+                                        "description": "Deploy Azure OpenAI workload foundation across multiple Azure region, using APIM for load balancing and distribution of traffic.",
+                                        "value": "Multiple"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('basics').aiDeployOption, 'PoC')]"
                         },
                         {
                             "name": "aiMultiLocationsApi",
@@ -120,14 +149,24 @@
                         {
                             "name": "aiMultiLocation",
                             "type": "Microsoft.Common.DropDown",
-                            "label": "Select the additional Azure region for the Azure Open AI workload",
+                            "label": "Select the additional Azure region for the Azure OpenAI workload",
                             "filter": true,
-                            "toolTip": "Select the additional Azure region for the Azure Open AI workload",
+                            "toolTip": "Select the additional Azure region for the Azure OpenAI workload",
                             "constraints": {
                                 "allowedValues": "[map(steps('basics').aiMultiLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
                                 "required": true
                             },
                             "visible": "[equals(steps('basics').aiIntention, 'Multiple')]"
+                        },
+                        {
+                            "name": "aiVnetWarning",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[equals(steps('basics').aiIntention, 'Multiple')]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "For AI hub in Azure in a multi-region setup, all Azure services will be configured using public endpoint. Private endpoint support for both PoC and Production deployment will be enabled soon.",
+                                "uri": "https://forms.office.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbRw_T3EIZ1KNCuv_1duLJBgpUMUcwV1Y5QjI3UTVTMkhSVUo3R09NNVQxSyQlQCN0PWcu"
+                            }
                         },
                         {
                             "name": "aoAiMulti",
@@ -142,6 +181,15 @@
                             "name": "aoAiSingle",
                             "type": "Microsoft.Common.InfoBox",
                             "visible": "[equals(steps('basics').aiIntention, 'Single')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/aoai_single_region.svg'>"
+                            }
+                        },
+                        {
+                            "name": "aoAiProd",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[equals(steps('basics').aiDeployOption, 'Production')]",
                             "options": {
                                 "icon": "None",
                                 "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/aoai_single_region.svg'>"
@@ -164,7 +212,7 @@
                             "visible": true,
                             "options": {
                                 "icon": "None",
-                                "text": "Centralizing storage of application secrets in Azure Key Vault allows you to control their distribution. Key Vault greatly reduces the chances that secrets may be accidentally leaked. When application developers use Key Vault, they no longer need to store security information in their application. Use Azure Key Vault to enable Customer-Managed keys scenarios for Azure Open AI workload compositions",
+                                "text": "Centralizing storage of application secrets in Azure Key Vault allows you to control their distribution. Key Vault greatly reduces the chances that secrets may be accidentally leaked. When application developers use Key Vault, they no longer need to store security information in their application. Use Azure Key Vault to enable Customer-Managed keys scenarios for Azure OpenAI workload compositions",
                                 "uri": "https://www.microsoft.com"
                             }
                         },
@@ -379,7 +427,7 @@
                         {
                             "name": "kvKeyCreation",
                             "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Use Customer-Managed Keys to encrypt data for Storage Account and Azure Open AI",
+                            "label": "Use Customer-Managed Keys to encrypt data for the Azure services",
                             "defaultValue": "Yes (recommended)",
                             "toolTip": "",
                             "constraints": {
@@ -414,7 +462,7 @@
                             "visible": true,
                             "options": {
                                 "icon": "None",
-                                "text": "Bring your own storage that you can use to train Azure Open AI on internal, highly confidential data fully encrypted by Customer-Managed Keys.",
+                                "text": "Bring your own storage that you can use to train Azure OpenAI on internal, highly confidential data fully encrypted by Customer-Managed Keys.",
                                 "uri": "https://www.microsoft.com"
                             }
                         },
@@ -450,13 +498,13 @@
                             "name": "stCmkKeyName",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Customer-Managed Key Name",
-                            "placeholder": "CMK-Storage",
-                            "defaultValue": "",
+                            "placeholder": "",
+                            "defaultValue": "CmkStorage",
                             "toolTip": "Use only allowed characters",
                             "constraints": {
                                 "required": true,
-                                "regex": "^[a-z0-9A-Z-]{1,10}$",
-                                "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1-10 characters long."
+                                "regex": "^[a-z0-9A-Z-]{1,15}$",
+                                "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1-15 characters long."
                             },
                             "visible": "[equals(steps('kvSettings').kvKeyCreation, 'Yes')]"
                         },
@@ -601,7 +649,7 @@
                 },
                 {
                     "name": "aiSettings",
-                    "label": "Azure Open AI Configuration",
+                    "label": "Azure OpenAI Configuration",
                     "subLabel": {
                         "preValidation": "",
                         "postValidation": "Done"
@@ -629,13 +677,13 @@
                             "name": "aiCmkKeyName",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Customer-Managed Key Name",
-                            "placeholder": "CMK-Azure-Open-AI",
-                            "defaultValue": "",
+                            "placeholder": "",
+                            "defaultValue": "CmkAOAI",
                             "toolTip": "Use only allowed characters",
                             "constraints": {
                                 "required": true,
-                                "regex": "^[a-z0-9A-Z-]{1,10}$",
-                                "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1-10 characters long."
+                                "regex": "^[a-z0-9A-Z-]{1,15}$",
+                                "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1-15 characters long."
                             },
                             "visible": "[equals(steps('kvSettings').kvKeyCreation, 'Yes')]"
                         },
@@ -670,7 +718,7 @@
                         {
                             "name": "aiRestrictOutboundNetworkAccess",
                             "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Restric Outbound Network Access for Azure Open AI",
+                            "label": "Restric Outbound Network Access for Azure OpenAI",
                             "defaultValue": "Yes (recommended)",
                             "toolTip": "",
                             "constraints": {
@@ -691,7 +739,7 @@
                         {
                             "name": "aiNwLocationOption",
                             "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Deploy the Private Endpoint for Azure Open AI into the same region as the Azure Open AI service",
+                            "label": "Deploy the Private Endpoint for Azure OpenAI into the same region as the Azure OpenAI service",
                             "defaultValue": "Yes",
                             "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
                             "constraints": {
@@ -772,7 +820,7 @@
                         {
                             "name": "aiSystemIdentity",
                             "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Enable Managed Identity (System-assigned) for Azure Open AI",
+                            "label": "Enable Managed Identity (System-assigned) for Azure OpenAI",
                             "defaultValue": "Yes (recommended)",
                             "toolTip": "When enabling Managed Identity and usage of Customer-Managed keys, this identity will have RBAC permission to retrieve the associated Key Vault secret.",
                             "constraints": {
@@ -903,7 +951,7 @@
                             "multiselect": false,
                             "multiLine": true,
                             "selectAll": false,
-                            "defaultDescription": "Select the models you want to deploy to you Azure Open AI service",
+                            "defaultDescription": "Select the models you want to deploy to you Azure OpenAI service",
                             "filter": true,
                             "constraints": {
                                 "allowedValues": [
@@ -1667,7 +1715,7 @@
                             "type": "Microsoft.Common.OptionsGroup",
                             "label": "Enable Managed Identity (System-assigned) for Azure AI Search",
                             "defaultValue": "Yes (recommended)",
-                            "toolTip": "When enabling Managed Identity and usage of Customer-Managed keys, this identity will have RBAC permission access the Azure Open AI instance.",
+                            "toolTip": "When enabling Managed Identity and usage of Customer-Managed keys, this identity will have RBAC permission access the Azure OpenAI instance.",
                             "constraints": {
                                 "allowedValues": [
                                     {
@@ -1870,7 +1918,7 @@
                             "type": "Microsoft.Common.OptionsGroup",
                             "label": "Enable Managed Identity (System-assigned) for Azure AI Vision",
                             "defaultValue": "Yes (recommended)",
-                            "toolTip": "When enabling Managed Identity and usage of Customer-Managed keys, this identity will have RBAC permission access the Azure Open AI instance.",
+                            "toolTip": "When enabling Managed Identity and usage of Customer-Managed keys, this identity will have RBAC permission access the Azure OpenAI instance.",
                             "constraints": {
                                 "allowedValues": [
                                     {
