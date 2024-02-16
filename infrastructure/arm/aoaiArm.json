@@ -1180,7 +1180,7 @@
                         "value": "ServicePrincipal"
                     },
                     "principalId": {
-                        "value": "[if(and(not(empty(parameters('aiMultiLocation'))), equals(parameters('aiSystemIdentity'), 'Yes')), reference(variables('deploymentNames').rgAzureAiObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                        "value": "[if(and(not(empty(parameters('aiMultiLocation'))), equals(parameters('aiSystemIdentity'), 'Yes')), reference(variables('deploymentNames').rgAzureApimObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
                     }
                 }
             }
