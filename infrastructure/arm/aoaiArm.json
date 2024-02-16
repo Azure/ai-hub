@@ -1157,7 +1157,7 @@
         },
         // Creating Role Assignment for APIM on AOAI OpenAI Reader role
         {
-            "condition": "[and(not(empty(parameters('aiMultiLocation'))) ,equals(parameters('aiSearchSystemIdentity'), 'Yes'))]",
+            "condition": "[and(not(empty(parameters('aiMultiLocation'))) ,equals(parameters('aiSystemIdentity'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').rgRbac8DeploymentName]",
@@ -1180,7 +1180,7 @@
                         "value": "ServicePrincipal"
                     },
                     "principalId": {
-                        "value": "[if(and(not(empty(parameters('aiMultiLocation'))), equals(parameters('aiSearchSystemIdentity'), 'Yes')), reference(variables('deploymentNames').rgAzureAiSearchObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                        "value": "[if(and(not(empty(parameters('aiMultiLocation'))), equals(parameters('aiSystemIdentity'), 'Yes')), reference(variables('deploymentNames').rgAzureAiSearchObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
                     }
                 }
             }
