@@ -499,8 +499,8 @@
             "rgName": "[concat(parameters('prefix'), '-rg-', parameters('location'))]"
         },
         // Multi region variables for N deployments
-        "aoaiEndpoint1": "[toLower(concat(parameters('prefix'), '-', parameters('location'), '-AzOpenAI', '.openai.azure.com/'))]",
-        "aoaiEndpoint2": "[toLower(concat(parameters('prefix'), '-', parameters('aiMultiLocation'), '-AzOpenAI', '.openai.azure.com/'))]"
+        "aoaiEndpoint1": "[toLower(concat('https://', parameters('prefix'), '-', parameters('location'), '-AzOpenAI', '.openai.azure.com/'))]",
+        "aoaiEndpoint2": "[toLower(concat('https://', parameters('prefix'), '-', parameters('aiMultiLocation'), '-AzOpenAI', '.openai.azure.com/'))]"
     },
     "resources": [
         {
