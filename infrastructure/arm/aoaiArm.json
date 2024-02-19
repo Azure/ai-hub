@@ -528,6 +528,7 @@
                 }
             }
         },
+        // Deploying application centric Log Analytics workspace into primary region
         {
             "condition": "[or(equals(parameters('kvMonCreation'), 'Yes'), equals(parameters('stMonCreation'), 'Yes'), equals(parameters('aiMonCreation'), 'Yes'), equals(parameters('aiSearchMonCreation'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
@@ -556,6 +557,7 @@
                 }
             }
         },
+        // Deploying Key Vault into primary region
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
@@ -708,6 +710,7 @@
                 }
             }
         },
+        // Deploying Azure OpenAI into primary region
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
@@ -1362,6 +1365,9 @@
                     },
                     "aoaiEndpoint2": {
                         "value": "[variables('aoaiEndpoint2')]"
+                    },
+                    "aiMonCreation": {
+                        "value": "[parameters('aiMonCreation')]"
                     }
                 }
             }
