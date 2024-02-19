@@ -32,11 +32,20 @@
         "openApiSpecUrl": {
             "type": "string",
             "defaultValue": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/cognitiveservices/data-plane/AzureOpenAI/inference/preview/2024-02-15-preview/inference.json"
+        },
+        "aiMonCreation": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No"
         }
     },
     "variables": {
         "name-compliant-azureApim": "[concat(parameters('prefix'), '-', parameters('location'), '-apim')]",
         "azure-openai-service-api": "azure-openai-service-api",
+        "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
         "policy": "policy"
     },
     "resources": [
@@ -93,6 +102,26 @@
                                 "apiVersionConstraint": {
                                     "minApiVersion": "2019-12-01"
                                 }
+                            }
+                        },
+                        // Enabling Diagnostic settings if Azure OpenAI is deployed with Azure Monitor enabled
+                        {
+                            "condition": "[equals(parameters('aiMonCreation'), 'Yes')]",
+                            "type": "Microsoft.ApiManagement/service/providers/diagnosticSettings",
+                            "apiVersion": "2021-05-01-preview",
+                            "name": "[concat(variables('name-compliant-azureApim'), '/', 'Microsoft.Insights/diag')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.ApiManagement/service/', variables('name-compliant-azureApim'))]"
+                            ],
+                            "properties": {
+                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', variables('name-compliant-azMon'))]",
+                                "logs": [
+                                    {
+                                        "categoryGroup": "allLogs",
+                                        "enabled": true
+                                    }
+                                ]
                             }
                         },
                         {
