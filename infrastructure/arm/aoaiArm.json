@@ -449,7 +449,15 @@
                 "No"
             ]
         },
-        "dDocNwLocation": {
+        "docRestrictOutboundNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docNwLocation": {
             "type": "string",
             "defaultValue": "[parameters('location')]"
         },
@@ -944,28 +952,28 @@
                         "value": "[parameters('location')]"
                     },
                     "docRbacAuthz": {
-                        "value": "[parameters('visionRbacAuthz')]"
+                        "value": "[parameters('docRbacAuthz')]"
                     },
                     "docSubnetId": {
-                        "value": "[parameters('visionSubnetId')]"
+                        "value": "[parameters('docSubnetId')]"
                     },
                     "prefix": {
                         "value": "[parameters('prefix')]"
                     },
                     "docNwLocation": {
-                        "value": "[parameters('visionNwLocation')]"
+                        "value": "[parameters('docNwLocation')]"
                     },
                     "docDisableNetworkAccess": {
-                        "value": "[parameters('visionDisableNetworkAccess')]"
+                        "value": "[parameters('docDisableNetworkAccess')]"
                     },
                     "docSystemIdentity": {
-                        "value": "[parameters('visionSystemIdentity')]"
+                        "value": "[parameters('docSystemIdentity')]"
                     },
                     "docRestrictOutboundNetworkAccess": {
-                        "value": "[parameters('visionRestrictOutboundNetworkAccess')]"
+                        "value": "[parameters('docRestrictOutboundNetworkAccess')]"
                     },
                     "docMonCreation": {
-                        "value": "[parameters('visionMonCreation')]"
+                        "value": "[parameters('docMonCreation')]"
                     }
                 }
             }
