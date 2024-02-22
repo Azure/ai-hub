@@ -1565,11 +1565,86 @@
                             }
                         },
                         {
-                            "name": "aiAddServicesSection",
+                            "name": "aiAddVisionSection",
                             "type": "Microsoft.Common.Section",
-                            "label": "Required services for the selected use case",
+                            "label": "Required services for the 'Image and video recognition' use case",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
+                        },
+                        {
+                            "name": "aiAddOnYouDataSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Required services for the 'On Your Data' use case",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                        },
+                        {
+                            "name": "aiDedicatedInfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "For using Azure OpenAI in the same Azure region while getting additional quota and capacity, it is recommended to deploy into separate Azure subscriptions to avoid the capacity is shared.",
+                                "uri": "https://www.microsoft.com"
+                            }
+                        },
+                        {
+                            "name": "aiAddEmbeddingInstance",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Create a dedicated Azure OpenAI instance to orchestrate index creation and generate embeddings in AI Search",
+                            "defaultValue": "Yes, in a separate subscription (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes, in a separate subscription (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "Yes, in the same subscription",
+                                        "value": "Same"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                        },
+                        {
+                            "name": "aiDedicatedSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Dedicate Azure OpenAI instace for index and embeddings",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiAddEmbeddingInstance, 'Yes')]",
+                            "elements": [
+                                {
+                                    "name": "subinfo",
+                                    "type": "Microsoft.Common.TextBlock",
+                                    "visible": true,
+                                    "options": {
+                                        "text": "Select the additional subscription that will be used for Azure OpenAI to orchestrate indexes and generate embeddings to AI Search."
+                                    }
+                                },
+                                {
+                                    "type": "Microsoft.Common.SubscriptionSelector",
+                                    "name": "aiDedicatedSubscriptionId",
+                                    "label": "Additional subscription"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "aiDedicatedSubnetId",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "ResourceId of existing subnet in the additional subscription for connecting Private Endpoint",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiAddEmbeddingInstance, 'Yes'), equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes'))]"
                         },
                         {
                             "name": "aiSearchSection",
@@ -2231,7 +2306,10 @@
                 "docSubnetId": "[steps('aiAuxiliarySettings').aiDocSubnetId]",
                 "docSystemIdentity": "[steps('aiAuxiliarySettings').aiDocSystemIdentity]",
                 "docMonCreation": "[steps('aiAuxiliarySettings').aiDocMonCreation]",
-                "docRestrictOutboundNetworkAccess": "[steps('aiAuxiliarySettings').aiDocRestrictOutboundNetworkAccess]"
+                "docRestrictOutboundNetworkAccess": "[steps('aiAuxiliarySettings').aiDocRestrictOutboundNetworkAccess]",
+                "aiAddEmbeddingInstance": "[steps('aiAuxiliarySettings').aiAddEmbeddingInstance]",
+                "aiDedicatedSubnetId": "[steps('aiAuxiliarySettings').aiDedicatedSubnetId]",
+                "aiDedicatedSubscriptionId": "[steps('aiAuxiliarySettings').aiDedicatedSection.aiDedicatedSubscriptionId]"
             },
             "kind": "Subscription",
             "location": "[steps('basics').resourceScope.location.name]",
