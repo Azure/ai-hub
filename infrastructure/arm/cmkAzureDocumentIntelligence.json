@@ -6,24 +6,24 @@
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "Provide the name of the resource group where the Azure Open AI instance that will be created"
+                "description": "Provide the name of the resource group where the Azure Doc Intel instance that will be created"
             }
         },
         "location": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "Select the location for the Azure Open AI instance that will be created"
+                "description": "Select the location for the Azure Doc Intel instance that will be created"
             }
         },
         "prefix": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "Provide name for the Azure Open AI instance that will be created"
+                "description": "Provide name for the Azure Doc Intel instance that will be created"
             }
         },
-        "aiSystemIdentity": {
+        "docSystemIdentity": {
             "type": "string",
             "defaultValue": "No",
             "allowedValues": [
@@ -31,7 +31,7 @@
                 "No"
             ]
         },
-        "aiDisableNetworkAccess": {
+        "docDisableNetworkAccess": {
             "type": "string",
             "defaultValue": "No",
             "allowedValues": [
@@ -39,7 +39,7 @@
                 "No"
             ]
         },
-        "aiRbacAuthz": {
+        "docRbacAuthz": {
             "type": "string",
             "defaultValue": "No",
             "allowedValues": [
@@ -47,27 +47,27 @@
                 "No"
             ]
         },
-        "aiCmkKeyName": {
+        "docRestrictOutboundNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docCmkKeyName": {
             "type": "string",
             "defaultValue": ""
         },
-        "aiRestrictOutboundNetworkAccess": {
-            "type": "string",
-            "defaultValue": "No",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ]
-        },
-        "aiCmkKeyVersion": {
+        "docCmkKeyVersion": {
             "type": "string",
             "defaultValue": ""
         }
     },
     "variables": {
-        "name-compliant-azureOpenAi": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai')]",
+        "name-compliant-azureDocumentIntelligence": "[concat(parameters('prefix'), '-', parameters('location'), '-aidocintel')]",
         "name-compliant-keyvault": "[concat(parameters('prefix'), '-', parameters('location'), '-kv')]",
-        "aiIdentity": {
+        "visionIdentity": {
             "type": "SystemAssigned"
         },
         "denyFwAcl": {
@@ -79,8 +79,8 @@
         "cmk": {
             "keySource": "Microsoft.Keyvault",
             "keyvaultproperties": {
-                "keyname": "[parameters('aiCmkKeyName')]",
-                "keyVersion": "[parameters('aiCmkKeyVersion')]",
+                "keyname": "[parameters('docCmkKeyName')]",
+                "keyVersion": "[parameters('docCmkKeyVersion')]",
                 "keyvaulturi": "[concat('https://', variables('name-compliant-keyvault'), '.vault.azure.net')]"
             }
         }
@@ -95,7 +95,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
-            "name": "azureOpenAiCmk",
+            "name": "azureOpenAi",
             "resourceGroup": "[parameters('rgName')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
@@ -110,20 +110,20 @@
                         {
                             "type": "Microsoft.CognitiveServices/accounts",
                             "apiVersion": "2022-03-01",
-                            "name": "[variables('name-compliant-azureOpenAi')]",
+                            "name": "[variables('name-compliant-azureDocumentIntelligence')]",
                             "location": "[parameters('location')]",
-                            "identity": "[if(equals(parameters('aiSystemIdentity'), 'Yes'), variables('aiIdentity'), json('null'))]",
+                            "identity": "[if(equals(parameters('docSystemIdentity'), 'Yes'), variables('visionIdentity'), json('null'))]",
                             "sku": {
                                 "name": "S0"
                             },
-                            "kind": "OpenAI",
+                            "kind": "FormRecognizer",
                             "properties": {
-                                "customSubDomainName": "[toLower(variables('name-compliant-azureOpenAi'))]",
-                                "publicNetworkAccess": "[if(equals(parameters('aiDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]",
-                                "disableLocalAuth": "[if(equals(parameters('aiRbacAuthz'), 'Yes'), bool('true'), bool('false'))]",
-                                "restrictOutboundNetworkAccess": "[if(equals(parameters('aiRestrictOutboundNetworkAccess'), 'Yes'), bool('true'), bool('false'))]",
-                                "networkAcls": "[if(equals(parameters('aiDisableNetworkAccess'), 'Yes'), variables('denyFwAcl'), json('null'))]",
-                                "encryption": "[if(not(empty(parameters('aiCmkKeyName'))), variables('cmk'), json('null'))]"
+                                "customSubDomainName": "[toLower(variables('name-compliant-azureDocumentIntelligence'))]",
+                                "publicNetworkAccess": "[if(equals(parameters('docDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]",
+                                "disableLocalAuth": "[if(equals(parameters('docRbacAuthz'), 'Yes'), bool('true'), bool('false'))]",
+                                "restrictOutboundNetworkAccess": "[if(equals(parameters('docRestrictOutboundNetworkAccess'), 'Yes'), bool('true'), bool('false'))]",
+                                "networkAcls": "[if(equals(parameters('docDisableNetworkAccess'), 'Yes'), variables('denyFwAcl'), json('null'))]",
+                                "encryption": "[if(not(empty(parameters('docCmkKeyName'))), variables('cmk'), json('null'))]"
                             }
                         }
                     ]

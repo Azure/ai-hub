@@ -441,6 +441,46 @@
                 "No"
             ]
         },
+        "docDisableNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "dDocNwLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]"
+        },
+        "docRbacAuthz": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docSubnetId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "docSystemIdentity": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docMonCreation": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
         "aiUseCaseSelection": {
             "type": "string",
             "defaultValue": ""
@@ -460,6 +500,7 @@
             "rgKeyVersionTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgKey.json')]",
             "rgAzureOpenAiObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureAiObjectId.json')]",
             "rgAzureAiSearchObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureAiSearchObjectId.json')]",
+            "rgAzureDocumentIntelligenceObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureDocumentIntelligenceObjectId.json')]",
             "rgAzureApimObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureApimObjectId.json')]",
             "rgRbacTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgRbac.json')]",
             "azureOpenAiCmkTemplateUri": "[uri(deployment().properties.templateLink.uri, 'cmkAzureOpenAi.json')]",
@@ -467,6 +508,7 @@
             "azureOpenAiContentFilterTemplateUri": "[uri(deployment().properties.templateLink.uri, 'contentFilter.json')]",
             "azureAiSearchTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureAiSearch.json')]",
             "azureComputerVisionTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureComputerVision.json')]",
+            "azureDocumentIntelligenceTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureDocumentIntelligence.json')]",
             "azureApimTemplateUri": "[uri(deployment().properties.templateLink.uri, 'apimPublic.json')]"
         },
         "deploymentSuffix": "[concat('-', deployment().location, guid(parameters('prefix')))]",
@@ -479,6 +521,7 @@
             "rgKeyVersionDeploymentName": "[take(concat(parameters('prefix'), '-key', variables('deploymentSuffix')), 64)]",
             "rgAzureAiObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-ai-objectId', variables('deploymentSuffix')), 64)]",
             "rgAzureAiSearchObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-search-objectId', variables('deploymentSuffix')), 64)]",
+            "rgAzureDocumentIntelligenceObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-doc-objectId', variables('deploymentSuffix')), 64)]",
             "rgAzureApimObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-apim-objectId', variables('deploymentSuffix')), 64)]",
             "rgRbac1DeploymentName": "[take(concat(parameters('prefix'), '-rbac1', variables('deploymentSuffix')), 64)]",
             "rgRbac2DeploymentName": "[take(concat(parameters('prefix'), '-rbac2', variables('deploymentSuffix')), 64)]",
@@ -493,14 +536,18 @@
             "azureOpenAIContentFilterDeploymentName": "[take(concat(parameters('prefix'), '-aoaiContentFilter', variables('deploymentSuffix')), 64)]",
             "azureAiSearchDeploymentName": "[take(concat(parameters('prefix'), 'aaisearch', variables('deploymentSuffix')), 64)]",
             "azureComputerVisionDeploymentName": "[take(concat(parameters('prefix'), 'aicomputervision', variables('deploymentSuffix')), 64)]",
+            "azureDocumentIntelligenceDeploymentName": "[take(concat(parameters('prefix'), 'aidocumentintelligence', variables('deploymentSuffix')), 64)]",
             "apimDeploymentName": "[take(concat(parameters('prefix'), 'apim', variables('deploymentSuffix')), 64)]"
         },
         "resourceNames": {
             "rgName": "[concat(parameters('prefix'), '-rg-', parameters('location'))]"
         },
-        // Multi region variables for N deployments
-        "aoaiEndpoint1": "[toLower(concat('https://', parameters('prefix'), '-', parameters('location'), '-AzOpenAI', '.openai.azure.com/'))]",
-        "aoaiEndpoint2": "[toLower(concat('https://', parameters('prefix'), '-', parameters('aiMultiLocation'), '-AzOpenAI', '.openai.azure.com/'))]"
+        // Multi region variables for N deployments and endpoint references
+        "aoaiEndpoint1": "[toLower(concat('https://', parameters('prefix'), '-', parameters('location'), '-azopenai', '.openai.azure.com/'))]",
+        "aoaiEndpoint2": "[toLower(concat('https://', parameters('prefix'), '-', parameters('aiMultiLocation'), '-azopenai', '.openai.azure.com/'))]",
+        "storageAccountName": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(deployment().name)), 23))]",
+        "blobStorageEndpoint": "[concat('https://', variables('storageAccountName'), '.blob.core.windows.net/')]",
+        "keyVaultEndpoint": "[concat('https://', parameters('prefix'), '-', parameters('location'), '-kv', '.vault.azure.net/')]"
     },
     "resources": [
         {
@@ -870,6 +917,59 @@
                 }
             }
         },
+        // Deploying Azure AI Document Intelligence into primary region
+        {
+            "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azureDocumentIntelligenceDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azureDocumentIntelligenceTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "docRbacAuthz": {
+                        "value": "[parameters('visionRbacAuthz')]"
+                    },
+                    "docSubnetId": {
+                        "value": "[parameters('visionSubnetId')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "docNwLocation": {
+                        "value": "[parameters('visionNwLocation')]"
+                    },
+                    "docDisableNetworkAccess": {
+                        "value": "[parameters('visionDisableNetworkAccess')]"
+                    },
+                    "docSystemIdentity": {
+                        "value": "[parameters('visionSystemIdentity')]"
+                    },
+                    "docRestrictOutboundNetworkAccess": {
+                        "value": "[parameters('visionRestrictOutboundNetworkAccess')]"
+                    },
+                    "docMonCreation": {
+                        "value": "[parameters('visionMonCreation')]"
+                    }
+                }
+            }
+        },
         // Retrieving objectId of the AOAI System Identity
         {
             "condition": "[equals(parameters('aiSystemIdentity'), 'Yes')]",
@@ -912,6 +1012,33 @@
                 "templateLink": {
                     "contentVersion": "1.0.0.0",
                     "uri": "[variables('templateUris').rgAzureAiSearchObjectIdTemplateUri]"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        // Retrieving objectId of the AI Document Intelligence System Identity
+        {
+            "condition": "[and(equals(parameters('docSystemIdentity'), 'Yes'), equals(parameters('aiSystemIdentity'), 'Yes'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgAzureDocumentIntelligenceObjectIdDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureDocumentIntelligenceDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgAzureDocumentIntelligenceObjectIdTemplateUri]"
                 },
                 "parameters": {
                     "prefix": {
