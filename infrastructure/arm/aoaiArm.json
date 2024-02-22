@@ -559,6 +559,7 @@
             "rgRbac8DeploymentName": "[take(concat(parameters('prefix'), '-rbac8', variables('deploymentSuffix')), 64)]",
             "azureOpenAiFinalDeploymentName": "[take(concat(parameters('prefix'), '-aoaicmk', variables('deploymentSuffix')), 64)]",
             "azureOpenAiModelDeploymentName": "[take(concat(parameters('prefix'), '-aoaiModel', variables('deploymentSuffix')), 64)]",
+            "azureOpenAiEmbeddingModelDeploymentName": "[take(concat(parameters('prefix'), '-aoaiEmbeddingModel', variables('deploymentSuffix')), 64)]",
             "azureOpenAIContentFilterDeploymentName": "[take(concat(parameters('prefix'), '-aoaiContentFilter', variables('deploymentSuffix')), 64)]",
             "azureAiSearchDeploymentName": "[take(concat(parameters('prefix'), '-aaisearch', variables('deploymentSuffix')), 64)]",
             "azureComputerVisionDeploymentName": "[take(concat(parameters('prefix'), '-aicomputervision', variables('deploymentSuffix')), 64)]",
@@ -567,7 +568,8 @@
         },
         "resourceNames": {
             "rgName": "[concat(parameters('prefix'), '-rg-', parameters('location'))]",
-            "aoaiOrchestratorName": "orchestrator"
+            "aoaiOrchestratorName": "orchestrator",
+            "aoaiOrchestratorModelName": "text-embedding-ada-002"
         },
         // Multi region variables for N deployments and endpoint references
         "aoaiEndpoint1": "[toLower(concat('https://', parameters('prefix'), '-', parameters('location'), '-azopenai', '.openai.azure.com/'))]",
@@ -889,6 +891,40 @@
                     },
                     "aiMonCreation": {
                         "value": "[parameters('aiMonCreation')]"
+                    }
+                }
+            }
+        },
+        // Deploying embedding model to dedicated AOAI instance for orchestrating index and generate embeddings
+        {
+            "condition": "[and(equals(parameters('aiAddEmbeddingInstance'), 'Yes'), equals(parameters('aiModelDeployment'), 'Yes'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azureOpenAiEmbeddingModelDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiEmbeddingDeploymentName)]"
+
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azureOpenAiModelTemplateUri]"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "aiModelDeploymentName": {
+                        "value": "[parameters('aiModelDeploymentName')]"
+                    },
+                    "aiModelVersion": {
+                        "value": "[variables('resourceNames').aoaiOrchestratorModelName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
                     }
                 }
             }
