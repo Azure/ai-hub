@@ -1531,7 +1531,7 @@
                             "type": "Microsoft.Common.DropDown",
                             "label": "Select the initial use case you want to deploy",
                             "placeholder": "",
-                            "defaultValue": "Image and video recognition",
+                            "defaultValue": "'On Your Data'",
                             "toolTip": "",
                             "multiselect": false,
                             "multiLine": true,
@@ -1541,6 +1541,11 @@
                             "constraints": {
                                 "allowedValues": [
                                     {
+                                        "label": "'On Your Data'",
+                                        "description": "Empowers your organization to leverage the power of OpenAI models, such as GPT-4, and incorporates the advanced capabilities of RAG (Retrieval Augmented Generation) model, directly on your data with enterprise-grade security on Azure.",
+                                        "value": "onyourdata"
+                                    },
+                                    {
                                         "label": "Content creation and design",
                                         "description": "Content creation and design: Effective content creation and design are crucial for attracting and engaging customers.",
                                         "value": "content"
@@ -1549,11 +1554,6 @@
                                         "label": "Accelerated automation",
                                         "description": "Automating IT tasks improves employee experiences, enhances customer interactions, and drives more efficiency within a company’s developer community.",
                                         "value": "automation"
-                                    },
-                                    {
-                                        "label": "Personalized marketing",
-                                        "description": "Personalization increases the chances of customer engagement and conversion and can significantly improve marketing ROI..",
-                                        "value": "marketing"
                                     },
                                     {
                                         "label": "Chatbots and virtual agents",
@@ -1969,6 +1969,209 @@
                                 "required": true
                             },
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
+                        },
+                        {
+                            "name": "aiAddServicesSectionOnYourData",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Required services for the selected use case",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                        },
+                        {
+                            "name": "aiDocSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure AI Document Intelligence",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                        },
+                        {
+                            "name": "aiDocInfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "Azure AI Document Intelligence enables you to effectively manage the velocity at which data is collected and processed and is key to improved operations, informed data-driven decisions, and enlightened innovation.",
+                                "uri": "https://learn.microsoft.com/azure/ai-services/document-intelligence/overview?view=doc-intel-4.0.0"
+                            }
+                        },
+                        {
+                            "name": "aiDocNetworkSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Network Settings",
+                            "elements": [],
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                        },
+                        {
+                            "name": "aiDocDisableNetworkAccess",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Disable Public Network Access",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                        },
+                        {
+                            "name": "aiDocRestrictOutboundNetworkAccess",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Restric Outbound Network Access for Document Intelligence",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                        },
+                        {
+                            "name": "aiDocNwLocationOption",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Deploy the Private Endpoint for Azure AI Document Intelligence into the same region as the Azure AI Document Intelligence service",
+                            "defaultValue": "Yes",
+                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiDocLocationsApi",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "locations?api-version=2019-11-01"
+                            }
+                        },
+                        {
+                            "name": "aiDocNwLocation",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Select region for the Private Endpoint",
+                            "filter": true,
+                            "toolTip": "Select the target region for the Private Endpoint",
+                            "constraints": {
+                                "allowedValues": "[map(steps('aiAuxiliarySettings').aiDocLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
+                                "required": true
+                            },
+                            "visible": "[and(not(equals(steps('aiAuxiliarySettings').aiDocNwLocationOption, 'Yes')), equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiDocSubnetId",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "constraints": {
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'))]"
+                        },
+                        {
+                            "name": "aiDocauthzSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Authorization Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                        },
+                        {
+                            "name": "aiDocRbacAuthz",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Azure RBAC authorization",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No, use local authorization with API key",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
+                        },
+                        {
+                            "name": "aiDocSystemIdentity",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Managed Identity (System-assigned) for Azure AI Document Intelligence",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "When enabling Managed Identity, this identity will have RBAC permission access the Azure OpenAI instance.",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                        },
+                        {
+                            "name": "aiDocMonSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure Monitor Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                        },
+                        {
+                            "name": "aiDocMonCreation",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Diagnostic Settings for logging and threat detection",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
                         }
                     ]
                 }
@@ -2032,7 +2235,14 @@
                 "visionMonCreation": "[steps('aiAuxiliarySettings').aiVisionMonCreation]",
                 "visionRestrictOutboundNetworkAccess": "[steps('aiAuxiliarySettings').aiVisionRestrictOutboundNetworkAccess]",
                 "aiUseCaseSelection": "[steps('aiAuxiliarySettings').aiUseCaseSelection]",
-                "aiMultiLocation": "[steps('basics').aiMultiLocation]"
+                "aiMultiLocation": "[steps('basics').aiMultiLocation]",
+                "docDisableNetworkAccess": "[steps('aiAuxiliarySettings').aiDocDisableNetworkAccess]",
+                "docRbacAuthz": "[steps('aiAuxiliarySettings').aiDocRbacAuthz]",
+                "docNwLocation": "[if(equals(steps('aiAuxiliarySettings').aiDocNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('aiAuxiliarySettings').aiDocNwLocation)]",
+                "docSubnetId": "[steps('aiAuxiliarySettings').aiDocSubnetId]",
+                "docSystemIdentity": "[steps('aiAuxiliarySettings').aiDocSystemIdentity]",
+                "docMonCreation": "[steps('aiAuxiliarySettings').aiDocMonCreation]",
+                "docRestrictOutboundNetworkAccess": "[steps('aiAuxiliarySettings').aiDocRestrictOutboundNetworkAccess]"
             },
             "kind": "Subscription",
             "location": "[steps('basics').resourceScope.location.name]",
