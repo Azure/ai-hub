@@ -497,6 +497,7 @@
             "type": "string",
             "allowedValues": [
                 "Yes",
+                "Same",
                 "No"
             ],
             "defaultValue": "No"
@@ -842,7 +843,7 @@
         },
         // Deploying optional dedicated AOAI instance for embedding into the same subscription in the same region
         {
-            "condition": "[equals(parameters('aiAddEmbeddingInstance'), 'Yes')]",
+            "condition": "[equals(parameters('aiAddEmbeddingInstance'), 'Same')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').azureOpenAiEmbeddingDeploymentName]",
@@ -897,7 +898,7 @@
         },
         // Deploying embedding model to dedicated AOAI instance for orchestrating index and generate embeddings
         {
-            "condition": "[and(equals(parameters('aiAddEmbeddingInstance'), 'Yes'), equals(parameters('aiModelDeployment'), 'Yes'))]",
+            "condition": "[and(equals(parameters('aiAddEmbeddingInstance'), 'Same'), equals(parameters('aiModelDeployment'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').azureOpenAiEmbeddingModelDeploymentName]",
