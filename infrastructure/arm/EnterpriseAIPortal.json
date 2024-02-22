@@ -1531,7 +1531,7 @@
                             "type": "Microsoft.Common.DropDown",
                             "label": "Select the initial use case you want to deploy",
                             "placeholder": "",
-                            "defaultValue": "'On Your Data'",
+                            "defaultValue": "Image and video recognition",
                             "toolTip": "",
                             "multiselect": false,
                             "multiLine": true,
@@ -1540,40 +1540,29 @@
                             "filter": true,
                             "constraints": {
                                 "allowedValues": [
+									{
+                                        "label": "Image and video recognition",
+                                        "description": "Analyze images and provide textual responses to questions about them. It incorporates both natural language processing and visual understanding.",
+                                        "value": "vision"
+                                    },
                                     {
                                         "label": "'On Your Data'",
                                         "description": "Empowers your organization to leverage the power of OpenAI models, such as GPT-4, and incorporates the advanced capabilities of RAG (Retrieval Augmented Generation) model, directly on your data with enterprise-grade security on Azure.",
                                         "value": "onyourdata"
-                                    },
-                                    {
-                                        "label": "Content creation and design",
-                                        "description": "Content creation and design: Effective content creation and design are crucial for attracting and engaging customers.",
-                                        "value": "content"
-                                    },
-                                    {
-                                        "label": "Accelerated automation",
-                                        "description": "Automating IT tasks improves employee experiences, enhances customer interactions, and drives more efficiency within a company’s developer community.",
-                                        "value": "automation"
-                                    },
-                                    {
-                                        "label": "Chatbots and virtual agents",
-                                        "description": "Chatbots and virtual assistants powered by generative AI provide instant and accurate responses to customer queries.",
-                                        "value": "chatbots"
-                                    },
-                                    {
-                                        "label": "Language translation and natural language processing",
-                                        "description": "In a globalized world, language barriers can hinder communication and business growth.",
-                                        "value": "language"
-                                    },
-                                    {
-                                        "label": "Image and video recognition",
-                                        "description": "Analyze images and provide textual responses to questions about them. It incorporates both natural language processing and visual understanding.",
-                                        "value": "vision"
                                     }
                                 ],
                                 "required": true
                             },
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+						{
+                            "name": "onYourDataArchitecture",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-rag-architecture.svg'>"
+                            }
                         },
                         {
                             "name": "aiAddServicesSection",
