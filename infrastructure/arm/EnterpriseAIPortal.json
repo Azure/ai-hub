@@ -1919,7 +1919,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
+                            "visible": false
                         },
                         {
                             "name": "aiVisionSystemIdentity",
