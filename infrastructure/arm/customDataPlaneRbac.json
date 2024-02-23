@@ -1,0 +1,213 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "uniqueValue": {
+            "type": "string",
+            "defaultValue": "[deployment().name]"
+        }
+    },
+    "variables": {
+        "roles": {
+            "roleDefinitions": [
+                {
+                    "properties": {
+                        "roleName": "ComputerVisionDataContributor",
+                        "description": "Computer Vision Data Contributor",
+                        "type": "customRole",
+                        "permissions": [
+                            {
+                                "actions": [
+                                    "Microsoft.CognitiveServices/*/read"
+                                ],
+                                "notActions": [],
+                                "dataActions": [
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/describe/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/generatethumbnail/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/ocr/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/recognizetext/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/tag/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/areaofinterest/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/detect/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/imageanalysis:analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/imageanalysis:segment/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/imagecomposition:rectify/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/imagecomposition:stitch/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/models:cancel/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/planogramcompliance:match/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval:vectorizeimage/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval:vectorizetext/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/grounding/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/batch/write",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/batch/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/batch/analyzestatus/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/batch/status/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/index-statis/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/suggest/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/search/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes:query/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes:querybyimage/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes:querybytext/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes:sample/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/documents/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/facegroups/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/facegroups/write",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes/delete",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes/write",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes/documents/write",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes/documents/delete",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes/documents/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes/ingestions/write",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/retrieval/indexes/ingestions/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/datasets/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/datasets/write",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/datasets/delete",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/deployments/write",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/deployments/delete",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/deployments/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/models/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/models/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/models/:cancel/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/models/delete",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/models/write",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/models/evaluations/write",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/models/evaluations/delete",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/models/evaluations/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/read/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/read/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/read/core/asyncbatchanalyze/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/read/operations/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/operations/imageanalysis:analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/operations/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/operations/contentgeneration-backgrounds:generate/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/textoperations/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/face/correction/images/delete",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/productrecognition/runs/write",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/productrecognition/runs/delete",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/productrecognition/runs/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/face/correction/users/delete",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/face/correction/users/groups/merge/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/face/correction/users/groups/faces/write",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/face/correction/users/groups/faces/delete",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/face/correction/users/images/delete",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/face/correction/users/operations/read",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/face/users/uncertainfaces/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/face/users/resetgroups/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/face/users/groupondemand/action",
+                                    "Microsoft.CognitiveServices/accounts/ComputerVision/face/users/retrievegroups/action"
+                                ],
+                                "notDataActions": []
+                            }
+                        ]
+                    }
+                },
+                {
+                    "properties": {
+                        "roleName": "DocumentIntelligenceDataContributor",
+                        "description": "Document Intelligence Data Contributor",
+                        "type": "customRole",
+                        "permissions": [
+                            {
+                                "actions": [
+                                    "Microsoft.CognitiveServices/*/read"
+                                ],
+                                "notActions": [],
+                                "dataActions": [
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels:analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/read/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels:build/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels:compose/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels:copyto/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels:authorizecopy/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/businesscard/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/businesscard/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/train/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/delete",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/copyauthorization/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/copy/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/compose/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/copyresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/keys/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/layout/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/layout/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/creation/build/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/creation/classify/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/creation/compose/model/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/creation/copy/model/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/creation/generate/copyauthorization/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/analysis/analyze/document/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/analysis/batchanalyze/document/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/analysis/get/analyze/result/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/analysis/get/batchanalyze/result/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/classification/analyze/document/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/classification/get/analyze/result/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/management/classifier/delete",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/management/get/classifier/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/management/get/info/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/management/get/model/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/management/model/delete",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/operation/get/operation/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/operation/list/operations/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/receipt/asyncbatchanalyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/receipt/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/receipt/operations/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels/delete",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/iddocument/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/iddocument/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/info/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/invoice/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/invoice/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/operations/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/document:translate/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/detect/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/breaksentence/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/translate/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/transliterate/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/batches/delete",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/batches/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/batches/write",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/batches/documents/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/documents/formats/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/glossaries/formats/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/storagesources/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/dictionary/examples/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/dictionary/lookup/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/languages/read"
+                                ],
+                                "notDataActions": []
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/roleDefinitions",
+            "name": "[guid(parameters('uniqueValue'), variables('roles').roleDefinitions[copyIndex()].properties.roleName)]",
+            "apiVersion": "2018-01-01-preview",
+            "copy": {
+                "name": "roleDefinitionCopy",
+                "count": "[length(variables('roles').roleDefinitions)]"
+            },
+            "properties": {
+                "roleName": "[variables('roles').roleDefinitions[copyIndex()].properties.roleName]",
+                "description": "[variables('roles').roleDefinitions[copyIndex()].properties.description]",
+                "type": "[variables('roles').roleDefinitions[copyIndex()].properties.type]",
+                "permissions": "[variables('roles').roleDefinitions[copyIndex()].properties.permissions]",
+                "assignableScopes": [
+                    "[subscription().id]"
+                ]
+            }
+        }
+    ]
+}

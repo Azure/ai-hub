@@ -54,7 +54,14 @@
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "Provide a name for the customer-managed key that will be used for storage encryption."
+                "description": "Provide a name for the customer-managed key that will be used for Azure OpenAI instance encryption."
+            }
+        },
+        "aiOrchCmkKeyName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide a name for the customer-managed key that will be used for AI embedding orchestrator."
             }
         },
         "kvKeyExpiration": {
@@ -138,6 +145,8 @@
         "no-st-cmk-name": "[format('{0}/{1}', variables('name-compliant-keyvault'), 'nostcmk')]",
         "name-compliant-keyvault-ai-cmk-name": "[format('{0}/{1}', variables('name-compliant-keyvault'), parameters('aiCmkKeyName'))]",
         "no-ai-cmk-name": "[format('{0}/{1}', variables('name-compliant-keyvault'), 'noaicmk')]",
+        "name-complaint-keyvault-ai-cmk-orch-name": "[format('{0}/{1}', variables('name-compliant-keyvault'), parameters('aiOrchCmkKeyName'))]",
+        "no-orch-cmk-name": "[format('{0}/{1}', variables('name-compliant-keyvault'), 'noorch')]",
         "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
         "denyFwAcls": {
             "bypass": "AzureServices",
@@ -219,7 +228,7 @@
                                 "[concat('Microsoft.KeyVault/vaults/', variables('name-compliant-keyvault'))]"
                             ],
                             "properties": {
-                                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'e147488a-f6f5-4113-8e2d-b22465e65bf6')]",
+                                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4633458b-17de-408a-b874-0445c86b69e6')]",
                                 "principalId": "[parameters('userAssignedIdentity')]",
                                 "principalType": "ServicePrincipal"
                             }
@@ -304,6 +313,38 @@
                             "type": "Microsoft.KeyVault/vaults/keys",
                             "apiVersion": "2021-10-01",
                             "name": "[if(not(empty(parameters('aiCmkKeyName'))), variables('name-compliant-keyvault-ai-cmk-name'), variables('no-ai-cmk-name'))]",
+                            "dependsOn": [
+                                "[concat('Microsoft.KeyVault/vaults/', variables('name-compliant-keyvault'))]",
+                                "[concat('Microsoft.Network/privateEndpoints/', variables('name-compliant-keyvault-pe'))]"
+                            ],
+                            "properties": {
+                                "kty": "RSA",
+                                "keyOps": [],
+                                "keySize": 2048,
+                                "curveName": "P-256",
+                                "attributes": {
+                                    "enabled": true,
+                                    "exp": "[parameters('kvKeyExpiration')]"
+                                },
+                                "rotationPolicy": {
+                                    "attributes": {
+                                        "expiryTime": "[parameters('kvExpiryTime')]"
+                                    },
+                                    "lifetimeActions": [
+                                        {
+                                            "action": {
+                                                "type": "notify"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "condition": "[not(empty(parameters('aiOrchCmkKeyName')))]",
+                            "type": "Microsoft.KeyVault/vaults/keys",
+                            "apiVersion": "2021-10-01",
+                            "name": "[if(not(empty(parameters('aiOrchCmkKeyName'))), variables('name-complaint-keyvault-ai-cmk-orch-name'), variables('no-orch-cmk-name'))]",
                             "dependsOn": [
                                 "[concat('Microsoft.KeyVault/vaults/', variables('name-compliant-keyvault'))]",
                                 "[concat('Microsoft.Network/privateEndpoints/', variables('name-compliant-keyvault-pe'))]"
