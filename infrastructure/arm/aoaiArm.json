@@ -582,7 +582,7 @@
         "resourceNames": {
             "rgName": "[concat(parameters('prefix'), '-rg-', parameters('location'))]",
             "aoaiOrchestratorName": "[concat(parameters('prefix'), '-orch-')]",
-            "aoaiOrchestratorModelName": "text-embedding-ada-002"
+            "aoaiOrchestratorModelName": "[take(concat('orch', uniqueString(deployment().name)),7)]"
         },
         // Multi region variables for N deployments and endpoint references
         "aoaiEndpoint1": "[toLower(concat('https://', parameters('prefix'), '-', parameters('location'), '-azopenai', '.openai.azure.com/'))]",
