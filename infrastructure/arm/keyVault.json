@@ -228,7 +228,7 @@
                                 "[concat('Microsoft.KeyVault/vaults/', variables('name-compliant-keyvault'))]"
                             ],
                             "properties": {
-                                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4633458b-17de-408a-b874-0445c86b69e6')]",
+                                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'e147488a-f6f5-4113-8e2d-b22465e65bf6')]",
                                 "principalId": "[parameters('userAssignedIdentity')]",
                                 "principalType": "ServicePrincipal"
                             }
