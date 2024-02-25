@@ -525,6 +525,7 @@
     "variables": {
         "templateUris": {
             "managedIdentityUri": "[uri(deployment().properties.templateLink.uri, 'managedIdentity.json')]",
+            "customDataPlaneRbacUri": "[uri(deployment().properties.templateLink.uri, 'customDataPlaneRbac.json')]",
             "azMonTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azMon.json')]",
             "keyVaultTemplateUri": "[uri(deployment().properties.templateLink.uri, 'keyVault.json')]",
             "storageTemplateUri": "[uri(deployment().properties.templateLink.uri, 'storageAccount.json')]",
@@ -546,6 +547,7 @@
         "deploymentSuffix": "[concat('-', deployment().location, guid(parameters('prefix')))]",
         "deploymentNames": {
             "managedIdentityDeploymentName": "[take(concat(parameters('prefix'), '-mi', variables('deploymentSuffix')), 64)]",
+            "customDataPlaneRbacDeploymentName": "[take(concat(parameters('prefix'), '-data-plane-rbac', variables('deploymentSuffix')), 64)]",
             "azMonDeploymentName": "[take(concat(parameters('prefix'), '-azmon', variables('deploymentSuffix')), 64)]",
             "keyVaultDeploymentName": "[take(concat(parameters('prefix'), '-kv', variables('deploymentSuffix')), 64)]",
             "storageDeploymentName": "[take(concat(parameters('prefix'), '-sa', variables('deploymentSuffix')), 64)]",
@@ -569,6 +571,7 @@
             "azOpenAiRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-blobContributor', variables('deploymentSuffix')), 64)]",
             "azOpenAiEmbeddingRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-blobContributor', variables('deploymentSuffix')), 64)]",
             "azAiSearchRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-search-rbac-for-blobContributor', variables('deploymentSuffix')), 64)]",
+            "azAiDocumentIntelligenceRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-doc-rbac-for-blobContributor', variables('deploymentSuffix')), 64)]",
             "azApimRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-apim-rbac-for-aoai', variables('deploymentSuffix')), 64)]",
             "azureOpenAiFinalDeploymentName": "[take(concat(parameters('prefix'), '-aoaicmk', variables('deploymentSuffix')), 64)]",
             "azureOpenAiModelDeploymentName": "[take(concat(parameters('prefix'), '-aoaiModel', variables('deploymentSuffix')), 64)]",
@@ -614,6 +617,25 @@
                     },
                     "prefix": {
                         "value": "[parameters('prefix')]"
+                    }
+                }
+            }
+        },
+        // Creating required custom RoleDefinitions with Data Plane permissions for Document Intelligence and Computer Vision
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').customDataPlaneRbacDeploymentName]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').customDataPlaneRbacUri]"
+                },
+                "parameters": {
+                    "uniqueValue": {
+                        "value": "[deployment().name]"
                     }
                 }
             }
@@ -1561,6 +1583,36 @@
                     },
                     "principalId": {
                         "value": "[if(equals(parameters('aiSearchSystemIdentity'), 'Yes'), reference(variables('deploymentNames').rgAzureAiSearchObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
+        // Creating Role Assignment for Document Intelligence on Storage Account using Storage Blob Data Contributor role
+        {
+            "condition": "[equals(parameters('docSystemIdentity'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azAiDocumentIntelligenceRbacForBlobContributorDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureDocumentIntelligenceObjectIdDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "ba92f5b4-2d11-453d-a403-e96b0029c9fe"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(equals(parameters('docSystemIdentity'), 'Yes'), reference(variables('deploymentNames').rgAzureDocumentIntelligenceObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
                     }
                 }
             }

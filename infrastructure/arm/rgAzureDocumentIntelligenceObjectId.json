@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-        "name-compliant-azureDocumentIntelligence": "[concat(parameters('prefix'), '-', parameters('location'), '-aidocintel')]"
+        "name-compliant-azureDocumentIntelligence": "[concat(parameters('prefix'), '-', parameters('location'), '-azdocintel')]"
     },
     "resources": [],
     "outputs": {
