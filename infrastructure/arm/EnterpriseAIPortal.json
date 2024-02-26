@@ -3,7 +3,7 @@
     "view": {
         "kind": "Form",
         "properties": {
-            "title": "Secure and Compliant Generative AI on Azure",
+            "title": "Secure and Compliant AI Hub on Azure",
             "steps": [
                 {
                     "name": "basics",
@@ -1660,8 +1660,55 @@
                             "options": {
                                 "icon": "None",
                                 "text": "Azure AI Search, an AI-powered information retrieval platform, helps developers build rich search experiences and generative AI apps that combine large language models with enterprise data. Implement search functionality for any mobile or search application within your organization or as part of software as a service (SaaS) apps.",
-                                "uri": "https://www.microsoft.com"
+                                "uri": "https://learn.microsoft.com/azure/search/search-what-is-azure-search"
                             }
+                        },
+                        {
+                            "name": "aiSearchReliabilitySection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Scale and Capacity Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchReliabilityInfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "In Azure AI Search, capacity is based on replicas and partitions that can be scaled to your workload. Replicas are copies of the search engine. Partitions are units of storage. Each new search service starts with one each, but you can add or remove replicas and partitions independently to accommodate fluctuating workloads.",
+                                "uri": "https://learn.microsoft.com/azure/search/search-capacity-planning"
+                            }
+                        },
+                        {
+                            "name": "aiSearchReplicas",
+                            "type": "Microsoft.Common.Slider",
+                            "min": 1,
+                            "max": 5,
+                            "label": "Replicas distribute workloads across the service",
+                            "subLabel": "Replicas",
+                            "defaultValue": 1,
+                            "showStepMarkers": true,
+                            "toolTip": "Replicas distribute workloads across the service. We guarantee 99.9% availability for read operations with 2 replicas, and for read and write operations with 3 or more replicas.",
+                            "constraints": {
+                                "required": false
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchPartitions",
+                            "type": "Microsoft.Common.Slider",
+                            "min": 1,
+                            "max": 5,
+                            "label": "Partitions allow for scaling of document counts",
+                            "subLabel": "Partitions",
+                            "defaultValue": 1,
+                            "showStepMarkers": true,
+                            "toolTip": "Partitions allow for scaling of document counts as well as faster data ingestion by spanning your index over multiple units.",
+                            "constraints": {
+                                "required": false
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
                         },
                         {
                             "name": "aiSearchNetworkSection",
@@ -2286,6 +2333,8 @@
                 "aiSearchRbacAuthz": "[steps('aiAuxiliarySettings').aiSearchRbacAuthz]",
                 "aiSearchSubnetId": "[steps('aiAuxiliarySettings').aiSearchSubnetId]",
                 "aiSearchSystemIdentity": "[steps('aiAuxiliarySettings').aiSearchSystemIdentity]",
+                "aiSearchReplicas": "[string(steps('aiAuxiliarySettings').aiSearchReplicas)]",
+                "aiSearchPartitions": "[string(steps('aiAuxiliarySettings').aiSearchPartitions)]",
                 "aiUseCaseDeployment": "[steps('aiAuxiliarySettings').aiUseCaseDeployment]",
                 "kvMonCreation": "[steps('kvSettings').kvMonCreation]",
                 "stMonCreation": "[steps('stSettings').stMonCreation]",

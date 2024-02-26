@@ -360,6 +360,14 @@
                 "No"
             ]
         },
+        "aiSearchReplicas": {
+            "type": "string",
+            "defaultValue": "1"
+        },
+        "aiSearchPartitions": {
+            "type": "string",
+            "defaultValue": "1"
+        },
         "aiUseCaseDeployment": {
             "type": "string",
             "defaultValue": "No",
@@ -1017,6 +1025,12 @@
                     },
                     "aiSearchEncryption": {
                         "value": "[parameters('aiSearchEncryption')]"
+                    },
+                    "aiSearchReplicas": {
+                        "value": "[parameters('aiSearchReplicas')]"
+                    },
+                    "aiSearchPartitions": {
+                        "value": "[parameters('aiSearchPartitions')]"
                     },
                     "aiSearchMonCreation": {
                         "value": "[parameters('aiSearchMonCreation')]"

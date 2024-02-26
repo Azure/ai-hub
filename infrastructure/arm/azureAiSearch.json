@@ -73,6 +73,14 @@
                 "Yes",
                 "No"
             ]
+        },
+        "aiSearchReplicas": {
+            "type": "string",
+            "defaultValue": "1"
+        },
+        "aiSearchPartitions": {
+            "type": "string",
+            "defaultValue": "1"
         }
     },
     "variables": {
@@ -123,8 +131,8 @@
                                 "name": "standard"
                             },
                             "properties": {
-                                "replicaCount": 1,
-                                "partitionCount": 1,
+                                "replicaCount": "[int(parameters('aiSearchReplicas'))]",
+                                "partitionCount": "[int(parameters('aiSearchPartitions'))]",
                                 "hostingMode": "default",
                                 "publicNetworkAccess": "[if(equals(parameters('aiSearchDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]",
                                 "disableLocalAuth": "[if(equals(parameters('aiSearchRbacAuthz'), 'Yes'), bool('true'), bool('false'))]",
