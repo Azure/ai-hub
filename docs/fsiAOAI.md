@@ -1,4 +1,4 @@
-# AI hub on Azure - User Guide
+# Enterprise Azure OpenAI Hub - User Guide
 
 ![Benefits](./ai-overview.png)
 
@@ -7,7 +7,7 @@ The reference implementation has been developed, validated, and proven with seve
 
 ## Table of Contents
 
-- [What is secure and compliant Generative AI hub on Azure?](#what-is-secure-and-compliant-generative-ai-hub-on-azure)
+- [What is Enterprise Azure OpenAI Hub?](#what-is-enterprise-azure-openai-hub)
   - [Deploy for PoC and testing purposes](#deploy-for-poc-and-testing-purposes)
   - [Architecture and scale-out considerations](#architecture-and-scale-out-considerations)
 - [Deployment instructions](#deployment-instructions)
@@ -23,27 +23,28 @@ The reference implementation has been developed, validated, and proven with seve
 
 | Reference Implementation | Description | Deploy | Documentation
 |:----------------------|:------------|--------|--------------|
-| Secure and Compliant Generative AI on Azure | Secure and Compliant Generative AI, aligned with the prescriptive guidance for FSI Landing Zones, ensuring a secure and compliant Azure Open AI workload composition into the landing zones |[![Deploy To Microsoft Cloud](./deploytomicrosoftcloud.svg)](https://aka.ms/DeploySecureGenAI) | [User Guide](./fsiAOAI.md)
+| Enterprise Azure OpenAI Hub | Secure and Compliant Generative AI hub for the Enterprises, to provide an accelerated path for AI applications at scale in production |[![Deploy To Microsoft Cloud](./deploytomicrosoftcloud.svg)](https://aka.ms/DeploySecureGenAI) | [User Guide](./fsiAOAI.md)
 
-## What is secure and compliant Generative AI hub on Azure?
+## What is Enterprise Azure OpenAI Hub?
 
-Azure Open AI provides powerful, generative AI capabilities that organizations can access securely over a private network, use their own customer-managed keys to encrypt the data, and enable sophisitcated monitoring and observability of their AI workloads, while managing authentication and authorization centrally. This reference implementation provides a secure and compliant deployment of Azure Open AI, and the recommended configuration is aligned with the recommended Azure policies provided by FSI Landing Zones for the Azure services in this workload composition.
+Azure Open AI provides powerful, generative AI capabilities that organizations can access securely over a private network, use their own customer-managed keys to encrypt the data, and enable sophisitcated monitoring and observability of their AI workloads, while managing authentication and authorization centrally. This reference implementation provides a secure and compliant deployment of Enterprise Azure OpenAI Hub, and the recommended configuration is aligned with Enterprise security and compliance requirements.
 
 Further, it allows organizations to deploy the Azure Open AI instance(s) to the regions of their choice, and where capacity exists for the respective model deployments, while honoring the connectivity and networking requirements of the organization.
 
-The Secure and Compliant Generative Azure Open AI includes the following Azure services:
+The Enterprise Azure OpenAI Hub includes the following Azure services:
 
 * Cognitive Services
   * Azure Open AI
-* Private Endpoint
+* Private Endpoints
 * Network Security Groups
   * Application Security Groups
 * Storage Accounts
-* Key Vault for CMK
+* Key Vault for customer-managed keys
 * Azure Monitor
   * Log Analytics
+  * Diagnostics settings enabled for Azure services for Logs and Metrics
 * Managed Identity
-* Role Assignments
+  * Identities created for each Azure service with respective Role Assignment for Service 2 Service authorizations
 
 Optionally, you can also get started with the initial Gen AI use case (e.g., Azure native RAG architecture and setup) to accelerate the adoption of Generative AI in your organization.
 
@@ -56,20 +57,23 @@ Optionally, you can also get started with the initial Gen AI use case (e.g., Azu
   * GPT-4 with Vision
   * Embeddings
 * Azure AI Search
+* Azure AI Document Intelligence
 * Azure AI Vision
+* Azure Data Factory
+* Azure CosmosDB
 * Azure API Management for scale-out and multi-region deployments
 
 ## Deploy for PoC and testing purposes
 
-Although the reference implementation is tailored for the FSI industry, it can be used by any organization that requires a secure and compliant deployment of Azure Open AI. The reference implementation is designed to be deployed in a single Azure region, in a subscription where the virtual network with a dedicated subnet has been created upfront, to be used for the Private Endpoint. However, you can toggle any of the options to deploy the Azure Open AI instance(s) to the regions of your choice, and where capacity exists for the respective model deployments, while honoring the connectivity and networking requirements of the organization. For PoC and testing, you may want to quickly validate a use-case without requiring private connectivity, or monitoring enabled, and the reference implementation provides the flexibility to enable or disable these features as needed.
+Although the reference implementation is tailored for the Enterprises to conform to their security and compliance requirements, it can be used by any organization that requires a secure and compliant deployment of Azure Open AI. The reference implementation is designed to be deployed in a single Azure region, in a subscription where the virtual network with a dedicated subnet has been created upfront, to be used for the Private Endpoint. However, you can toggle any of the options to deploy the Azure Open AI instance(s) to the regions of your choice, and where capacity exists for the respective model deployments, while honoring the connectivity and networking requirements of the organization. For PoC and testing, you may want to quickly validate a use-case without requiring private connectivity, or monitoring enabled, and the reference implementation provides the flexibility to enable or disable these features as needed.
 
 ## Architecture and scale-out considerations
 
-The Secure and Compliant Generative AI on Azure reference implementation is designed to be deployed in a single Azure region, in a subscription where the virtual network with a dedicated subnet has been created upfront, to be used for the Private Endpoint. 
+The Enterprise Azure OpenAI Hub reference implementation is designed to be deployed in a single Azure region, in a subscription where the virtual network with a dedicated subnet has been created upfront, to be used for the Private Endpoint. 
 
 ![Azure Open AI workload composition in a compliant corp connected landing zone](./aoai.png)
 
-The diagram above shows an example where the Secure and Compliant Generative Azure Open AI is being deployed to a compliant, corp connected landing zone, where all services are connected via private endpoint to the virtual network. The virtual network is connected to the hub virtual network via VNet peering, and the hub virtual network is connected to on-premises network via ExpressRoute.
+The diagram above shows an example where the Enterprise Azure OpenAI Hub is being deployed to a compliant, corp connected landing zone, where all services are connected via private endpoint to the virtual network. The virtual network is connected to the hub virtual network via VNet peering, and the hub virtual network is connected to on-premises network via ExpressRoute.
 
 In the most simplistic form, users - assuming Azure RBAC has been granted to the Open AI instance, and model deployment has completed, can interact with the Azure Open AI API over the private endpoint, and the Azure Open AI instance will respond with the generated text. If any data must be provided, the storage account is encrypted using customer-managed keys, and the keys are stored in a Key Vault. The Key Vault is also used to store the customer-managed keys for the Azure Open AI instance.
 
@@ -108,19 +112,18 @@ In the most simplistic form, users - assuming Azure RBAC has been granted to the
 
 ## Deployment instructions
 
-This section will describe how to deploy the "Secure and Compliant Generative Azure Open AI" reference implementation into an Azure subscription.
+This section will describe how to deploy the "Enterprise Azure OpenAI Hub" reference implementation into an Azure subscription.
 
 ### Pre-requisites
 
-The "Secure and Compliant Generative Azure Open AI" reference implementation is deployed at the *subscription* scope in Azure, and requires a few pre-requisites to be in place before you can deploy the reference implementation:
+The "Enterprise Azure OpenAI Hub" reference implementation is deployed at the *subscription* scope in Azure, and requires a few pre-requisites to be in place before you can deploy the reference implementation:
 
 - Ideally use a dedicated Azure subscription, where you have submitted the subscription ID into the form for [requesting access to Azure Open AI](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu). This will ensure that the subscription is enabled for Azure Open AI, including GTP-4.
-- Once the subscription has been approved, you must request access to customer-managed key (CMK) and bring-your-own-storage (BYOS) for Azure Open AI. This is done by submitting another request using [this form](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR65c5WORsv5NtSDPjRrSCMhUNDZJUERRVVVDME4xNDVNRjEwMTNZV1dHSSQlQCN0PWcu)
 - The user who's deploying the reference implementation must be *Owner* of the subscription where the reference implementation will be deployed, as the deployment will be making role assignments for the managed identities that are created.
 
 ## Step by step deployment guidance
 
-This section will explain the deployment experience and the options provided for the "Secure and Compliant Generative Azure Open AI" reference implementation.
+This section will explain the deployment experience and the options provided for the "Enterprise Azure OpenAI Hub" reference implementation.
 
 Once the pre-requisites have been completed, you can deploy the reference implementation using this link [*Deploy to Microsoft Cloud*](https://aka.ms/DeploySecureGenAI), it will start the deployment experience in the Azure portal into your default Azure tenant. In case you have access to multiple tenants, ensure you are selecting the right one.
 
