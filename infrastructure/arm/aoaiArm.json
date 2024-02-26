@@ -636,6 +636,9 @@
                 "parameters": {
                     "uniqueValue": {
                         "value": "[deployment().name]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
                     }
                 }
             }

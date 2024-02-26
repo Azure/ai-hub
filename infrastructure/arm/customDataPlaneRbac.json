@@ -5,6 +5,10 @@
         "uniqueValue": {
             "type": "string",
             "defaultValue": "[deployment().name]"
+        },
+        "prefix": {
+            "type": "string",
+            "defaultValue": ""
         }
     },
     "variables": {
@@ -12,7 +16,7 @@
             "roleDefinitions": [
                 {
                     "properties": {
-                        "roleName": "ComputerVisionDataContributor",
+                        "roleName": "[concat(parameters('prefix'), '-', 'ComputerVisionDataContributor')]",
                         "description": "Computer Vision Data Contributor",
                         "type": "customRole",
                         "permissions": [
@@ -105,7 +109,7 @@
                 },
                 {
                     "properties": {
-                        "roleName": "DocumentIntelligenceDataContributor",
+                        "roleName": "[concat(parameters('prefix'), '-', 'DocumentIntelligenceDataContributor')]",
                         "description": "Document Intelligence Data Contributor",
                         "type": "customRole",
                         "permissions": [
