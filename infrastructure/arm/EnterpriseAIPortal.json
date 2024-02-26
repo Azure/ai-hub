@@ -1671,16 +1671,6 @@
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
                         },
                         {
-                            "name": "aiSearchReliabilityInfo",
-                            "type": "Microsoft.Common.TextBlock",
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]",
-                            "options": {
-                                "icon": "None",
-                                "text": "In Azure AI Search, capacity is based on replicas and partitions that can be scaled to your workload. Replicas are copies of the search engine. Partitions are units of storage. Each new search service starts with one each, but you can add or remove replicas and partitions independently to accommodate fluctuating workloads.",
-                                "uri": "https://learn.microsoft.com/azure/search/search-capacity-planning"
-                            }
-                        },
-                        {
                             "name": "aiSearchReplicas",
                             "type": "Microsoft.Common.Slider",
                             "min": 1,
