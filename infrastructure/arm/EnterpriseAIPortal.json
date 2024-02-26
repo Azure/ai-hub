@@ -3,7 +3,7 @@
     "view": {
         "kind": "Form",
         "properties": {
-            "title": "Secure and Compliant Generative AI on Azure",
+            "title": "Enterprise Azure OpenAI Hub",
             "steps": [
                 {
                     "name": "basics",
@@ -21,7 +21,7 @@
                             "type": "Microsoft.Common.TextBlock",
                             "visible": true,
                             "options": {
-                                "text": "The 'Secure and Compliant Generative AI on Azure' accelerator helps organizations to expedite the composition and deployment of a well-architected Azure OpenAI workload, with the required pre-requisites to ensure encryption in transit and at rest, secure network connectivity, central authorization, and to comply with regulated industries at scale.",
+                                "text": "The 'Enterprise Azure OpenAI Hub' accelerator helps organizations to expedite the composition and deployment of a well-architected Azure OpenAI workload, with the required pre-requisites to ensure encryption in transit and at rest, secure network connectivity, central authorization, and to comply with regulated industries at scale.",
                                 "link": {
                                     "label": "Learn more",
                                     "uri": "https://learn.microsoft.com/azure/ai-services/openai/overview"
@@ -57,7 +57,7 @@
                         {
                             "name": "prefix",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Azure OpenAI Workload Prefix",
+                            "label": "Enterprise Azure OpenAI Hub Prefix",
                             "placeholder": "",
                             "defaultValue": "",
                             "toolTip": "Use only allowed characters",
@@ -73,7 +73,7 @@
                             "type": "Microsoft.Common.TextBlock",
                             "visible": true,
                             "options": {
-                                "text": "Select the architecture setup for the Azure OpenAI workload. You can select if you want to deploy a single instance into a single region, or create multiple instances across multiple regions using API Management for load balancing and distribution of traffic.",
+                                "text": "Select the architecture setup for the Enterprise Azure OpenAI Hub. You can select if you want to deploy a single instance into a single region, or create multiple instances across multiple regions using API Management for load balancing and distribution of traffic.",
                                 "link": {
                                     "label": "Learn more",
                                     "uri": "https://learn.microsoft.com/azure/ai-services/openai/overview"
@@ -90,18 +90,18 @@
                             "multiselect": false,
                             "multiLine": true,
                             "selectAll": false,
-                            "defaultDescription": "Select the architecture for this deployment.",
+                            "defaultDescription": "Select the intent for this deployment.",
                             "filter": true,
                             "constraints": {
                                 "allowedValues": [
                                     {
                                         "label": "Production",
-                                        "description": "Deploy Azure AI hub into a production environment.",
+                                        "description": "Deploy Enterprise Azure OpenAI Hub into a production environment.",
                                         "value": "Production"
                                     },
                                     {
                                         "label": "Proof of Concept",
-                                        "description": "Explore and validate Azure AI hub in a single or multiple Azure regions.",
+                                        "description": "Explore and validate Enterprise Azure OpenAI Hub in a single or multiple Azure regions.",
                                         "value": "PoC"
                                     }
                                 ],
@@ -125,12 +125,12 @@
                                 "allowedValues": [
                                     {
                                         "label": "Deploy to a single Azure region",
-                                        "description": "Deploy the Azure OpenAI workload fondation with optional services into a single Azure region.",
+                                        "description": "Deploy Enterprise Azure OpenAI Hub with optional services into a single Azure region.",
                                         "value": "Single"
                                     },
                                     {
                                         "label": "Deploy to multiple Azure regions",
-                                        "description": "Deploy Azure OpenAI workload foundation across multiple Azure region, using APIM for load balancing and distribution of traffic.",
+                                        "description": "Deploy Enterprise Azure OpenAI Hub across multiple Azure regions, using APIM for load balancing and distribution of traffic.",
                                         "value": "Multiple"
                                     }
                                 ],
@@ -149,9 +149,9 @@
                         {
                             "name": "aiMultiLocation",
                             "type": "Microsoft.Common.DropDown",
-                            "label": "Select the additional Azure region for the Azure OpenAI workload",
+                            "label": "Select the additional Azure region for the Enterprise Azure OpenAI Hub",
                             "filter": true,
-                            "toolTip": "Select the additional Azure region for the Azure OpenAI workload",
+                            "toolTip": "Select the additional Azure region for the Enterprise Azure OpenAI Hub",
                             "constraints": {
                                 "allowedValues": "[map(steps('basics').aiMultiLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
                                 "required": true
@@ -164,7 +164,7 @@
                             "visible": "[equals(steps('basics').aiIntention, 'Multiple')]",
                             "options": {
                                 "icon": "warning",
-                                "text": "For AI hub in Azure in a multi-region setup, all Azure services will be configured using Public Endpoints. Private Endpoint support for both PoC and Production deployment will be enabled soon."
+                                "text": "For Enterprise Azure OpenAI Hub in a multi-region setup, all Azure services will be configured using Public Endpoints. Private Endpoint support for both PoC and Production deployment will be enabled soon."
                             }
                         },
                         {
@@ -191,7 +191,7 @@
                             "visible": "[equals(steps('basics').aiDeployOption, 'Production')]",
                             "options": {
                                 "icon": "warning",
-                                "text": "Currently AI hub on Azure can only be deployed to a single Azure region supporting Private Endpoints. Support for multi-region setup with Private Endpoints will be enabled soon."
+                                "text": "Currently Enterprise Azure OpenAI Hub can only be deployed to a single Azure region supporting Private Endpoints. Support for multi-region setup with Private Endpoints will be enabled soon."
                             }
                         },
                         {
@@ -1482,7 +1482,7 @@
                             "visible": true,
                             "options": {
                                 "icon": "None",
-                                "text": "Subject to your initial use cases, you can enable additional Azure services for the complete Generative AI architecture on Azure.",
+                                "text": "Subject to your initial use cases, you can enable additional Azure services for the complete Enterprise Azure OpenAI Hub architecture on Azure.",
                                 "uri": "https://www.microsoft.com"
                             }
                         },
@@ -1660,8 +1660,55 @@
                             "options": {
                                 "icon": "None",
                                 "text": "Azure AI Search, an AI-powered information retrieval platform, helps developers build rich search experiences and generative AI apps that combine large language models with enterprise data. Implement search functionality for any mobile or search application within your organization or as part of software as a service (SaaS) apps.",
-                                "uri": "https://www.microsoft.com"
+                                "uri": "https://learn.microsoft.com/azure/search/search-what-is-azure-search"
                             }
+                        },
+                        {
+                            "name": "aiSearchReliabilitySection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Scale and Capacity Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchReliabilityInfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "In Azure AI Search, capacity is based on replicas and partitions that can be scaled to your workload. Replicas are copies of the search engine. Partitions are units of storage. Each new search service starts with one each, but you can add or remove replicas and partitions independently to accommodate fluctuating workloads.",
+                                "uri": "https://learn.microsoft.com/azure/search/search-capacity-planning"
+                            }
+                        },
+                        {
+                            "name": "aiSearchReplicas",
+                            "type": "Microsoft.Common.Slider",
+                            "min": 1,
+                            "max": 5,
+                            "label": "Replicas distribute workloads across the service",
+                            "subLabel": "Replicas",
+                            "defaultValue": 1,
+                            "showStepMarkers": true,
+                            "toolTip": "Replicas distribute workloads across the service. We guarantee 99.9% availability for read operations with 2 replicas, and for read and write operations with 3 or more replicas.",
+                            "constraints": {
+                                "required": false
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                        },
+                        {
+                            "name": "aiSearchPartitions",
+                            "type": "Microsoft.Common.Slider",
+                            "min": 1,
+                            "max": 5,
+                            "label": "Partitions allow for scaling of document counts",
+                            "subLabel": "Partitions",
+                            "defaultValue": 1,
+                            "showStepMarkers": true,
+                            "toolTip": "Partitions allow for scaling of document counts as well as faster data ingestion by spanning your index over multiple units.",
+                            "constraints": {
+                                "required": false
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
                         },
                         {
                             "name": "aiSearchNetworkSection",
@@ -2286,6 +2333,8 @@
                 "aiSearchRbacAuthz": "[steps('aiAuxiliarySettings').aiSearchRbacAuthz]",
                 "aiSearchSubnetId": "[steps('aiAuxiliarySettings').aiSearchSubnetId]",
                 "aiSearchSystemIdentity": "[steps('aiAuxiliarySettings').aiSearchSystemIdentity]",
+                "aiSearchReplicas": "[string(steps('aiAuxiliarySettings').aiSearchReplicas)]",
+                "aiSearchPartitions": "[string(steps('aiAuxiliarySettings').aiSearchPartitions)]",
                 "aiUseCaseDeployment": "[steps('aiAuxiliarySettings').aiUseCaseDeployment]",
                 "kvMonCreation": "[steps('kvSettings').kvMonCreation]",
                 "stMonCreation": "[steps('stSettings').stMonCreation]",

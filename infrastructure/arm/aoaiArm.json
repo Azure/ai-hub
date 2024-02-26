@@ -360,6 +360,14 @@
                 "No"
             ]
         },
+        "aiSearchReplicas": {
+            "type": "string",
+            "defaultValue": "1"
+        },
+        "aiSearchPartitions": {
+            "type": "string",
+            "defaultValue": "1"
+        },
         "aiUseCaseDeployment": {
             "type": "string",
             "defaultValue": "No",
@@ -636,6 +644,9 @@
                 "parameters": {
                     "uniqueValue": {
                         "value": "[deployment().name]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
                     }
                 }
             }
@@ -1014,6 +1025,12 @@
                     },
                     "aiSearchEncryption": {
                         "value": "[parameters('aiSearchEncryption')]"
+                    },
+                    "aiSearchReplicas": {
+                        "value": "[parameters('aiSearchReplicas')]"
+                    },
+                    "aiSearchPartitions": {
+                        "value": "[parameters('aiSearchPartitions')]"
                     },
                     "aiSearchMonCreation": {
                         "value": "[parameters('aiSearchMonCreation')]"
