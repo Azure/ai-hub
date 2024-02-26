@@ -1,42 +1,44 @@
-# AI hub on Azure
+# Enterprise Azure OpenAI Hub on Azure
 
 ![Benefits](./docs/ai-overview.png)
 
 ## Overview
 
-Welcome to the secure and compliant generative "AI hub on Azure"! This repository is your ultimate guide to the exciting world of Generative AI on the Azure platform. Whether you are a seasoned AI enthusiast or just starting your journey, this hub is designed to provide an easy, fun, and immersive learning experience, and ideally accelerate the path from whiteboard to proof of concept, and from proof of concept to production.
+Welcome to the Enterprise Azure OpenAI Hub!
+
+This repository is your ultimate guide to the exciting world of Generative AI on the Azure platform. Whether you are a seasoned AI enthusiast or just starting your journey, this hub is designed to provide an easy, fun, rapid, and immersive learning experience, and ideally accelerate the path from whiteboard to proof of concept, and from proof of concept to production in an Enterprise context.
    
-Our primary goal is to empower you to explore a multitude of use cases with relevant Azure services. We've carefully structured this repository to provide an intuitive understanding of how best to leverage the power of Azure services for your AI needs. Through a series of real-world examples, and playbooks you'll gain practical insights into using Azure to solve complex problems and develop cutting-edge AI solutions.  
+Our primary goal is to empower you to explore a multitude of use cases with relevant Azure services, fully configured to meet your security and compliance requirements for the Enterprises. We've carefully structured this repository to provide an intuitive understanding of how best to leverage the power of Azure services for your AI needs. Through a series of real-world examples, and playbooks you'll gain practical insights into using Azure to solve complex problems and develop cutting-edge AI solutions.  
    
-But we don't stop at just exploring. This AI hub also serves as a comprehensive library of use cases based on proven patterns. We understand the importance of best practices in driving successful AI initiatives. Therefore, every use case in our library aligns with the highest industry standards and promotes best practices. You'll learn not just the 'how', but also the 'why' behind each pattern, giving you a solid grounding in the principles of secure and compliant AI development.  
+But we don't stop at just exploring. This Enterprise Azure OpenAI Hub also serves as a comprehensive library of use cases based on proven patterns. We understand the importance of best practices in driving successful AI initiatives. Therefore, every use case in our library aligns with the highest industry standards and promotes best practices. You'll learn not just the 'how', but also the 'why' behind each pattern, giving you a solid grounding in the principles of secure and compliant AI development.  
    
-Dive in and start exploring! Every step you take with us in this Generative AI hub on Azure is a step towards mastering the art and science of AI.
+Dive in and start exploring! The Enterprise Azure OpenAI Hub is your gateway to the world of AI on Azure. Whether you're a developer, a data scientist, or a business leader, you'll find everything you need to get started and build your AI skills. Let's create the future together!
 
 ## Table of Contents
 
-- [AI hub on Azure reference implementations](#ai-hub-on-azure-reference-implementations)
+- [Enterprise Azure OpenAI Hub reference implementation](#enterprise-azure-openai-hub-reference-implementation)
     - [Architecture and design](#letter-a)
     - [Security and compliance](#letter-b)
-- [Prescriptive use cases](#use-cases)
+- [Prescriptive use cases](#prescriptive-use-cases)
 - [Contributing](#contributing)
 - [Roadmap](#roadmap)
 ---
 
-### AI hub on Azure reference implementations
+### Enterprise Azure OpenAI Hub reference implementation
    
-The AI hub reference implementation is not just a learning resource; it's a comprehensive foundation for all your AI applications and use cases. It provides a robust infrastructure that allows you to build, test, and deploy AI models with ease. With our extensive library of use cases, you can dive right into practical applications of AI, learning by doing and gaining invaluable hands-on experience.
+The Enterprise Azure OpenAI Hub is not just a learning resource; it's a comprehensive foundation for all your AI applications and use cases. It provides a robust infrastructure that allows you to build, test, and deploy AI models with ease. With our extensive library of use cases, you can dive right into practical applications of AI, learning by doing and gaining invaluable hands-on experience.
 
-One of the key strengths of AI hub is its uncompromising focus on security, scalability, and reliability (if you decide to lead with our recommendations). We understand that these are non-negotiable requirements for any AI initiative. Therefore, we've embedded these principles right into the core of the AI hub. Our platform is designed to ensure that your AI applications are not only powerful and flexible, but also secure and reliable.   
+One of the key strengths of AI hub is its uncompromising focus on security, scalability, and reliability (if you decide to lead with our recommendations). We understand that these are non-negotiable requirements for any AI initiative. Therefore, we've embedded these principles right into the core of the Enterprise Azure OpenAI Hub. Our platform is designed to ensure that your AI applications are not only powerful and flexible, but also secure and reliable.   
   
 Scalability is another critical aspect of AI development. As your skills grow and your needs evolve, the AI hub is ready to scale with you, supporting everything from simple proof-of-concept models to complex, enterprise-wide AI solutions.  
    
-So why wait? Start your journey with Generative AI on Azure today. Dive into the AI hub on Azure reference implementation, and discover the incredible potential of AI. Let's create the future together!
+So why wait? Start your journey with Generative AI on Azure today. Dive into the Enterprise Azure OpenAI Hub reference implementation, and discover the incredible potential of AI. Let's create the future together!
 
 You can deploy the following reference implementations to your Azure subscription.
 
 | Reference Implementation | Description | Deploy | Instructions
 |:----------------------|:------------|--------|--------------|
-| Secure and Compliant Generative AI hub on Azure | Secure and Compliant Generative AI hub provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into the landing zones |[![Deploy To Microsoft Cloud](./docs/deploytomicrosoftcloud.svg)](https://aka.ms/DeploySecureGenAI) | [User Guide](./docs/fsiAOAI.md)
+| Enterprise Azure OpenAI Hub | Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into your Azure regions and subscriptions |[![Deploy To Microsoft Cloud](./docs/deploytomicrosoftcloud.svg)](https://aka.ms/DeploySecureGenAI) | [User Guide](./docs/fsiAOAI.md)
 
 <a id="letter-a"></a>![The letter A](./docs/a.png) [Architecture and design](./docs/architecture.md)
 

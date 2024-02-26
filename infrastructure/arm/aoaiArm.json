@@ -568,7 +568,7 @@
             "rgAzureAiSearchObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-search-objectId', variables('deploymentSuffix')), 64)]",
             "rgAzureDocumentIntelligenceObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-doc-objectId', variables('deploymentSuffix')), 64)]",
             "rgAzureApimObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-apim-objectId', variables('deploymentSuffix')), 64)]",
-            "azOpenAiRbacForKvDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-vv', variables('deploymentSuffix')), 64)]",
+            "azOpenAiRbacForKvDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-kv', variables('deploymentSuffix')), 64)]",
             "azOpenAiRbacForKvSecretDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-kvsecret', variables('deploymentSuffix')), 64)]",
             "azOpenAiEmbeddingRbacForKvSecretDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-for-kvsecret', variables('deploymentSuffix')), 64)]",
             "azOpenAiRbacForSearchIndexDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-searchIndex', variables('deploymentSuffix')), 64)]",
