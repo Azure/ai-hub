@@ -1590,7 +1590,7 @@
                         {
                             "name": "spnSection",
                             "type": "Microsoft.Common.Section",
-                            "visible": "[and(equals(steps('basics').aiIntention, 'Single'),equals(steps('basics').aiDeployOption, 'PoC') ,equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]",
+                            "visible": "[and(equals(steps('basics').aiIntention, 'Single'),equals(steps('basics').aiDeployOption, 'PoC') ,equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiSampleAppDeployment, 'YesWithAppRegistration'))]",
                             "label": "App Registration and Service Principal",
                             "elements": [
                                 {
