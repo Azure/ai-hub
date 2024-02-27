@@ -50,7 +50,7 @@
                             },
                             "visible": true
                         },
-						{
+                        {
                             "name": "aiIntention",
                             "type": "Microsoft.Common.DropDown",
                             "label": "Regional setup",
@@ -183,7 +183,10 @@
                             "options": {
                                 "icon": "None",
                                 "text": "Centralizing storage of application secrets in Azure Key Vault allows you to control their distribution. Key Vault greatly reduces the chances that secrets may be accidentally leaked. When application developers use Key Vault, they no longer need to store security information in their application. Use Azure Key Vault to enable Customer-Managed keys scenarios for Azure OpenAI workload compositions",
-                                "uri": "https://www.microsoft.com"
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://www.microsoft.com"
+                                }
                             }
                         },
                         {
@@ -888,6 +891,10 @@
                                         "label": "Yes",
                                         "value": "Yes"
                                     },
+									{
+										"label": "Deploy required models based on use case selection",
+										"value": "Automated"
+									},
                                     {
                                         "label": "No",
                                         "value": "No"
@@ -1471,7 +1478,7 @@
                             "name": "aiUseCaseDeployment",
                             "type": "Microsoft.Common.OptionsGroup",
                             "label": "Create required Azure services for the initial use cases",
-                            "defaultValue": "No",
+                            "defaultValue": "Yes",
                             "toolTip": "",
                             "constraints": {
                                 "allowedValues": [
@@ -1502,7 +1509,7 @@
                             "filter": true,
                             "constraints": {
                                 "allowedValues": [
-									{
+                                    {
                                         "label": "Image and video recognition",
                                         "description": "Analyze images and provide textual responses to questions about them. It incorporates both natural language processing and visual understanding.",
                                         "value": "vision"
@@ -1526,7 +1533,7 @@
                                 "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-video-architecture.svg'>"
                             }
                         },
-						{
+                        {
                             "name": "onYourDataArchitecture",
                             "type": "Microsoft.Common.InfoBox",
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]",
@@ -1534,6 +1541,84 @@
                                 "icon": "None",
                                 "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-rag-architecture.svg'>"
                             }
+                        },
+                        {
+                            "name": "aiSampleAppSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Sample Web App for 'On Your Data' use case (Optional)",
+                            "elements": [],
+                            "visible": "[and(equals(steps('basics').aiIntention, 'Single'),equals(steps('basics').aiDeployOption, 'PoC') ,equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
+                        },
+                        {
+                            "name": "aiSampleAppInfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": "[and(equals(steps('basics').aiIntention, 'Single'),equals(steps('basics').aiDeployOption, 'PoC') ,equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]",
+                            "options": {
+                                "icon": "None",
+                                "text": "The sample Web App enables your organization to quickly validate and explore ChatGPT on your own business data. To integrated with Entra ID for authentication, you can create a new Application Registration now with a client secret, or do it post deployment by following the documentation.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://github.com/microsoft/sample-app-aoai-chatGPT"
+                                }
+                            }
+                        },
+                        {
+                            "name": "aiSampleAppDeployment",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Deploy sample Web App for 'On Your Data' use case",
+                            "defaultValue": "No",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes, and create new App Registration",
+                                        "value": "YesWithAppRegistration"
+                                    },
+                                    {
+                                        "label": "Yes, but without App Registration",
+                                        "value": "YesWithoutAppRegistration"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('basics').aiIntention, 'Single'),equals(steps('basics').aiDeployOption, 'PoC') ,equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
+                        },
+                        {
+                            "name": "spnSection",
+                            "type": "Microsoft.Common.Section",
+                            "visible": "[and(equals(steps('basics').aiIntention, 'Single'),equals(steps('basics').aiDeployOption, 'PoC') ,equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]",
+                            "label": "App Registration and Service Principal",
+                            "elements": [
+                                {
+                                    "name": "aiServicePrincipal",
+                                    "type": "Microsoft.Common.ServicePrincipalSelector",
+                                    "label": {
+                                        "password": "Password",
+                                        "certificateThumbprint": "Certificate thumbprint",
+                                        "authenticationType": "Authentication Type",
+                                        "sectionHeader": "Service Principal"
+                                    },
+                                    "toolTip": {
+                                        "password": "Provide the application secret as it will be used to authenticate with Azure AD",
+                                        "certificateThumbprint": "Certificate thumbprint",
+                                        "authenticationType": "Authentication Type"
+                                    },
+                                    "defaultValue": {
+                                        "principalId": "",
+                                        "name": ""
+                                    },
+                                    "constraints": {
+                                        "required": true
+                                    },
+                                    "options": {
+                                        "hideCertificate": true
+                                    }
+                                }
+                            ]
                         },
                         {
                             "name": "aiAddVisionSection",
@@ -1556,7 +1641,10 @@
                             "options": {
                                 "icon": "None",
                                 "text": "For using Azure OpenAI in the same Azure region while getting additional quota and capacity, it is recommended to deploy into separate Azure subscriptions to avoid the capacity is shared.",
-                                "uri": "https://www.microsoft.com"
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://github.com/Azure/ai-hub"
+                                }
                             }
                         },
                         {
@@ -1587,7 +1675,7 @@
                         {
                             "name": "aiDedicatedSection",
                             "type": "Microsoft.Common.Section",
-                            "label": "Dedicate Azure OpenAI instace for index and embeddings",
+                            "label": "Dedicated Azure OpenAI instace for index and embeddings",
                             "visible": "[equals(steps('aiAuxiliarySettings').aiAddEmbeddingInstance, 'Yes')]",
                             "elements": [
                                 {
@@ -1595,7 +1683,7 @@
                                     "type": "Microsoft.Common.TextBlock",
                                     "visible": true,
                                     "options": {
-                                        "text": "Select the additional subscription that will be used for Azure OpenAI to orchestrate indexes and generate embeddings to AI Search."
+                                        "text": "Select the additional subscription that will be used for the dedicated Azure OpenAI instance to orchestrate indexes and generate embeddings to AI Search."
                                     }
                                 },
                                 {
@@ -1631,7 +1719,10 @@
                             "options": {
                                 "icon": "None",
                                 "text": "Azure AI Search, an AI-powered information retrieval platform, helps developers build rich search experiences and generative AI apps that combine large language models with enterprise data. Implement search functionality for any mobile or search application within your organization or as part of software as a service (SaaS) apps.",
-                                "uri": "https://learn.microsoft.com/azure/search/search-what-is-azure-search"
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://learn.microsoft.com/azure/search/search-what-is-azure-search"
+                                }
                             }
                         },
                         {
@@ -1860,7 +1951,10 @@
                             "options": {
                                 "icon": "None",
                                 "text": "Azure AI Vision is a unified service that offers innovative computer vision capabilities. Give your apps the ability to analyze images, read text, and detect faces with prebuilt image tagging, text extraction with optical character recognition (OCR), and responsible facial recognition. Incorporate vision features into your projects with no machine learning experience required.",
-                                "uri": "https://www.microsoft.com"
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/"
+                                }
                             }
                         },
                         {
@@ -2063,7 +2157,10 @@
                             "options": {
                                 "icon": "None",
                                 "text": "Azure AI Document Intelligence enables you to effectively manage the velocity at which data is collected and processed and is key to improved operations, informed data-driven decisions, and enlightened innovation.",
-                                "uri": "https://learn.microsoft.com/azure/ai-services/document-intelligence/overview?view=doc-intel-4.0.0"
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://learn.microsoft.com/azure/ai-services/document-intelligence/overview?view=doc-intel-4.0.0"
+                                }
                             }
                         },
                         {
@@ -2309,6 +2406,9 @@
                 "visionMonCreation": "[steps('aiAuxiliarySettings').aiVisionMonCreation]",
                 "visionRestrictOutboundNetworkAccess": "[steps('aiAuxiliarySettings').aiVisionRestrictOutboundNetworkAccess]",
                 "aiUseCaseSelection": "[steps('aiAuxiliarySettings').aiUseCaseSelection]",
+                "aiSampleAppDeployment": "[steps('aiAuxiliarySettings').aiSampleAppDeployment]",
+                "aiAppId": "[steps('aiAuxiliarySettings').spnSection.aiServicePrincipal.appId]",
+                "aiAppSecret": "[steps('aiAuxiliarySettings').spnSection.aiServicePrincipal.password]",
                 "aiMultiLocation": "[steps('basics').aiMultiLocation]",
                 "docDisableNetworkAccess": "[steps('aiAuxiliarySettings').aiDocDisableNetworkAccess]",
                 "docRbacAuthz": "[steps('aiAuxiliarySettings').aiDocRbacAuthz]",

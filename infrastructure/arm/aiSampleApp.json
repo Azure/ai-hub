@@ -1,0 +1,497 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "rgName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "location": {
+            "defaultValue": "[deployment().location]",
+            "type": "String",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "linuxFxVersion": {
+            "defaultValue": "PYTHON|3.11",
+            "type": "String",
+            "metadata": {
+                "description": "The Runtime stack of current web app"
+            }
+        },
+        "searchServiceName": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the Azure Search service"
+            }
+        },
+        "searchIndexName": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the Azure Search index"
+            }
+        },
+        "searchAdminKey": {
+            "type": "SecureString",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Admin key for the Azure Search service"
+            }
+        },
+        "useSemanticSearch": {
+            "defaultValue": true,
+            "type": "Bool",
+            "metadata": {
+                "description": "Whether to use semantic search or not"
+            }
+        },
+        "searchTopK": {
+            "defaultValue": 5,
+            "type": "Int",
+            "metadata": {
+                "description": "How many documents to return in the search results."
+            }
+        },
+        "searchEnableInDomain": {
+            "defaultValue": false,
+            "type": "Bool",
+            "metadata": {
+                "description": "Whether to limit answers to questions in domain of the search results."
+            }
+        },
+        "azureOpenAIResource": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Azure OpenAI resource name"
+            }
+        },
+        "azureOpenAIModelDeployment": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Azure OpenAI Model Deployment name"
+            }
+        },
+        "azureOpenAIModelName": {
+            "type": "String",
+            "defaultValue": "gpt-4",
+            "metadata": {
+                "description": "Azure OpenAI Model Name, e.g. 'gpt-35-turbo' or 'gpt-4'"
+            }
+        },
+        "azureOpenAIEndpoint": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Azure OpenAI API endpoint"
+            }
+        },
+        "azureOpenAIKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Azure OpenAI API key"
+            }
+        },
+        "azureOpenAIEmbeddingName": {
+            "type": "String",
+            "defaultValue": "embed-text-embedding-ada-002",
+            "metadata": {
+                "description": "Azure OpenAI Embedding API name"
+            }
+        },
+        "azureOpenAITemperature": {
+            "type": "String",
+            "defaultValue": "0.7",
+            "metadata": {
+                "description": "Temperature parameter for Azure OpenAI API"
+            }
+        },
+        "azureOpenAITopP": {
+            "type": "String",
+            "defaultValue": "0.95",
+            "metadata": {
+                "description": "top_p parameter for Azure OpenAI API"
+            }
+        },
+        "azureOpenAIMaxTokens": {
+            "type": "Int",
+            "defaultValue": 800,
+            "metadata": {
+                "description": "Maximum number of tokens to return from Azure OpenAI API"
+            }
+        },
+        "azureOpenAIStopSequence": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Stop sequences for Azure OpenAI API, separated by |"
+            }
+        },
+        "azureOpenAISystemMessage": {
+            "type": "String",
+            "defaultValue": "You are an AI assistant that helps people find information.",
+            "metadata": {
+                "description": "System message parameter for Azure OpenAI API"
+            }
+        },
+        "repoUrl": {
+            "type": "String",
+            "defaultValue": "https://github.com/microsoft/sample-app-aoai-chatGPT.git",
+            "metadata": {
+                "description": "Public github repo containing web app code."
+            }
+        },
+        "sku": {
+            "defaultValue": "S1",
+            "type": "String",
+            "metadata": {
+                "description": "SKU for the App Service Plan"
+            }
+        },
+        "azureSearchSemanticSearchConfig": {
+            "type": "String",
+            "defaultValue": "default",
+            "metadata": {
+                "description": "Semantic search config name for Azure OpenAI API"
+            }
+        },
+        "azureSearchQueryType": {
+            "type": "String",
+            "defaultValue": "vectorSimpleHybrid",
+            "metadata": {
+                "description": "Search query type for Azure OpenAI API"
+            }
+        },
+        "azureSearchContentColumns": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Search content columns for Azure OpenAI API, separated by |"
+            }
+        },
+        "azureSearchFilenameColumn": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Search filename column for Azure OpenAI API"
+            }
+        },
+        "azureSearchTitleColumn": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Search title column for Azure OpenAI API"
+            }
+        },
+        "azureSearchUrlColumn": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Search url column for Azure OpenAI API"
+            }
+        },
+        "azureSearchVectorColumns": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Search vector columns for Azure OpenAI API, separated by |"
+            }
+        },
+        "azureSearchPermittedGroupsColumn": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Search permitted groups column for Azure OpenAI API"
+            }
+        },
+        "authClientId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "App registration client id for the web app"
+            }
+        },
+        "authClientSecret": {
+            "type": "SecureString",
+            "defaultValue": "",
+            "metadata": {
+                "description": "App registration client secret for the web app"
+            }
+        },
+        "searchStrictness": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Strictness threshold for Azure Search"
+            }
+        },
+        "datasourceType": {
+            "defaultValue": "AzureCognitiveSearch",
+            "type": "String",
+            "metadata": {
+                "description": "Datasource type"
+            }
+        },
+        "aiMonCreation": {
+            "defaultValue": "No",
+            "type": "String",
+            "metadata": {
+                "description": "Whether to create Azure Monitor for the web app or not"
+            }
+        }
+    },
+    "variables": {
+        "name-compliant-webAppName": "[concat(parameters('prefix'), '-', parameters('location'), '-wa')]",
+        "name-compliant-appPlan": "[concat(parameters('prefix'), '-', parameters('location'), '-plan')]",
+        "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2022-09-01",
+            "name": "[parameters('rgName')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "resourceGroup": "[parameters('rgName')]",
+            "name": "createWebApp",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Web/serverfarms",
+                            "apiVersion": "2022-09-01",
+                            "name": "[variables('name-compliant-appPlan')]",
+                            "location": "[parameters('location')]",
+                            "sku": {
+                                "name": "[parameters('sku')]"
+                            },
+                            "kind": "linux",
+                            "properties": {
+                                "perSiteScaling": false,
+                                "elasticScaleEnabled": false,
+                                "maximumElasticWorkerCount": 1,
+                                "isSpot": false,
+                                "reserved": true,
+                                "isXenon": false,
+                                "hyperV": false,
+                                "targetWorkerCount": 0,
+                                "targetWorkerSizeId": 0,
+                                "zoneRedundant": false
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Web/sites",
+                            "apiVersion": "2021-02-01",
+                            "name": "[variables('name-compliant-webAppName')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.Web/serverfarms/', variables('name-compliant-appPlan'))]"
+                            ],
+                            "identity": {
+                                "type": "SystemAssigned"
+                            },
+                            "properties": {
+                                "httpsOnly": true,
+                                "serverFarmId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.Web/serverfarms/', variables('name-compliant-appPlan'))]",
+                                "siteConfig": {
+                                    "alwaysOn": "[not(equals(parameters('sku'), 'F1'))]",
+                                    "appCommandLine": "python3 -m gunicorn app:app",
+                                    "linuxFxVersion": "[parameters('linuxFxVersion')]",
+                                    "minTlsVersion": "1.2",
+                                    "ftpsState": "FtpsOnly",
+                                    "defaultDocuments": [
+                                        "Default.htm",
+                                        "Default.html",
+                                        "Default.asp",
+                                        "index.htm",
+                                        "index.html",
+                                        "iisstart.htm",
+                                        "default.aspx",
+                                        "index.php",
+                                        "hostingstart.html"
+                                    ],
+                                    "virtualApplications": [
+                                        {
+                                            "virtualPath": "/",
+                                            "physicalPath": "site\\wwwroot",
+                                            "preloadEnabled": false
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "condition": "[equals(parameters('aiMonCreation'), 'Yes')]",
+                            "type": "Microsoft.Web/sites/providers/diagnosticSettings",
+                            "apiVersion": "2021-05-01-preview",
+                            "name": "[concat(variables('name-compliant-webAppName'), '/', 'Microsoft.Insights/diag')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.Web/sites/', variables('name-compliant-webAppName'))]"
+                            ],
+                            "properties": {
+                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', variables('name-compliant-azMon'))]",
+                                "logs": [
+                                    {
+                                        "categoryGroup": "allLogs",
+                                        "enabled": true
+                                    }
+                                ],
+                                "metrics": [
+                                    {
+                                        "category": "AllMetrics",
+                                        "enabled": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Web/sites/config",
+                            "apiVersion": "2021-02-01",
+                            "name": "[concat(variables('name-compliant-webAppName'), '/appsettings')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.Web/sites/', variables('name-compliant-webAppName'))]"
+                            ],
+                            "properties": {
+                                "AZURE_SEARCH_SERVICE": "[parameters('searchServiceName')]",
+                                "AZURE_SEARCH_INDEX": "[parameters('searchIndexName')]",
+                                "AZURE_SEARCH_KEY": "[parameters('searchAdminKey')]",
+                                "AZURE_SEARCH_USE_SEMANTIC_SEARCH": "[parameters('useSemanticSearch')]",
+                                "AZURE_OPENAI_TEMPERATURE": "[parameters('azureOpenAITemperature')]",
+                                "AZURE_OPENAI_TOP_P": "[parameters('azureOpenAITopP')]",
+                                "AZURE_OPENAI_MAX_TOKENS": "[parameters('azureOpenAIMaxTokens')]",
+                                "AZURE_OPENAI_STOP_SEQUENCE": "[parameters('azureOpenAIStopSequence')]",
+                                "AZURE_OPENAI_RESOURCE": "[parameters('azureOpenAIResource')]",
+                                "AZURE_OPENAI_MODEL": "[parameters('azureOpenAIModelDeployment')]",
+                                "AZURE_OPENAI_MODEL_NAME": "[parameters('azureOpenAIModelName')]",
+                                "AZURE_OPENAI_ENDPOINT": "[parameters('azureOpenAIEndpoint')]",
+                                "AZURE_OPENAI_KEY": "[parameters('azureOpenAIKey')]",
+                                "AZURE_OPENAI_SYSTEM_MESSAGE": "[parameters('azureOpenAISystemMessage')]",
+                                "AZURE_OPENAI_EMBEDDING_NAME": "[parameters('azureOpenAIEmbeddingName')]",
+                                "SCM_DO_BUILD_DURING_DEPLOYMENT": "true",
+                                "AZURE_SEARCH_SEMANTIC_SEARCH_CONFIG": "[parameters('azureSearchSemanticSearchConfig')]",
+                                "AZURE_SEARCH_CONTENT_COLUMNS": "[parameters('azureSearchContentColumns')]",
+                                "AZURE_SEARCH_FILENAME_COLUMN": "[parameters('azureSearchFilenameColumn')]",
+                                "AZURE_SEARCH_TITLE_COLUMN": "[parameters('azureSearchTitleColumn')]",
+                                "AZURE_SEARCH_URL_COLUMN": "[parameters('azureSearchUrlColumn')]",
+                                "AZURE_SEARCH_VECTOR_COLUMNS": "[parameters('azureSearchVectorColumns')]",
+                                "AZURE_SEARCH_PERMITTED_GROUPS_COLUMN": "[parameters('azureSearchPermittedGroupsColumn')]",
+                                "AZURE_SEARCH_QUERY_TYPE": "[parameters('azureSearchQueryType')]",
+                                "AUTH_CLIENT_SECRET": "[parameters('authClientSecret')]",
+                                "AZURE_COSMOSDB_ACCOUNT": "",
+                                "AZURE_COSMOSDB_DATABASE": "",
+                                "AZURE_COSMOSDB_CONVERSATIONS_CONTAINER": "",
+                                "DATASOURCE_TYPE": "[parameters('datasourceType')]",
+                                "AZURE_SEARCH_TOP_K": "[parameters('searchTopK')]",
+                                "AZURE_SEARCH_STRICTNESS": "[parameters('searchStrictness')]",
+                                "AZURE_SEARCH_ENABLE_IN_DOMAIN": "[parameters('searchEnableInDomain')]",
+                                "AZURE_COSMOSDB_MONGO_VCORE_CONNECTION_STRING": "",
+                                "AZURE_COSMOSDB_MONGO_VCORE_DATABASE": "",
+                                "AZURE_COSMOSDB_MONGO_VCORE_CONTAINER": "",
+                                "AZURE_COSMOSDB_MONGO_VCORE_INDEX": "",
+                                "AZURE_COSMOSDB_MONGO_VCORE_CONTENT_COLUMNS": "",
+                                "AZURE_COSMOSDB_MONGO_VCORE_FILENAME_COLUMN": "",
+                                "AZURE_COSMOSDB_MONGO_VCORE_TITLE_COLUMN": "",
+                                "AZURE_COSMOSDB_MONGO_VCORE_URL_COLUMN": "",
+                                "AZURE_COSMOSDB_MONGO_VCORE_VECTOR_COLUMNS": "",
+                                "ELASTICSEARCH_ENDPOINT": "",
+                                "ELASTICSEARCH_ENCODED_API_KEY": "",
+                                "ELASTICSEARCH_INDEX": "",
+                                "ELASTICSEARCH_QUERY_TYPE": "",
+                                "ELASTICSEARCH_TOP_K": "",
+                                "ELASTICSEARCH_ENABLE_IN_DOMAIN": "",
+                                "ELASTICSEARCH_CONTENT_COLUMNS": "",
+                                "ELASTICSEARCH_FILENAME_COLUMN": "",
+                                "ELASTICSEARCH_TITLE_COLUMN": "",
+                                "ELASTICSEARCH_URL_COLUMN": "",
+                                "ELASTICSEARCH_VECTOR_COLUMNS": "",
+                                "ELASTICSEARCH_STRICTNESS": "",
+                                "ELASTICSEARCH_EMBEDDING_MODEL_ID": ""
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Web/sites/sourcecontrols",
+                            "apiVersion": "2021-02-01",
+                            "name": "[concat(variables('name-compliant-webAppName'), '/web')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.Web/sites/', variables('name-compliant-webAppName'))]",
+                                "[concat('Microsoft.Web/sites/', variables('name-compliant-webAppName'), '/config/', '/appsettings')]"
+                            ],
+                            "properties": {
+                                "repoUrl": "[parameters('repoUrl')]",
+                                "branch": "main",
+                                "isManualIntegration": true
+                            },
+                            "condition": "[contains(parameters('repoUrl'), 'http')]"
+                        },
+                        {
+                            "type": "Microsoft.Web/sites/config",
+                            "apiVersion": "2021-02-01",
+                            "name": "[concat(variables('name-compliant-webAppName'), '/authsettingsv2')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.Web/sites/', variables('name-compliant-webAppName'))]"
+                            ],
+                            "properties": {
+                                "globalValidation": {
+                                    "redirectToProvider": "azureactivedirectory",
+                                    "requireAuthentication": true,
+                                    "unauthenticatedClientAction": "RedirectToLoginPage"
+                                },
+                                "identityProviders": {
+                                    "azureActiveDirectory": {
+                                        "enabled": true,
+                                        "registration": {
+                                            "clientId": "[parameters('authClientId')]",
+                                            "clientSecretSettingName": "AUTH_CLIENT_SECRET",
+                                            "openIdIssuer": "[concat('https://login.microsoftonline.com/', subscription().tenantId, '/v2.0')]"
+                                        },
+                                        "validation": {
+                                            "jwtClaimChecks": {},
+                                            "defaultAuthorizationPolicy": {
+                                                "allowedPrincipals": {},
+                                                "allowedApplications": []
+                                            }
+                                        },
+                                        "login": {
+                                            "loginParameters": [
+                                                "response_type=code id_token",
+                                                "scope=openid offline_access profile https://graph.microsoft.com/User.Read"
+                                            ],
+                                            "disableWWWAuthenticate": false
+                                        }
+                                    }
+                                },
+                                "login": {
+                                    "tokenStore": {
+                                        "enabled": true
+                                    }
+                                }
+                            },
+                            "condition": "[not(empty(parameters('authClientId')))]"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
