@@ -247,6 +247,10 @@
             "metadata": {
                 "description": "Whether to create Azure Monitor for the web app or not"
             }
+        },
+        "azMonRgName": {
+            "type": "string",
+            "defaultValue": ""
         }
     },
     "variables": {
@@ -350,7 +354,7 @@
                                 "[concat('Microsoft.Web/sites/', variables('name-compliant-webAppName'))]"
                             ],
                             "properties": {
-                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', variables('name-compliant-azMon'))]",
+                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('azMonRgName'), '/providers/Microsoft.OperationalInsights/workspaces/', variables('name-compliant-azMon'))]",
                                 "logs": [
                                     {
                                         "categoryGroup": "allLogs",
