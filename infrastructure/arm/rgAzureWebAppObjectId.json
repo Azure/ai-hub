@@ -16,7 +16,7 @@
     "outputs": {
         "systemIdentityId": {
             "type": "string",
-            "value": "[reference(resourceId('Microsoft.Web/sites', variables('name-compliant-webAppName')), '2023-12-01', 'Full').identity.principalId]"
+            "value": "[reference(resourceId('Microsoft.Web/sites', variables('name-compliant-webAppName')), '2021-02-01', 'Full').identity.principalId]"
         }
     }
 }
