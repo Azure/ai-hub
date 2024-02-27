@@ -1973,7 +1973,8 @@
             "resourceGroup": "[variables('resourceNames').rgName]",
             "dependsOn": [
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]"
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiModelDeploymentName)]"
 
             ],
             "properties": {
@@ -2008,6 +2009,7 @@
             "dependsOn": [
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiModelDeploymentName)]",
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiOnYourDataEmbeddingDeploymentName)]"
 
             ],
