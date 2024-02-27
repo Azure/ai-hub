@@ -597,11 +597,14 @@
             "azOpenAiRbacForSearchServiceDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-searchService', variables('deploymentSuffix')), 64)]",
             "azOpenAiEmbeddingRbacForSearchServiceDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-searchService', variables('deploymentSuffix')), 64)]",
             "azAiSearchRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-search-rbac-for-aoai', variables('deploymentSuffix')), 64)]",
+            "azSampleAppRbacForSearchContributorDeploymentName": "[take(concat(parameters('prefix'), '-sampleapp-rbac-for-searchContributor', variables('deploymentSuffix')), 64)]",
             "azOpenAiRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-blobContributor', variables('deploymentSuffix')), 64)]",
             "azOpenAiEmbeddingRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-blobContributor', variables('deploymentSuffix')), 64)]",
             "azAiSearchRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-search-rbac-for-blobContributor', variables('deploymentSuffix')), 64)]",
             "azAiDocumentIntelligenceRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-doc-rbac-for-blobContributor', variables('deploymentSuffix')), 64)]",
             "azApimRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-apim-rbac-for-aoai', variables('deploymentSuffix')), 64)]",
+            "azSampleAppRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-sampleapp-rbac-for-aoai', variables('deploymentSuffix')), 64)]",
+            "azSampleAppRbacForSearchIndexDeploymentName": "[take(concat(parameters('prefix'), '-sampleapp-rbac-for-searchIndex', variables('deploymentSuffix')), 64)]",
             "azureOpenAiFinalDeploymentName": "[take(concat(parameters('prefix'), '-aoaicmk', variables('deploymentSuffix')), 64)]",
             "azureOpenAiModelDeploymentName": "[take(concat(parameters('prefix'), '-aoaiModel', variables('deploymentSuffix')), 64)]",
             "azureOpenAiOnYourDataEmbeddingDeploymentName": "[take(concat(parameters('prefix'), '-aoai-On-Your-Data-Embedding', variables('deploymentSuffix')), 64)]",
@@ -625,7 +628,7 @@
             "rgName": "[concat(parameters('prefix'), '-rg-', parameters('location'))]",
             "aoaiOrchestratorName": "[take(concat('orch', uniqueString(deployment().name)),7)]",
             "aoaiOrchestratorModelName": "text-embedding-ada-002",
-            "appRgName": "[concat(parameters('prefix'), '-aiapprg-', parameters('location'))]",
+            "appRgName": "[concat(parameters('prefix'), '-aiapp-rg-', parameters('location'))]",
             "azureAiSearchName": "[toLower(concat(parameters('prefix'), '-', parameters('location'), '-azaisearch'))]",
             "azureAiSearchIndexName": "eaoaiindex",
             "azureOpenAiName": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai')]"
@@ -1425,7 +1428,7 @@
                 }
             }
         },
-        // Creating Role Assignment for AOAI on AI Search using Search Index Data Reader role
+        // Creating Role Assignment for AOAI on AI Search using Search Index Data Contributor role
         {
             "condition": "[and(equals(parameters('aiSearchSystemIdentity'), 'Yes'), equals(parameters('aiSystemIdentity'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
@@ -1444,7 +1447,7 @@
                 },
                 "parameters": {
                     "roleDefinitionId": {
-                        "value": "1407120a-92aa-4202-b7e9-c0e197c71c8f"
+                        "value": "8ebe5a00-799e-43f5-93ac-243d3dce84a7"
                     },
                     "principalType": {
                         "value": "ServicePrincipal"
@@ -1455,7 +1458,7 @@
                 }
             }
         },
-        // Creating Role Assignment for AOAI Embeddings on AI Search using Search Index Data Reader role
+        // Creating Role Assignment for AOAI Embeddings on AI Search using Search Index Data Contributor role
         {
             "condition": "[and(equals(parameters('aiAddEmbeddingInstance'), 'Same'), equals(parameters('aiSystemIdentity'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
@@ -1474,7 +1477,7 @@
                 },
                 "parameters": {
                     "roleDefinitionId": {
-                        "value": "1407120a-92aa-4202-b7e9-c0e197c71c8f"
+                        "value": "8ebe5a00-799e-43f5-93ac-243d3dce84a7"
                     },
                     "principalType": {
                         "value": "ServicePrincipal"
@@ -1725,6 +1728,96 @@
                 }
             }
         },
+        // Creating Role Assignment for Web App on AOAI using Cognitive Services Open AI Contributor role
+        {
+            "condition": "[and(equals(parameters('aiSystemIdentity'), 'Yes'), not(equals(parameters('aiSampleAppDeployment'), 'No')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azSampleAppRbacForOpenAiDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureWebAppObjectIdDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "a001fd3d-188f-4b5d-821b-7da978bf7442"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(and(equals(parameters('aiSystemIdentity'), 'Yes'), not(equals(parameters('aiSampleAppDeployment'), 'No'))), reference(variables('deploymentNames').rgAzureWebAppObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
+        // Creating Role Assignment for Web App on AI Search using Search Contributor role
+        {
+            "condition": "[and(equals(parameters('aiSystemIdentity'), 'Yes'), not(equals(parameters('aiSampleAppDeployment'), 'No')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azSampleAppRbacForSearchContributorDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureAiSearchDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureWebAppObjectIdDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "7ca78c08-252a-4471-8644-bb5ff32d4ba0"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(and(equals(parameters('aiSystemIdentity'), 'Yes'), not(equals(parameters('aiSampleAppDeployment'), 'No'))), reference(variables('deploymentNames').rgAzureWebAppObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
+        // Creating Role Assignment for Web App on AI Search using Search Index Data Contributor role
+        {
+            "condition": "[and(equals(parameters('aiSystemIdentity'), 'Yes'), not(equals(parameters('aiSampleAppDeployment'), 'No')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azSampleAppRbacForSearchIndexDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureAiSearchDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureWebAppObjectIdDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "8ebe5a00-799e-43f5-93ac-243d3dce84a7"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(and(equals(parameters('aiSystemIdentity'), 'Yes'), not(equals(parameters('aiSampleAppDeployment'), 'No'))), reference(variables('deploymentNames').rgAzureWebAppObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
         // Enable CMK for AOAI Service
         {
             "condition": "[not(empty(parameters('aiCmkKeyName')))]",
@@ -1915,7 +2008,8 @@
             "resourceGroup": "[variables('resourceNames').rgName]",
             "dependsOn": [
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]"
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiOnYourDataEmbeddingDeploymentName)]"
 
             ],
             "properties": {
@@ -1999,6 +2093,9 @@
                     },
                     "aiMonCreation": {
                         "value": "[parameters('aiMonCreation')]"
+                    },
+                    "azMonRgName": {
+                        "value": "[variables('resourceNames').rgName]"
                     }
                 }
             }
