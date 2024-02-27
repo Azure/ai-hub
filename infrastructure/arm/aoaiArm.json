@@ -528,6 +528,23 @@
         "aiMultiLocation": {
             "type": "string",
             "defaultValue": ""
+        },
+        "aiSampleAppDeployment": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "YesWithAppRegistration",
+                "YesWithoutAppRegistration",
+                "No"
+            ]
+        },
+        "aiAppId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "aiAppSecret": {
+            "type": "securestring",
+            "defaultValue": ""
         }
     },
     "variables": {
@@ -543,6 +560,7 @@
             "rgAzureAiSearchObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureAiSearchObjectId.json')]",
             "rgAzureDocumentIntelligenceObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureDocumentIntelligenceObjectId.json')]",
             "rgAzureApimObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureApimObjectId.json')]",
+            "rgAzureWebAppObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureWebAppObjectId.json')]",
             "rgRbacTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgRbac.json')]",
             "azureOpenAiCmkTemplateUri": "[uri(deployment().properties.templateLink.uri, 'cmkAzureOpenAi.json')]",
             "azureOpenAiModelTemplateUri": "[uri(deployment().properties.templateLink.uri, 'modelDeployment.json')]",
@@ -550,7 +568,8 @@
             "azureAiSearchTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureAiSearch.json')]",
             "azureComputerVisionTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureComputerVision.json')]",
             "azureDocumentIntelligenceTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureDocumentIntelligence.json')]",
-            "azureApimTemplateUri": "[uri(deployment().properties.templateLink.uri, 'apimPublic.json')]"
+            "azureApimTemplateUri": "[uri(deployment().properties.templateLink.uri, 'apimPublic.json')]",
+            "aiSampleAppTemplateUri": "[uri(deployment().properties.templateLink.uri, 'aiSampleApp.json')]"
         },
         "deploymentSuffix": "[concat('-', deployment().location, guid(parameters('prefix')))]",
         "deploymentNames": {
@@ -568,6 +587,7 @@
             "rgAzureAiSearchObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-search-objectId', variables('deploymentSuffix')), 64)]",
             "rgAzureDocumentIntelligenceObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-doc-objectId', variables('deploymentSuffix')), 64)]",
             "rgAzureApimObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-apim-objectId', variables('deploymentSuffix')), 64)]",
+            "rgAzureWebAppObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-webapp-objectId', variables('deploymentSuffix')), 64)]",
             "azOpenAiRbacForKvDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-kv', variables('deploymentSuffix')), 64)]",
             "azOpenAiRbacForKvSecretDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-kvsecret', variables('deploymentSuffix')), 64)]",
             "azOpenAiEmbeddingRbacForKvSecretDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-for-kvsecret', variables('deploymentSuffix')), 64)]",
@@ -583,17 +603,31 @@
             "azApimRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-apim-rbac-for-aoai', variables('deploymentSuffix')), 64)]",
             "azureOpenAiFinalDeploymentName": "[take(concat(parameters('prefix'), '-aoaicmk', variables('deploymentSuffix')), 64)]",
             "azureOpenAiModelDeploymentName": "[take(concat(parameters('prefix'), '-aoaiModel', variables('deploymentSuffix')), 64)]",
-            "azureOpenAiEmbeddingModelDeploymentName": "[take(concat(parameters('prefix'), '-aoaiEmbeddingModel', variables('deploymentSuffix')), 64)]",
+            "azureOpenAiOnYourDataEmbeddingDeploymentName": "[take(concat(parameters('prefix'), '-aoai-On-Your-Data-Embedding', variables('deploymentSuffix')), 64)]",
+            "azureOpenAiOnYourDataGpt4DeploymentName": "[take(concat(parameters('prefix'), '-aoai-On-Your-Data-Gpt4', variables('deploymentSuffix')), 64)]",
+            "azureOpenAiEmbeddingModelDeploymentName": "[take(concat(parameters('prefix'), '-aoai-Embedding-Model', variables('deploymentSuffix')), 64)]",
             "azureOpenAIContentFilterDeploymentName": "[take(concat(parameters('prefix'), '-aoaiContentFilter', variables('deploymentSuffix')), 64)]",
             "azureAiSearchDeploymentName": "[take(concat(parameters('prefix'), '-aaisearch', variables('deploymentSuffix')), 64)]",
             "azureComputerVisionDeploymentName": "[take(concat(parameters('prefix'), '-aicomputervision', variables('deploymentSuffix')), 64)]",
             "azureDocumentIntelligenceDeploymentName": "[take(concat(parameters('prefix'), '-aidocumentintelligence', variables('deploymentSuffix')), 64)]",
-            "apimDeploymentName": "[take(concat(parameters('prefix'), '-apim', variables('deploymentSuffix')), 64)]"
+            "apimDeploymentName": "[take(concat(parameters('prefix'), '-apim', variables('deploymentSuffix')), 64)]",
+            "aiSampleAppDeploymentName": "[take(concat(parameters('prefix'), '-aiSampleApp', variables('deploymentSuffix')), 64)]"
+        },
+        "sampleAppRepoUrl" : "https://github.com/microsoft/sample-app-aoai-chatGPT.git",
+        "onYourDataSampleVariables": {
+            "embeddingDeploymentName": "sample",
+            "embeddingModelName": "text-embedding-ada-002",
+            "gptDeploymentName": "sample",
+            "gptModelName": "gpt-4"
         },
         "resourceNames": {
             "rgName": "[concat(parameters('prefix'), '-rg-', parameters('location'))]",
             "aoaiOrchestratorName": "[take(concat('orch', uniqueString(deployment().name)),7)]",
-            "aoaiOrchestratorModelName": "text-embedding-ada-002"
+            "aoaiOrchestratorModelName": "text-embedding-ada-002",
+            "appRgName": "[concat(parameters('prefix'), '-aiapprg-', parameters('location'))]",
+            "azureAiSearchName": "[toLower(concat(parameters('prefix'), '-', parameters('location'), '-azaisearch'))]",
+            "azureAiSearchIndexName": "eaoaiindex",
+            "azureOpenAiName": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai')]"
             
         },
         // Multi region variables for N deployments and endpoint references
@@ -1277,6 +1311,32 @@
                 }
             }
         },
+        // Retrieving objectId of the Web App System Identity
+        {
+            "condition": "[equals(parameters('aiSystemIdentity'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgAzureWebAppObjectIdDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').aiSampleAppDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgAzureWebAppObjectIdTemplateUri]"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
         // Consider to remove this deployment
         {
             "condition": "[equals(parameters('aiSystemIdentity'), 'Yes')]",
@@ -1807,6 +1867,137 @@
                     },
                     "aiProtectedJailbreak": {
                         "value": "[parameters('aiProtectedJailbreak')]"
+                    }
+                }
+            }
+        },
+        // Embedding with On Your Data: Automated model deployment subject to use case selection and dedicated AOAI for embedding (must be "No")
+        {
+            "condition": "[and(equals(parameters('aiAddEmbeddingInstance'), 'No'), equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiModelDeployment'), 'Automated'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azureOpenAiOnYourDataEmbeddingDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]"
+
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azureOpenAiModelTemplateUri]"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "aiModelDeploymentName": {
+                        "value": "[variables('onYourDataSampleVariables').embeddingDeploymentName]"
+                    },
+                    "aiModelVersion": {
+                        "value": "[variables('onYourDataSampleVariables').embeddingModelName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        // GPT4 On Your Data: Automated model deployment subject to use case selection and dedicated AOAI for embedding (must be "No")
+        {
+            "condition": "[and(equals(parameters('aiAddEmbeddingInstance'), 'No'), equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiModelDeployment'), 'Automated'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azureOpenAiOnYourDataGpt4DeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]"
+
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azureOpenAiModelTemplateUri]"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "aiModelDeploymentName": {
+                        "value": "[variables('onYourDataSampleVariables').gptDeploymentName]"
+                    },
+                    "aiModelVersion": {
+                        "value": "[variables('onYourDataSampleVariables').gptModelName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        // Deploy AI Sample App into primary region
+        {
+            "condition": "[not(equals(parameters('aiSampleAppDeployment'), 'No'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').aiSampleAppDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureAiSearchDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').aiSampleAppTemplateUri]"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "rgName": {
+                        "value": "[variables('resourceNames').appRgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "searchServiceName": {
+                        "value": "[variables('resourceNames').azureAiSearchName]"
+                    },
+                    "searchIndexName": {
+                        "value": "[variables('resourceNames').azureAiSearchIndexName]"
+                    },
+                    "azureOpenAIResource": {
+                        "value": "[variables('resourceNames').azureOpenAiName]"
+                    },
+                    "azureOpenAIModelDeployment": {
+                        "value": "[concat(variables('onYourDataSampleVariables').gptDeploymentName, '-', variables('onYourDataSampleVariables').gptModelName)]"
+                    },
+                    "azureOpenAIModelName": {
+                        "value": "[variables('onYourDataSampleVariables').gptModelName]"
+                    },
+                    "azureOpenAIEndpoint": {
+                        "value": "[variables('aoaiEndpoint1')]"
+                    },
+                    "azureOpenAIEmbeddingName": {
+                        "value": "[concat(variables('onYourDataSampleVariables').embeddingDeploymentName, '-', variables('onYourDataSampleVariables').embeddingModelName)]"
+                    },
+                    "repoUrl": {
+                        "value": "[variables('sampleAppRepoUrl')]"
+                    },
+                    "authClientId": {
+                        "value": "[parameters('aiAppId')]"
+                    },
+                    "authClientSecret": {
+                        "value": "[parameters('aiAppSecret')]"
+                    },
+                    "aiMonCreation": {
+                        "value": "[parameters('aiMonCreation')]"
                     }
                 }
             }

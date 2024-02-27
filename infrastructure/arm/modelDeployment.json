@@ -92,7 +92,7 @@
             "condition": "[equals(parameters('aiModelVersion'), 'gpt-4')]",
             "type": "Microsoft.CognitiveServices/accounts/deployments",
             "apiVersion": "2023-05-01",
-            "name": "[concat(variables('name-compliant-azureOpenAi'), '/', parameters('aiModelDeploymentName'), '-', 'gpt4')]",
+            "name": "[concat(variables('name-compliant-azureOpenAi'), '/', parameters('aiModelDeploymentName'), '-', 'gpt-4')]",
             "sku": {
                 "name": "Standard",
                 "capacity": 1
