@@ -164,6 +164,92 @@
                                 "required": true
                             },
                             "visible": "[equals(steps('basics').aiIntention, 'Multiple')]"
+                        },
+                        {
+                            "name": "aiUsersSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Data-plane RBAC Settings",
+                            "elements": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "aiUsersOrGroupsText",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": true,
+                            "options": {
+                                "text": "By default, the user deploying the Enterprise Azure OpenAI Hub will have control-plane RBAC access to all resources. Optionally, you can select an individual user or a group who will also get data-plane RBAC on the services.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://learn.microsoft.com/azure/ai-services/openai/overview"
+                                }
+                            }
+                        },
+                        {
+                            "name": "aiUsersOrGroups",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Assign data-plane access",
+                            "defaultValue": "No",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    },
+                                    {
+                                        "label": "Yes, assign to an Entra ID User",
+                                        "value": "User"
+                                    },
+                                    {
+                                        "label": "Yes, assign to an Entra ID Group",
+                                        "value": "Group"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "callGraphUsers",
+                            "type": "Microsoft.Solutions.GraphApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "/beta/users?&select=displayName,id",
+                                "transforms": {
+                                    "list": "value|[*].{label:displayName, value:id}"
+                                }
+                            }
+                        },
+                        {
+                            "name": "userDropDown",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Existing Entra ID User",
+                            "visible": "[equals(steps('basics').aiUsersOrGroups, 'User')]",
+                            "constraints": {
+                                "required": true,
+                                "allowedValues": "[coalesce(steps('basics').callGraphUsers.transformed.list, parse('[]'))]"
+                            }
+                        },
+                        {
+                            "name": "callGraphGroups",
+                            "type": "Microsoft.Solutions.GraphApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "/beta/groups?&select=displayName,id",
+                                "transforms": {
+                                    "list": "value|[*].{label:displayName, value:id}"
+                                }
+                            }
+                        },
+                        {
+                            "name": "groupDropDown",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Existing Entra ID Group",
+                            "visible": "[equals(steps('basics').aiUsersOrGroups, 'Group')]",
+                            "constraints": {
+                                "required": true,
+                                "allowedValues": "[coalesce(steps('basics').callGraphGroups.transformed.list, parse('[]'))]"
+                            }
                         }
                     ]
                 },
