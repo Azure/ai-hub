@@ -1517,6 +1517,15 @@
                             },
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
                         },
+                        {
+                            "name": "onYourVisionArchitecture",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-video-architecture.svg'>"
+                            }
+                        },
 						{
                             "name": "onYourDataArchitecture",
                             "type": "Microsoft.Common.InfoBox",
