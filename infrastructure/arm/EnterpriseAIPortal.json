@@ -42,7 +42,7 @@
                                     },
                                     {
                                         "label": "Proof of Concept",
-                                        "description": "Explore and validate Enterprise Azure OpenAI Hub in a single or multiple Azure regions.",
+                                        "description": "This option will allow you to enable Preview features such as multi-region setup and deploy sample applications if you want to start with a Use Case.",
                                         "value": "PoC"
                                     }
                                 ],
@@ -891,10 +891,6 @@
                                         "label": "Yes",
                                         "value": "Yes"
                                     },
-									{
-										"label": "Deploy required models based on use case selection",
-										"value": "Automated"
-									},
                                     {
                                         "label": "No",
                                         "value": "No"
@@ -1540,6 +1536,15 @@
                             "options": {
                                 "icon": "None",
                                 "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-rag-architecture.svg'>"
+                            }
+                        },
+                        {
+                            "name": "aiModelAddInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "To support the initial use case, additional Azure OpenAI model deployments will be created."
                             }
                         },
                         {

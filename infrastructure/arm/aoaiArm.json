@@ -198,7 +198,6 @@
             "defaultValue": "No",
             "allowedValues": [
                 "Yes",
-                "Automated",
                 "No"
             ]
         },
@@ -619,9 +618,9 @@
         },
         "sampleAppRepoUrl" : "https://github.com/microsoft/sample-app-aoai-chatGPT.git",
         "onYourDataSampleVariables": {
-            "embeddingDeploymentName": "sample",
+            "embeddingDeploymentName": "hub-embedding",
             "embeddingModelName": "text-embedding-ada-002",
-            "gptDeploymentName": "sample",
+            "gptDeploymentName": "hub-gpt4",
             "gptModelName": "gpt-4"
         },
         "resourceNames": {
@@ -1321,7 +1320,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').rgAzureWebAppObjectIdDeploymentName]",
-            "resourceGroup": "[variables('resourceNames').rgName]",
+            "resourceGroup": "[variables('resourceNames').appRgName]",
             "dependsOn": [
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').aiSampleAppDeploymentName)]"
             ],
@@ -1428,7 +1427,7 @@
                 }
             }
         },
-        // Creating Role Assignment for AOAI on AI Search using Search Index Data Contributor role
+        // Creating Role Assignment for AOAI on AI Search using Search Index Data Reader role
         {
             "condition": "[and(equals(parameters('aiSearchSystemIdentity'), 'Yes'), equals(parameters('aiSystemIdentity'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
@@ -1447,7 +1446,7 @@
                 },
                 "parameters": {
                     "roleDefinitionId": {
-                        "value": "8ebe5a00-799e-43f5-93ac-243d3dce84a7"
+                        "value": "1407120a-92aa-4202-b7e9-c0e197c71c8f"
                     },
                     "principalType": {
                         "value": "ServicePrincipal"
@@ -1458,7 +1457,7 @@
                 }
             }
         },
-        // Creating Role Assignment for AOAI Embeddings on AI Search using Search Index Data Contributor role
+        // Creating Role Assignment for AOAI Embeddings on AI Search using Search Index Data Reader role
         {
             "condition": "[and(equals(parameters('aiAddEmbeddingInstance'), 'Same'), equals(parameters('aiSystemIdentity'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
@@ -1477,7 +1476,7 @@
                 },
                 "parameters": {
                     "roleDefinitionId": {
-                        "value": "8ebe5a00-799e-43f5-93ac-243d3dce84a7"
+                        "value": "1407120a-92aa-4202-b7e9-c0e197c71c8f"
                     },
                     "principalType": {
                         "value": "ServicePrincipal"
@@ -1788,7 +1787,7 @@
                 }
             }
         },
-        // Creating Role Assignment for Web App on AI Search using Search Index Data Contributor role
+        // Creating Role Assignment for Web App on AI Search using Search Index Data Reader role
         {
             "condition": "[and(equals(parameters('aiSystemIdentity'), 'Yes'), not(equals(parameters('aiSampleAppDeployment'), 'No')))]",
             "type": "Microsoft.Resources/deployments",
@@ -1807,7 +1806,7 @@
                 },
                 "parameters": {
                     "roleDefinitionId": {
-                        "value": "8ebe5a00-799e-43f5-93ac-243d3dce84a7"
+                        "value": "1407120a-92aa-4202-b7e9-c0e197c71c8f"
                     },
                     "principalType": {
                         "value": "ServicePrincipal"
@@ -1967,7 +1966,7 @@
         },
         // Embedding with On Your Data: Automated model deployment subject to use case selection and dedicated AOAI for embedding (must be "No")
         {
-            "condition": "[and(equals(parameters('aiAddEmbeddingInstance'), 'No'), equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiModelDeployment'), 'Automated'))]",
+            "condition": "[and(equals(parameters('aiAddEmbeddingInstance'), 'No'), equals(parameters('aiUseCaseSelection'), 'onyourdata'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').azureOpenAiOnYourDataEmbeddingDeploymentName]",
@@ -2001,7 +2000,7 @@
         },
         // GPT4 On Your Data: Automated model deployment subject to use case selection and dedicated AOAI for embedding (must be "No")
         {
-            "condition": "[and(equals(parameters('aiAddEmbeddingInstance'), 'No'), equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiModelDeployment'), 'Automated'))]",
+            "condition": "[and(equals(parameters('aiAddEmbeddingInstance'), 'No'), equals(parameters('aiUseCaseSelection'), 'onyourdata'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').azureOpenAiOnYourDataGpt4DeploymentName]",
