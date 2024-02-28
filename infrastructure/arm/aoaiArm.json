@@ -1314,7 +1314,7 @@
                 }
             }
         },
-        // Retrieving objectId of the Web App System Identity
+        // Retrieving objectId of the Azure Web App System Identity
         {
             "condition": "[not(equals(parameters('aiSampleAppDeployment'), 'No'))]",
             "type": "Microsoft.Resources/deployments",
