@@ -32,7 +32,7 @@
                             "multiLine": true,
                             "selectAll": false,
                             "defaultDescription": "Select the intent for this deployment.",
-                            "filter": true,
+                            "filter": false,
                             "constraints": {
                                 "allowedValues": [
                                     {
@@ -61,7 +61,7 @@
                             "multiLine": true,
                             "selectAll": false,
                             "defaultDescription": "Select the architecture for this deployment.",
-                            "filter": true,
+                            "filter": false,
                             "constraints": {
                                 "allowedValues": [
                                     {
@@ -161,6 +161,64 @@
                             "toolTip": "Select the additional Azure region for the Enterprise Azure OpenAI Hub",
                             "constraints": {
                                 "allowedValues": "[map(steps('basics').aiMultiLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
+                                "required": true
+                            },
+                            "visible": "[equals(steps('basics').aiIntention, 'Multiple')]"
+                        },
+                        {
+                            "name": "apimLocation",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Select the Azure region for the API Management (V2 Preview)",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Select the supported Azure region for the API Management (V2 Preview) service that will be created.",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "filter": false,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "East US",
+                                        "value": "eastus"
+                                    },
+                                    {
+                                        "label": "West US",
+                                        "value": "westus"
+                                    },
+                                    {
+                                        "label": "France Central",
+                                        "value": "francecentral"
+                                    },
+                                    {
+                                        "label": "North Europe",
+                                        "value": "northeurope"
+                                    },
+                                    {
+                                        "label": "West Europe",
+                                        "value": "westeurope"
+                                    },
+                                    {
+                                        "label": "UK South",
+                                        "value": "uksouth"
+                                    },
+                                    {
+                                        "label": "Brazil South",
+                                        "value": "brazilsouth"
+                                    },
+                                    {
+                                        "label": "Australia East",
+                                        "value": "australiaeast"
+                                    },
+                                    {
+                                        "label": "Australia Southeast",
+                                        "value": "australiasoutheast"
+                                    },
+                                    {
+                                        "label": "East Asia",
+                                        "value": "eastasia"
+                                    }
+                                ],
                                 "required": true
                             },
                             "visible": "[equals(steps('basics').aiIntention, 'Multiple')]"
@@ -2424,7 +2482,8 @@
                 "docRestrictOutboundNetworkAccess": "[steps('aiAuxiliarySettings').aiDocRestrictOutboundNetworkAccess]",
                 "aiAddEmbeddingInstance": "[steps('aiAuxiliarySettings').aiAddEmbeddingInstance]",
                 "aiDedicatedSubnetId": "[steps('aiAuxiliarySettings').aiDedicatedSubnetId]",
-                "aiDedicatedSubscriptionId": "[steps('aiAuxiliarySettings').aiDedicatedSection.aiDedicatedSubscriptionId]"
+                "aiDedicatedSubscriptionId": "[steps('aiAuxiliarySettings').aiDedicatedSection.aiDedicatedSubscriptionId]",
+                "apimLocation": "[steps('basics').apimLocation]"
             },
             "kind": "Subscription",
             "location": "[steps('basics').resourceScope.location.name]",
