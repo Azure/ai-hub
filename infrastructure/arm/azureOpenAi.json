@@ -80,13 +80,19 @@
                 "Yes",
                 "No"
             ]
+        },
+        "azMonWorkspaceName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the resource id of the Azure Monitor workspace where the Azure Open AI instance that will be connected"
+            }
         }
     },
     "variables": {
         "name-compliant-azureOpenAi": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai')]",
-        "name-compliant-openAi-pe": "[concat(parameters('prefix'), '-azopenai-pe')]",
-        "name-compliant-openAi-asg": "[concat(parameters('prefix'), '-azopenai-asg')]",
-        "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
+        "name-compliant-openAi-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai-pe')]",
+        "name-compliant-openAi-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai-asg')]",
         "aiIdentity": {
             "type": "SystemAssigned"
         },
@@ -147,7 +153,7 @@
                                 "[concat('Microsoft.CognitiveServices/accounts/', variables('name-compliant-azureOpenAi'))]"
                             ],
                             "properties": {
-                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', variables('name-compliant-azMon'))]",
+                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('azMonWorkspaceName'))]",
                                 "logs": [
                                     {
                                         "categoryGroup": "allLogs",
