@@ -934,6 +934,9 @@
                     "rgName": {
                         "value": "[variables('resourceNames').rgName]"
                     },
+                    "rgLocation": {
+                        "value": "[parameters('location')]"
+                    },
                     "location": {
                         "value": "[parameters('location')]"
                     },
@@ -990,6 +993,9 @@
                 "parameters": {
                     "rgName": {
                         "value": "[variables('resourceNames').rgName]"
+                    },
+                    "rgLocation": {
+                        "value": "[parameters('aiMultiLocation')]"
                     },
                     "location": {
                         "value": "[parameters('aiMultiLocation')]"
