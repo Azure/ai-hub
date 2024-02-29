@@ -995,7 +995,7 @@
                         "value": "[variables('resourceNames').rgName]"
                     },
                     "rgLocation": {
-                        "value": "[parameters('aiMultiLocation')]"
+                        "value": "[parameters('location')]"
                     },
                     "location": {
                         "value": "[parameters('aiMultiLocation')]"
