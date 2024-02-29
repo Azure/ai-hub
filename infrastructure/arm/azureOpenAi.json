@@ -9,6 +9,13 @@
                 "description": "Provide the name of the resource group where the Azure Open AI instance that will be created"
             }
         },
+        "rgLocation": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the location of the resource group where the Azure Open AI instance that will be created"
+            }
+        },
         "location": {
             "type": "string",
             "defaultValue": "",
@@ -108,7 +115,7 @@
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2022-09-01",
             "name": "[parameters('rgName')]",
-            "location": "[parameters('location')]"
+            "location": "[parameters('rglocation')]"
         },
         {
             "type": "Microsoft.Resources/deployments",
