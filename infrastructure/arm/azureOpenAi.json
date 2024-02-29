@@ -92,7 +92,7 @@
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "Provide the resource id of the Azure Monitor workspace where the Azure Open AI instance that will be connected"
+                "description": "Provide the resource name of the Azure Monitor workspace where the Azure Open AI instance that will be connected"
             }
         }
     },
