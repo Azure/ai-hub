@@ -77,8 +77,8 @@
     },
     "variables": {
         "name-compliant-azureComputerVision": "[concat(parameters('prefix'), '-', parameters('location'), '-aivision')]",
-        "name-compliant-vision-pe": "[concat(parameters('prefix'), '-azvision-pe')]",
-        "name-compliant-vision-asg": "[concat(parameters('prefix'), '-azvision-asg')]",
+        "name-compliant-vision-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azvision-pe')]",
+        "name-compliant-vision-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-azvision-asg')]",
         "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
         "visionIdentity": {
             "type": "SystemAssigned"

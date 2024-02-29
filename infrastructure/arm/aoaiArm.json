@@ -553,6 +553,7 @@
     },
     "variables": {
         "templateUris": {
+            "baseUri": "[uri(deployment().properties.templateLink.uri, 'aoaiArm.json')]",
             "managedIdentityUri": "[uri(deployment().properties.templateLink.uri, 'managedIdentity.json')]",
             "customDataPlaneRbacUri": "[uri(deployment().properties.templateLink.uri, 'customDataPlaneRbac.json')]",
             "azMonTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azMon.json')]",
@@ -575,86 +576,51 @@
             "azureApimTemplateUri": "[uri(deployment().properties.templateLink.uri, 'apimPublic.json')]",
             "aiSampleAppTemplateUri": "[uri(deployment().properties.templateLink.uri, 'aiSampleApp.json')]"
         },
-        "deploymentSuffix": "[concat('-', deployment().location, guid(parameters('prefix')))]",
+        "deploymentSuffix": "[concat('-', guid(parameters('prefix')))]",
         "deploymentNames": {
-            "managedIdentityDeploymentName": "[take(concat(parameters('prefix'), '-mi', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "customDataPlaneRbacDeploymentName": "[take(concat(parameters('prefix'), '-data-plane-rbac', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azMonDeploymentName": "[take(concat(parameters('prefix'), '-azmon', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "keyVaultDeploymentName": "[take(concat(parameters('prefix'), '-kv', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "storageDeploymentName": "[take(concat(parameters('prefix'), '-sa', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-aoai', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureOpenAiEmbeddingDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "aiMultiRegionDeploymentName": "[take(concat(parameters('prefix'), '-secondary-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "managedIdentityDeploymentName": "[take(concat(parameters('prefix'), '-mi-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "customDataPlaneRbacDeploymentName": "[take(concat(parameters('prefix'), '-data-plane-rbac-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azMonDeploymentName": "[take(concat(parameters('prefix'), '-azmon-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "keyVaultDeploymentName": "[take(concat(parameters('prefix'), '-kv-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "storageDeploymentName": "[take(concat(parameters('prefix'), '-sa-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azureOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-aoai-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azureOpenAiEmbeddingDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "rgKeyVersionDeploymentName": "[take(concat(parameters('prefix'), '-key', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "rgAzureAiObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-objectId', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "rgAzureAiEmbeddingObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-objectId', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "rgAzureOpenAiObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-objectId', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "rgAzureAiSearchObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-search-objectId', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "rgAzureDocumentIntelligenceObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-doc-objectId', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "rgAzureApimObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-apim-objectId', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "rgAzureWebAppObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-webapp-objectId', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azOpenAiRbacForKvDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-kv', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azOpenAiRbacForKvSecretDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-kvsecret', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azOpenAiEmbeddingRbacForKvSecretDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-for-kvsecret', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azOpenAiRbacForSearchIndexDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-searchIndex', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azOpenAiEmbeddingRbacForSearchIndexDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-searchIndex', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azOpenAiRbacForSearchServiceDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-searchService', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azOpenAiEmbeddingRbacForSearchServiceDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-searchService', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "rgAzureAiObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "rgAzureAiEmbeddingObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "rgAzureOpenAiObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "rgAzureAiSearchObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-search-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "rgAzureDocumentIntelligenceObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-doc-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "rgAzureApimObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-apim-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "rgAzureWebAppObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-webapp-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azOpenAiRbacForKvDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-kv-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azOpenAiRbacForKvSecretDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-kvsecret-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azOpenAiEmbeddingRbacForKvSecretDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-for-kvsecret-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azOpenAiRbacForSearchIndexDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-searchIndex-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azOpenAiEmbeddingRbacForSearchIndexDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-searchIndex-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azOpenAiRbacForSearchServiceDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-searchService-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azOpenAiEmbeddingRbacForSearchServiceDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-searchService-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "azAiSearchRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-search-rbac-for-aoai', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azSampleAppRbacForSearchContributorDeploymentName": "[take(concat(parameters('prefix'), '-sampleapp-rbac-for-searchContributor', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azOpenAiRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-blobContributor', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azOpenAiEmbeddingRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-blobContributor', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azAiSearchRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-search-rbac-for-blobContributor', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azAiDocumentIntelligenceRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-doc-rbac-for-blobContributor', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azApimRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-apim-rbac-for-aoai', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azSampleAppRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-sampleapp-rbac-for-aoai', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azSampleAppRbacForSearchIndexDeploymentName": "[take(concat(parameters('prefix'), '-sampleapp-rbac-for-searchIndex', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureOpenAiFinalDeploymentName": "[take(concat(parameters('prefix'), '-aoaicmk', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureOpenAiModelDeploymentName": "[take(concat(parameters('prefix'), '-aoaiModel', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureOpenAiOnYourDataEmbeddingDeploymentName": "[take(concat(parameters('prefix'), '-aoai-On-Your-Data-Embedding', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureOpenAiOnYourDataGpt4DeploymentName": "[take(concat(parameters('prefix'), '-aoai-On-Your-Data-Gpt4', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureOpenAiEmbeddingModelDeploymentName": "[take(concat(parameters('prefix'), '-aoai-Embedding-Model', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureOpenAIContentFilterDeploymentName": "[take(concat(parameters('prefix'), '-aoaiContentFilter', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureAiSearchDeploymentName": "[take(concat(parameters('prefix'), '-aaisearch', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureComputerVisionDeploymentName": "[take(concat(parameters('prefix'), '-aicomputervision', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureDocumentIntelligenceDeploymentName": "[take(concat(parameters('prefix'), '-aidocumentintelligence', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "apimDeploymentName": "[take(concat(parameters('prefix'), '-apim', parameters('apimLocation'), variables('deploymentSuffix')), 64)]",
-            "aiSampleAppDeploymentName": "[take(concat(parameters('prefix'), '-aiSampleApp', parameters('location'), variables('deploymentSuffix')), 64)]"
-        },
-        "multiRegionDeploymentNames": {
-            "keyVaultDeploymentName": "[take(concat(parameters('prefix'), '-kv', variables('deploymentSuffix')), 64)]",
-            "storageDeploymentName": "[take(concat(parameters('prefix'), '-sa', variables('deploymentSuffix')), 64)]",
-            "azureOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-aoai', variables('deploymentSuffix')), 64)]",
-            "azureOpenAiEmbeddingDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch', variables('deploymentSuffix')), 64)]",
-            "rgKeyVersionDeploymentName": "[take(concat(parameters('prefix'), '-key', variables('deploymentSuffix')), 64)]",
-            "rgAzureAiObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-objectId', variables('deploymentSuffix')), 64)]",
-            "rgAzureAiEmbeddingObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-objectId', variables('deploymentSuffix')), 64)]",
-            "rgAzureOpenAiObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-objectId', variables('deploymentSuffix')), 64)]",
-            "rgAzureAiSearchObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-search-objectId', variables('deploymentSuffix')), 64)]",
-            "rgAzureDocumentIntelligenceObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-doc-objectId', variables('deploymentSuffix')), 64)]",
-            "rgAzureApimObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-apim-objectId', variables('deploymentSuffix')), 64)]",
-            "rgAzureWebAppObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-webapp-objectId', variables('deploymentSuffix')), 64)]",
-            "azOpenAiRbacForKvDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-kv', variables('deploymentSuffix')), 64)]",
-            "azOpenAiRbacForKvSecretDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-kvsecret', variables('deploymentSuffix')), 64)]",
-            "azOpenAiEmbeddingRbacForKvSecretDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-for-kvsecret', variables('deploymentSuffix')), 64)]",
-            "azOpenAiRbacForSearchIndexDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-searchIndex', variables('deploymentSuffix')), 64)]",
-            "azOpenAiEmbeddingRbacForSearchIndexDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-searchIndex', variables('deploymentSuffix')), 64)]",
-            "azOpenAiRbacForSearchServiceDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-searchService', variables('deploymentSuffix')), 64)]",
-            "azOpenAiEmbeddingRbacForSearchServiceDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-searchService', variables('deploymentSuffix')), 64)]",
-            "azAiSearchRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-search-rbac-for-aoai', variables('deploymentSuffix')), 64)]",
-            "azOpenAiRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-blobContributor', variables('deploymentSuffix')), 64)]",
-            "azOpenAiEmbeddingRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-blobContributor', variables('deploymentSuffix')), 64)]",
-            "azAiSearchRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-search-rbac-for-blobContributor',  variables('deploymentSuffix')), 64)]",
-            "azAiDocumentIntelligenceRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-doc-rbac-for-blobContributor', variables('deploymentSuffix')), 64)]",
-            "azApimRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-apim-rbac-for-aoai', variables('deploymentSuffix')), 64)]",
-            "azureOpenAiFinalDeploymentName": "[take(concat(parameters('prefix'), '-aoaicmk',  variables('deploymentSuffix')), 64)]",
-            "azureOpenAiModelDeploymentName": "[take(concat(parameters('prefix'), '-aoaiModel', variables('deploymentSuffix')), 64)]",
-            "azureOpenAiOnYourDataEmbeddingDeploymentName": "[take(concat(parameters('prefix'), '-aoai-On-Your-Data-Embedding', variables('deploymentSuffix')), 64)]",
-            "azureOpenAiOnYourDataGpt4DeploymentName": "[take(concat(parameters('prefix'), '-aoai-On-Your-Data-Gpt4', variables('deploymentSuffix')), 64)]",
-            "azureOpenAiEmbeddingModelDeploymentName": "[take(concat(parameters('prefix'), '-aoai-Embedding-Model', variables('deploymentSuffix')), 64)]",
-            "azureOpenAIContentFilterDeploymentName": "[take(concat(parameters('prefix'), '-aoaiContentFilter', variables('deploymentSuffix')), 64)]",
-            "azureAiSearchDeploymentName": "[take(concat(parameters('prefix'), '-aaisearch', variables('deploymentSuffix')), 64)]",
-            "azureComputerVisionDeploymentName": "[take(concat(parameters('prefix'), '-aicomputervision', variables('deploymentSuffix')), 64)]",
-            "azureDocumentIntelligenceDeploymentName": "[take(concat(parameters('prefix'), '-aidocumentintelligence', variables('deploymentSuffix')), 64)]"
+            "azSampleAppRbacForSearchContributorDeploymentName": "[take(concat(parameters('prefix'), '-sampleapp-rbac-for-searchContributor-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azOpenAiRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-aoai-rbac-for-blobContributor-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azOpenAiEmbeddingRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-rbac-for-blobContributor-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azAiSearchRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-search-rbac-for-blobContributor-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azAiDocumentIntelligenceRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-doc-rbac-for-blobContributor-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azApimRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-apim-rbac-for-aoai-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azSampleAppRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-sampleapp-rbac-for-aoai-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azSampleAppRbacForSearchIndexDeploymentName": "[take(concat(parameters('prefix'), '-sampleapp-rbac-for-searchIndex-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azureOpenAiFinalDeploymentName": "[take(concat(parameters('prefix'), '-aoaicmk-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azureOpenAiModelDeploymentName": "[take(concat(parameters('prefix'), '-aoaiModel-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azureOpenAiOnYourDataEmbeddingDeploymentName": "[take(concat(parameters('prefix'), '-aoai-On-Your-Data-Embedding-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azureOpenAiOnYourDataGpt4DeploymentName": "[take(concat(parameters('prefix'), '-aoai-On-Your-Data-Gpt4-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azureOpenAiEmbeddingModelDeploymentName": "[take(concat(parameters('prefix'), '-aoai-Embedding-Model-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azureOpenAIContentFilterDeploymentName": "[take(concat(parameters('prefix'), '-aoaiContentFilter-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azureAiSearchDeploymentName": "[take(concat(parameters('prefix'), '-aaisearch-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azureComputerVisionDeploymentName": "[take(concat(parameters('prefix'), '-aicomputervision-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azureDocumentIntelligenceDeploymentName": "[take(concat(parameters('prefix'), '-aidocumentintelligence-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "apimDeploymentName": "[take(concat(parameters('prefix'), '-apim-', parameters('apimLocation'), variables('deploymentSuffix')), 64)]",
+            "aiSampleAppDeploymentName": "[take(concat(parameters('prefix'), '-aiSampleApp-', parameters('location'), variables('deploymentSuffix')), 64)]"
         },
         "sampleAppRepoUrl" : "https://github.com/microsoft/sample-app-aoai-chatGPT.git",
         "onYourDataSampleVariables": {
@@ -683,6 +649,249 @@
         "armLocationValidation": "[if(empty(parameters('aiMultiLocation')), parameters('location'), parameters('aiMultiLocation'))]"
     },
     "resources": [
+        // The fruit that ate itself
+        {
+            "condition": "[not(empty(parameters('aiMultiLocation')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').aiMultiRegionDeploymentName]",
+            "location": "[variables('armLocationValidation')]",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').baseUri]"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('aiMultiLocation')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "userIdentity": {
+                        "value": "[parameters('userIdentity')]"
+                    },
+                    "kvNwLocation": {
+                        "value": "[parameters('kvNwLocation')]"
+                    },
+                    "kvSubnetId": {
+                        "value": "[parameters('kvSubnetId')]"
+                    },
+                    "stCmkKeyName": {
+                        "value": "[parameters('stCmkKeyName')]"
+                    },
+                    "aiCmkKeyName": {
+                        "value": "[parameters('aiCmkKeyName')]"
+                    },
+                    "aiOrchCmkKeyName": {
+                        "value": "[parameters('aiOrchCmkKeyName')]"
+                    },
+                    "kvKeyExpiration": {
+                        "value": "[parameters('kvKeyExpiration')]"
+                    },
+                    "kvDisableNetworkAccess": {
+                        "value": "[parameters('kvDisableNetworkAccess')]"
+                    },
+                    "kvRbacAuthZ": {
+                        "value": "[parameters('kvRbacAuthZ')]"
+                    },
+                    "kvPurgeProtection": {
+                        "value": "[parameters('kvPurgeProtection')]"
+                    },
+                    "kvSoftDelete": {
+                        "value": "[parameters('kvSoftDelete')]"
+                    },
+                    "kvSoftDeleteRetention": {
+                        "value": "[parameters('kvSoftDeleteRetention')]"
+                    },
+                    "kvExpiryTime": {
+                        "value": "[parameters('kvExpiryTime')]"
+                    },
+                    "kvTimeAfterCreate": {
+                        "value": "[parameters('kvTimeAfterCreate')]"
+                    },
+                    "kvTimeBeforeExpiry": {
+                        "value": "[parameters('kvTimeBeforeExpiry')]"
+                    },
+                    "stHttpsOnly": {
+                        "value": "[parameters('stHttpsOnly')]"
+                    },
+                    "stSubnetId": {
+                        "value": "[parameters('stSubnetId')]"
+                    },
+                    "stDisableNetworkAccess": {
+                        "value": "[parameters('stDisableNetworkAccess')]"
+                    },
+                    "stNwLocation": {
+                        "value": "[parameters('stNwLocation')]"
+                    },
+                    "stRbacAuthz": {
+                        "value": "[parameters('stRbacAuthz')]"
+                    },
+                    "aiRbacAuthz": {
+                        "value": "[parameters('aiRbacAuthz')]"
+                    },
+                    "aiSubnetId": {
+                        "value": "[parameters('aiSubnetId')]"
+                    },
+                    "aiDisableNetworkAccess": {
+                        "value": "[parameters('aiDisableNetworkAccess')]"
+                    },
+                    "aiNwLocation": {
+                        "value": "[parameters('aiNwLocation')]"
+                    },
+                    "aiSystemIdentity": {
+                        "value": "[parameters('aiSystemIdentity')]"
+                    },
+                    "aiRestrictOutboundNetworkAccess": {
+                        "value": "[parameters('aiRestrictOutboundNetworkAccess')]"
+                    },
+                    "aiModelDeployment": {
+                        "value": "[parameters('aiModelDeployment')]"
+                    },
+                    "aiModelDeploymentName": {
+                        "value": "[parameters('aiModelDeploymentName')]"
+                    },
+                    "aiModelVersion": {
+                        "value": "[parameters('aiModelVersion')]"
+                    },
+                    "aiContentFilter": {
+                        "value": "[parameters('aiContentFilter')]"
+                    },
+                    "aiContentFilterName": {
+                        "value": "[parameters('aiContentFilterName')]"
+                    },
+                    "aiContentHateFilterPrompt": {
+                        "value": "[parameters('aiContentHateFilterPrompt')]"
+                    },
+                    "aiContentSexualFilterPrompt": {
+                        "value": "[parameters('aiContentSexualFilterPrompt')]"
+                    },
+                    "aiContentViolenceFilterPrompt": {
+                        "value": "[parameters('aiContentViolenceFilterPrompt')]"
+                    },
+                    "aiContentHarmFilterPrompt": {
+                        "value": "[parameters('aiContentHarmFilterPrompt')]"
+                    },
+                    "aiContentHateFilterCompletion": {
+                        "value": "[parameters('aiContentHateFilterCompletion')]"
+                    },
+                    "aiContentHarmFilterCompletion": {
+                        "value": "[parameters('aiContentHarmFilterCompletion')]"
+                    },
+                    "aiContentSexualFilterCompletion": {
+                        "value": "[parameters('aiContentSexualFilterCompletion')]"
+                    },
+                    "aiContentViolenceFilterCompletion": {
+                        "value": "[parameters('aiContentViolenceFilterCompletion')]"
+                    },
+                    "aiProtectedMaterialText": {
+                        "value": "[parameters('aiProtectedMaterialText')]"
+                    },
+                    "aiProtectedMaterialCode": {
+                        "value": "[parameters('aiProtectedMaterialCode')]"
+                    },
+                    "aiProtectedJailbreak": {
+                        "value": "[parameters('aiProtectedJailbreak')]"
+                    },
+                    "aiSearchSubnetId": {
+                        "value": "[parameters('aiSearchSubnetId')]"
+                    },
+                    "aiSearchSystemIdentity": {
+                        "value": "[parameters('aiSearchSystemIdentity')]"
+                    },
+                    "aiSearchNwLocation": {
+                        "value": "[parameters('aiSearchNwLocation')]"
+                    },
+                    "aiSearchDisableNetworkAccess": {
+                        "value": "[parameters('aiSearchDisableNetworkAccess')]"
+                    },
+                    "aiSearchRbacAuthz": {
+                        "value": "[parameters('aiSearchRbacAuthz')]"
+                    },
+                    "aiSearchEncryption": {
+                        "value": "[parameters('aiSearchEncryption')]"
+                    },
+                    "aiSearchReplicas": {
+                        "value": "[parameters('aiSearchReplicas')]"
+                    },
+                    "aiSearchPartitions": {
+                        "value": "[parameters('aiSearchPartitions')]"
+                    },
+                    "aiUseCaseDeployment": {
+                        "value": "[parameters('aiUseCaseDeployment')]"
+                    },
+                    "kvMonCreation": {
+                        "value": "[parameters('kvMonCreation')]"
+                    },
+                    "stMonCreation": {
+                        "value": "[parameters('stMonCreation')]"
+                    },
+                    "aiMonCreation": {
+                        "value": "[parameters('aiMonCreation')]"
+                    },
+                    "aiSearchMonCreation": {
+                        "value": "[parameters('aiSearchMonCreation')]"
+                    },
+                    "visionRbacAuthz": {
+                        "value": "[parameters('visionRbacAuthz')]"
+                    },
+                    "visionSubnetId": {
+                        "value": "[parameters('visionSubnetId')]"
+                    },
+                    "visionDisableNetworkAccess": {
+                        "value": "[parameters('visionDisableNetworkAccess')]"
+                    },
+                    "visionNwLocation": {
+                        "value": "[parameters('visionNwLocation')]"
+                    },
+                    "visionSystemIdentity": {
+                        "value": "[parameters('visionSystemIdentity')]"
+                    },
+                    "visionRestrictOutboundNetworkAccess": {
+                        "value": "[parameters('visionRestrictOutboundNetworkAccess')]"
+                    },
+                    "visionMonCreation": {
+                        "value": "[parameters('visionMonCreation')]"
+                    },
+                    "docDisableNetworkAccess": {
+                        "value": "[parameters('docDisableNetworkAccess')]"
+                    },
+                    "docRestrictOutboundNetworkAccess": {
+                        "value": "[parameters('docRestrictOutboundNetworkAccess')]"
+                    },
+                    "docNwLocation": {
+                        "value": "[parameters('docNwLocation')]"
+                    },
+                    "docRbacAuthz": {
+                        "value": "[parameters('docRbacAuthz')]"
+                    },
+                    "docSubnetId": {
+                        "value": "[parameters('docSubnetId')]"
+                    },
+                    "docSystemIdentity": {
+                        "value": "[parameters('docSystemIdentity')]"
+                    },
+                    "docMonCreation": {
+                        "value": "[parameters('docMonCreation')]"
+                    },
+                    "aiUseCaseSelection": {
+                        "value": "[parameters('aiUseCaseSelection')]"
+                    },
+                    "aiAddEmbeddingInstance": {
+                        "value": "[parameters('aiAddEmbeddingInstance')]"
+                    },
+                    "aiDedicatedSubnetId": {
+                        "value": "[parameters('aiDedicatedSubnetId')]"
+                    },
+                    "aiDedicatedSubscriptionId": {
+                        "value": "[parameters('aiDedicatedSubscriptionId')]"
+                    }
+                }
+            }
+        },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
@@ -936,72 +1145,8 @@
                     "rgName": {
                         "value": "[variables('resourceNames').rgName]"
                     },
-                    "rgLocation": {
-                        "value": "[parameters('location')]"
-                    },
                     "location": {
                         "value": "[parameters('location')]"
-                    },
-                    "userIdentity": {
-                        "value": "[parameters('userIdentity')]"
-                    },
-                    "aiRbacAuthz": {
-                        "value": "[parameters('aiRbacAuthz')]"
-                    },
-                    "aiSubnetId": {
-                        "value": "[parameters('aiSubnetId')]"
-                    },
-                    "prefix": {
-                        "value": "[parameters('prefix')]"
-                    },
-                    "aiNwLocation": {
-                        "value": "[parameters('aiNwLocation')]"
-                    },
-                    "aiDisableNetworkAccess": {
-                        "value": "[parameters('aiDisableNetworkAccess')]"
-                    },
-                    "aiSystemIdentity": {
-                        "value": "[parameters('aiSystemIdentity')]"
-                    },
-                    "aiRestrictOutboundNetworkAccess": {
-                        "value": "[parameters('aiRestrictOutboundNetworkAccess')]"
-                    },
-                    "aiMonCreation": {
-                        "value": "[parameters('aiMonCreation')]"
-                    },
-                    "azMonWorkspaceName": {
-                        "value": "[variables('resourceNames').azMonWorkspaceName]"
-                    }
-                }
-            }
-        },
-        // Deploying secondary Azure OpenAI into secondary region
-        {
-            "condition": "[not(empty(parameters('aiMultiLocation')))]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2022-09-01",
-            "name": "[variables('multiRegionDeploymentNames').azureOpenAiDeploymentName]",
-            "location": "[variables('armLocationValidation')]",
-            "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "contentVersion": "1.0.0.0",
-                    "uri": "[variables('templateUris').azureOpenAiTemplateUri]"
-                },
-                "parameters": {
-                    "rgName": {
-                        "value": "[variables('resourceNames').rgName]"
-                    },
-                    "rgLocation": {
-                        "value": "[parameters('location')]"
-                    },
-                    "location": {
-                        "value": "[parameters('aiMultiLocation')]"
                     },
                     "userIdentity": {
                         "value": "[parameters('userIdentity')]"
