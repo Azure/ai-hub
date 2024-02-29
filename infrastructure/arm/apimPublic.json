@@ -19,11 +19,11 @@
         },
         "aoaiEndpoint1": {
             "type": "string",
-            "defaultValue": "https://swi-switzerlandnorth-azopenai.openai.azure.com/"
+            "defaultValue": ""
         },
         "aoaiEndpoint2": {
             "type": "string",
-            "defaultValue": "https://knmove.openai.azure.com/"
+            "defaultValue": ""
         },
         "location": {
             "type": "string",
@@ -40,10 +40,14 @@
                 "No"
             ],
             "defaultValue": "No"
+        },
+        "apimLocation": {
+            "type": "string",
+            "defaultValue": ""
         }
     },
     "variables": {
-        "name-compliant-azureApim": "[concat(parameters('prefix'), '-', parameters('location'), '-apim')]",
+        "name-compliant-azureApim": "[concat(parameters('prefix'), '-', parameters('apimLocation'), '-apim')]",
         "azure-openai-service-api": "azure-openai-service-api",
         "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
         "policy": "policy"
@@ -75,7 +79,7 @@
                             "type": "Microsoft.ApiManagement/service",
                             "apiVersion": "2023-03-01-preview",
                             "name": "[variables('name-compliant-azureApim')]",
-                            "location": "[parameters('location')]",
+                            "location": "[parameters('apimLocation')]",
                             "dependsOn": [
                             ],
                             "sku": {
@@ -110,7 +114,7 @@
                             "type": "Microsoft.ApiManagement/service/providers/diagnosticSettings",
                             "apiVersion": "2021-05-01-preview",
                             "name": "[concat(variables('name-compliant-azureApim'), '/', 'Microsoft.Insights/diag')]",
-                            "location": "[parameters('location')]",
+                            "location": "[parameters('apimLocation')]",
                             "dependsOn": [
                                 "[concat('Microsoft.ApiManagement/service/', variables('name-compliant-azureApim'))]"
                             ],

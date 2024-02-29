@@ -529,6 +529,10 @@
             "type": "string",
             "defaultValue": ""
         },
+        "apimLocation": {
+            "type": "string",
+            "defaultValue": ""
+        },
         "aiSampleAppDeployment": {
             "type": "string",
             "defaultValue": "No",
@@ -1309,7 +1313,7 @@
                         "value": "[parameters('prefix')]"
                     },
                     "location": {
-                        "value": "[parameters('location')]"
+                        "value": "[parameters('apimLocation')]"
                     }
                 }
             }
@@ -2123,6 +2127,9 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
+                    },
+                    "apimLocation": {
+                        "value": "[parameters('apimLocation')]"
                     },
                     "prefix": {
                         "value": "[parameters('prefix')]"
