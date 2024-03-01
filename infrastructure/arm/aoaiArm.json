@@ -549,6 +549,14 @@
         "aiAppSecret": {
             "type": "securestring",
             "defaultValue": ""
+        },
+        "createDataPlaneRbacDef": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
         }
     },
     "variables": {
@@ -649,7 +657,7 @@
         "armLocationValidation": "[if(empty(parameters('aiMultiLocation')), parameters('location'), parameters('aiMultiLocation'))]"
     },
     "resources": [
-        // The fruit that ate itself
+        // The fruit that ate itself - Deploying this ARM template to create secondary region
         {
             "condition": "[not(empty(parameters('aiMultiLocation')))]",
             "type": "Microsoft.Resources/deployments",
@@ -888,10 +896,14 @@
                     },
                     "aiDedicatedSubscriptionId": {
                         "value": "[parameters('aiDedicatedSubscriptionId')]"
+                    },
+                    "createDataPlaneRbacDef": {
+                        "value": "[parameters('createDataPlaneRbacDef')]"
                     }
                 }
             }
         },
+        // Creating User Assigned MI for Storage Account
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
@@ -919,6 +931,7 @@
         },
         // Creating required custom RoleDefinitions with Data Plane permissions for Document Intelligence and Computer Vision
         {
+            "condition": "[equals(parameters('createDataPlaneRbacDef'), 'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').customDataPlaneRbacDeploymentName]",
