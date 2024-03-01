@@ -77,8 +77,8 @@
     },
     "variables": {
         "name-compliant-azureDocumentIntelligence": "[concat(parameters('prefix'), '-', parameters('location'), '-azdocintel')]",
-        "name-compliant-doc-pe": "[concat(parameters('prefix'), '-azdocintel-pe')]",
-        "name-compliant-doc-asg": "[concat(parameters('prefix'), '-azdocintel-asg')]",
+        "name-compliant-doc-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azdocintel-pe')]",
+        "name-compliant-doc-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-azdocintel-asg')]",
         "name-compliant-storage": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(deployment().name)), 23))]",
         "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
         "visionIdentity": {
