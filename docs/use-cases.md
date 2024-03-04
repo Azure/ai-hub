@@ -215,7 +215,7 @@ And checking the "Rag-rg-swedencentral" Resource Group, you will see the followi
 
 <img src="./MultiRegion5.png" alt="Multi Region Deployment" width="800" height="400">
 
-4. Select the "POSTS - Creates a completion for the chat message" API operation and provide the following input parameters to test the API:
+4. Select the "POST - Creates a completion for the chat message" API operation and provide the following input parameters to test the API:
 - API-version: 2023-12-01-preview
 - Deployment-id: The deployment *name* of the GPT4 you created during the deployment
 
