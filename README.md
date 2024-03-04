@@ -36,9 +36,10 @@ So why wait? Start your journey with Generative AI on Azure today. Dive into the
 
 You can deploy the following reference implementations to your Azure subscription.
 
-| Reference Implementation | Description | Deploy | Instructions
-|:----------------------|:------------|--------|--------------|
-| Enterprise Azure OpenAI Hub | Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into your Azure regions and subscriptions |[![Deploy To Microsoft Cloud](./docs/deploytomicrosoftcloud.svg)](https://aka.ms/DeploySecureGenAI) | [User Guide](./docs/fsiAOAI.md)
+| Reference Implementation | Description | Deploy | Instructions  
+|:----------|:-------------------------|:------------|:-------|  
+| Enterprise Azure OpenAI Hub | Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into your Azure regions and subscriptions | <img src="./docs/media/deploytoazure.svg" alt="Deploy to Azure" width="100" height="60"> | [User Guide](./docs/fsiAOAI.md) |  
+
 
 <a id="letter-a"></a>![The letter A](./docs/a.png) [Architecture and design](./docs/architecture.md)
 
