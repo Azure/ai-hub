@@ -208,6 +208,16 @@ When creating a new App Registration, this can be done directly in the deploymen
 
 ![Use Cases and Additional Services](./AppSetup2.png)
 
+Once you click register, a new window will open where you can copy the secret value, and provide it to the UX.
+
+Create the new secret, and copy the value of the secret to your clip board. Once you close the window (upper right corner), you can paste the value into the UX in the password field.
+
+![Use Cases and Additional Services](./AppSetup3.png)
+
+Paste the secret value and continue with the configuration for the rest of the services required for 'On Your Data' use case.
+
+![Use Cases and Additional Services](./AppSetup4.png)
+
 ### Review + create
 
 *Review + Create* page will validate your permission and configuration before you can click deploy. Once it has been validated successfully, you can click *Create*
