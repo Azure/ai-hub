@@ -11,11 +11,13 @@ The Enterprise Azure OpenAI Hub is an advanced, scalable platform designed to ha
   - [Azure roadmap alignment](#azure-roadmap-alignment)
 - [Design areas](#design-areas)
   - [Scalability and reliability](#scalability-and-reliability)
+  - [Compute and orchestration](#compute-and-orchestration)
   - [Network security and connectivity](#network-security-and-connectivity)
   - [Security, Governance, and Compliance](#security-governance-and-compliance)
   - [Identity and Access Management](#identity-and-access-management)
   - [Data Protection](#data-protection)
   - [Logging and Threat Detection](#logging-and-threat-detection)
+- [Next steps](#next-steps)
 ---
 
 ## Overview
@@ -101,4 +103,4 @@ In the most simplistic form, users - assuming Azure RBAC has been granted to the
 
 ## Next Steps
 
-Learn more about the [use cases](./use-cases.md) that are available for the "Enterprise Azure OpenAI Hub" reference implementation.
+Learn more about the [use cases](./use-cases.md) that are available for the **Enterprise Azure OpenAI Hub** reference implementation.

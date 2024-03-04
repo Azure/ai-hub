@@ -1,4 +1,4 @@
-# Use Cases for Enterprise Azure OpenAI Hub
+# Use Cases enabled by Enterprise Azure OpenAI Hub
 
 This article provides instructions for how to leverage and validate the initial use case you selected for the Enterprise Azure OpenAI Hub. The use case you selected will determine the deployment and validation steps you need to follow.
 
