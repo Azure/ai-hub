@@ -11,6 +11,7 @@ The Enterprise Azure OpenAI Hub is an advanced, scalable platform designed to ha
   - [Azure roadmap alignment](#azure-roadmap-alignment)
 - [Design areas](#design-areas)
   - [Scalability and reliability](#scalability-and-reliability)
+  - [Compute and orchestration](#compute-and-orchestration)
   - [Network security and connectivity](#network-security-and-connectivity)
   - [Security, Governance, and Compliance](#security-governance-and-compliance)
   - [Identity and Access Management](#identity-and-access-management)
