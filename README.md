@@ -51,19 +51,19 @@ Customers in regulated industries must define and enforce required controls in o
 
 ### Prescriptive use cases
 
+Leverage and validate the initial use case you selected for the Enterprise Azure OpenAI Hub. The use case you selected will determine the deployment and validation steps you need to follow. We will continue to iterate and add more use cases to the library as we continue to evolve and refine commun customer scenarios, aligned with the development of the Azure AI platform.
+
+For a detailed walkthrough, you can go through the validation and realization steps [in this article](./docs/use-cases.md).
+
 #### Image and Video recognition
 
-#### Content creation and design
+GPT4 Vision together with Azure AI Vision services can be used to recognize and understand the content of images and videos. This use case is designed to provide a comprehensive understanding of how to leverage the power of Azure AI Vision services to solve complex problems and develop cutting-edge AI solutions.
 
-#### Accelerated automation
+#### 'On Your Data'
 
-#### Personalized marketing
+Azure native RAG Architecture leveraging Azure AI search for vectorization and using Azure OpenAI for generating embeddings and decoding the embeddings to generate text. This use case is designed to provide a comprehensive understanding of how to leverage the power of Azure AI services to solve complex problems and develop cutting-edge AI solutions on your own Enterprise data.
 
-#### Language translation and natural language processing
-
-#### Chatbots and virtual agents
-
-#### [ChatGPT on your Enterprise data](./docs/rag.md)
+[Read the following guidance](./docs/rag.md) for the architecture setup and how to use.
 
 ## Contributing
 
