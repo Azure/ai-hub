@@ -23,7 +23,7 @@ The reference implementation has been developed, validated, and proven with seve
 
 | Reference Implementation | Description | Deploy | Instructions  
 |:----------|:-------------------------|:------------|:-------|  
-| Enterprise Azure OpenAI Hub | Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into your Azure regions and subscriptions | <img src="./docs/media/deploytoazure.svg" alt="Deploy to Azure" width="100" height="60"> | [User Guide](./docs/fsiAOAI.md) |  
+| Enterprise Azure OpenAI Hub | Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into your Azure regions and subscriptions | <img src="./media/deploytoazure.svg" alt="Deploy to Azure" width="100" height="60"> | [User Guide](./docs/fsiAOAI.md) |  
 
 ## What is Enterprise Azure OpenAI Hub?
 
