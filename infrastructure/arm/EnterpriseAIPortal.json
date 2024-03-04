@@ -71,7 +71,7 @@
                                     },
                                     {
                                         "label": "Deploy to multiple Azure regions",
-                                        "description": "Deploy Enterprise Azure OpenAI Hub across multiple Azure regions, using APIM for load balancing and distribution of traffic.",
+                                        "description": "Deploy Enterprise Azure OpenAI Hub across multiple Azure regions, using APIM for load balancing with retry and error handling.",
                                         "value": "Multiple"
                                     }
                                 ],
@@ -112,7 +112,7 @@
                             "visible": "[equals(steps('basics').aiDeployOption, 'Production')]",
                             "options": {
                                 "icon": "warning",
-                                "text": "Currently Enterprise Azure OpenAI Hub can only be deployed to a single Azure region supporting Private Endpoints. Support for multi-region setup with Private Endpoints will be enabled soon."
+                                "text": "Currently Enterprise Azure OpenAI Hub can only be deployed to a single Azure region supporting Private Endpoints. Support for multi-region setup with Private Endpoints will be enabled soon. To deploy to multiple Azure regions using Public Endpoints, select 'Proof of Concept' option in the drop down."
                             }
                         },
                         {
@@ -1634,7 +1634,7 @@
                             "constraints": {
                                 "allowedValues": [
                                     {
-                                        "label": "Yes, and create new App Registration",
+                                        "label": "Yes, with App Registration",
                                         "value": "YesWithAppRegistration"
                                     },
                                     {
