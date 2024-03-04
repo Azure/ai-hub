@@ -38,7 +38,7 @@ You can deploy the following reference implementations to your Azure subscriptio
 
 | Reference Implementation | Description | Deploy | Instructions  
 |:----------|:-------------------------|:------------|:-------|  
-| Enterprise Azure OpenAI Hub | Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into your Azure regions and subscriptions | <img src="./docs/media/deploytoazure.svg" alt="Deploy to Azure" width="100" height="60"> | [User Guide](./docs/fsiAOAI.md) |  
+| Enterprise Azure OpenAI Hub | Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into your Azure regions and subscriptions | <img src="./docs/media/deploytoazure.svg" alt="Deploy to Azure" width="100" height="60"> | [User Guide](./docs/EnterpriseAzureOpenAIHub.md) |  
 
 
 <a id="letter-a"></a>![The letter A](./docs/a.png) [Architecture and design](./docs/architecture.md)
