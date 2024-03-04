@@ -99,23 +99,39 @@ This section will explain the deployment experience and the options provided for
 
 Once the pre-requisites have been completed, you can deploy the reference implementation using this link [*Deploy to Microsoft Cloud*](https://aka.ms/DeploySecureGenAI), it will start the deployment experience in the Azure portal into your default Azure tenant. In case you have access to multiple tenants, ensure you are selecting the right one.
 
-### 1 - Deployment location
+### 1 - Architecture Setup
 
-On the first page, select the *Region*. This region will primarily be used to place the deployment resources in an Azure region, but also used as the initial region for the resources that are created, unless you explicitly select a different region for the Private Endpoints (covered later). Provide a prefix for the naming convention that will be used for the resources.
+The first tab will allow you to specify the intent of the deployment, and the overall architecture setup. You can select the deployment intent as "Production" or "Proof of Concept", and subject to the selection, the deployment experience will be tailored to the respective intent.
+
+The region you select when deploying to "Production" will be used for the deployment and the Azure services that will be created. If you want to deploy using Private Endpoints for the Azure services, select the region where you know there's capacity and availability for Azure OpenAI, even if that is a region different then where your Virtual Network is created, as we enable you to select the region for this for each service later.
+Provide a prefix for the naming convention that will be used for the resources.
+
 > Note: the naming convention will primarily consist of 'prefix'-'region'-'resourcetype' where possible.
 
-![Deployment location](./ai-step1.png)
+![Deployment location](./ArchSetup.png)
+
+When selecting "Production" as the intent, provide the prefix for the naming convention and select the target Azure region.
+
+![Deployment Prod](./ArchSetupSingleParam.png)
+
+When selecting "Proof of Concept" as the intent for the deployment, you can optionally select to deploy to a single region, or to multiple regions. When deploying to multiple regions, Azure API Management will be used to facilitate the load balancing, and also provides the retry logic and error handling in case of a failure or unavailability of the Azure Open AI instance in one of the regions. This option requires the Azure services to use Public Endpoints as the APIM service is not available over Private Endpoints in the V2 version currently.
+
+![Deployment intent](./ArchSetupMulti.png)
+
+When selecting this option, you must provide region input for the initial deployment, the secondary deployment, and also select one of the available regions for Azure API Management V2 service.
+
+![Deployment PoC Multi region](./ArchSetupMultiLocationParam.png)
 
 ### 2 - Key Vault Configuration
 
 Configure the Key Vault that will be used to store the keys used by the storage account for encryption at rest, as well as the Azure Open AI service. It is recommended to leave with the default recommendations as it relates to the security and compliance recommendations. If needed, you can opt out of the recommendations, assuming you are aware of the implications.
 
-![Key Vault](./ai-step2.png)
+![Key Vault](./KVSetup1.png
 
 In the networking section when deploying using a Private Endpoint, you must provide the resourceId of an existing subnet in the same region where you are deploying into. 
 If you want to deploy the Azure Open AI workloads into a different region vs where you have your virtual network, select the region for the Private Endpoint (i.e., "Deploy the Private Endpoint for Key Vault into the same region as the Key Vault" option must be set to "No", and the regional parameter will appear in the portal)
 
-![Key Vault](./ai-step2a.png)
+![Key Vault](./KVSetup2.png)
 
 ### 3 - Storage Configuration
 
@@ -123,41 +139,74 @@ This page will create and configure the storage account that will be used in con
 
 Provide a key name, and the resourceId for an existing subnet when deploying with Private Endpoint. Same as with the Key Vault configuration, if you are deploying to a different region vs where the virtual network is created, select a different region for the private endpoint.
 
-![Storage Account](./ai-step3.png)
+![Storage Account](./SASetup1.png)
 
-![Storage Account](./ai-step4.png)
+### 4 - Azure OpenAI Configuration
 
-### 4 - Azure Open AI Configuration
+Configure the Azure OpenAI instance that will be created, by providing a name for the customer-managed key, and the resourceId to the subnet where the Private Endpoint will be deployed. Same as with the Key Vault and Storage Account configuration, if you are deploying to a different region vs where the virtual network is created, select a different region for the private endpoint.
 
-Configure the Azure Open AI instance that will be created, by providing a name for the customer-managed key, and the resourceId to the subnet where the Private Endpoint will be deployed. Same as with the Key Vault and Storage Account configuration, if you are deploying to a different region vs where the virtual network is created, select a different region for the private endpoint.
+![Azure Open AI](./AOAISetup1.png)
 
-![Azure Open AI](./ai-step5.png)
+### 5 - Model Deployment and Content Filtering
 
-![Azure Open AI](./ai-step6.png)
+On this page, you can optionally select to deploy an available model to your Azure OpenAI instance, subject to the available models in the region you have selected. Should there be any capacity constraints with the selected model, the validation API will catch that and inform you before you can submit the deployment.
 
-### 5 - Model Deployment
-
-On this page, you can optionally select to deploy an available model to your Azure Open AI instance, subject to the available models in the region you have selected. Should there be any capacity constraints with the selected model, the validation API will catch that and inform you before you can submit the deployment.
-
-![Model Deployment](./ai-step7.png)
+![Model Deployment](./ModelSetup1.png)
 
 Select the intial model deployment from the drop down list, and provide a name for the deployment.
 
-![Model Deployment](./ai-step8.png)
+![Model Deployment](./ModelSetup2.png)
 
 Additionally, you can configure content filtering and advanced filtering settings, that are running on top of the general filtering settings. This is to ensure that the generated content is compliant with the organization's policies and guidelines.
 
-![Model Deployment](./ai-step9.png)
+![Model Deployment](./ModelSetup3.png)
 
-![Model Deployment](./ai-step10.png)
+![Model Deployment](./ModelSetup4.png)
 
 ### 5 - Use Cases and Additional Services
 
-On this page, you can optionally select your initial use case, and additional services that you may want to deploy alongside the Azure Open AI instance. The list of services will dynamically appear based on the use case you have selected. Each Azure service will provide similar configuration options as the previous pages, and you can configure them as needed in order to meet your security and compliance needs for the overall architecture and setup.
+On this page, you can optionally select your initial use case, and additional services that you may want to deploy alongside the Azure OpenAI instance. The list of services will dynamically appear based on the use case you have selected. Each Azure service will provide similar configuration options as the previous pages, and you can configure them as needed in order to meet your security and compliance needs for the overall architecture and setup.
 
-![Use Cases and Additional Services](./ai-step11.png)
+To learn more about the use cases and additional services that are available for the "Enterprise Azure OpenAI Hub" reference implementation, see the [use cases](./use-cases.md) documentation.
 
-![Use Cases and Additional Services](./ai-step12.png)
+![Use Cases and Additional Services](./UseCaseSetup1.png)
+
+In the drop down, you can currently select between the following use cases:
+
+* Image and Video Recognition
+* 'On Your Data'
+
+Both use cases will provide you with required details for the services that must be configured to enable the use case, and you can configure them as needed in order to meet your security and compliance needs for the overall architecture and setup.
+
+** Image and Video Recognition **
+
+When selecting the Image and Video Recognition use case, you can configure the Azure AI Vision, Azure AI Search, and Azure AI Document Intelligence services, Azure Data Factory, and Azure CosmosDB services, and provide the necessary details for the configuration.
+
+![Use Cases and Additional Services](./UseCaseSetup2.png)
+
+** 'On Your Data' **
+
+When selecting the 'On Your Data' use case, you can configure the Azure AI Search, Azure Document Intelligence, Azure Data Factory, and Azure CosmosDB services, and provide the necessary details for the configuration.
+
+![Use Cases and Additional Services](./UseCaseSetup3.png)
+
+When selecting 'On Your Data' as the use case, you have an option to use a dedicated Azure OpenAI instance for the purpose of orchestrating indexing and content generation based on the data that you have ingested in the storage account, and indexed in Azure AI Search, and generate the embeddings. You can deploy this to a remote subscription (recommended to not compete about quota with the main Azure OpenAI instance), and provide the necessary details for the configuration.
+
+![Use Cases and Additional Services](./UseCaseSetup4.png)
+
+** 'Proof of Concept' and 'On Your Data' use case **
+
+If you selected the intent of the deployment to be "Proof of Concept", you can optionally deploy a sample Web Application into its own resoucre group, that will be configured to interact with Azure OpenAI instance, and start generating content based on the data that you have ingested in an Azure native RAG architecture.
+
+For this to work, it requires an Application Registration in Entra ID. You can choose to use an existing one, or create a new one, where you provide the secret value (as secure string) to the UX, and the Application ID will be used to configure the Web Application.
+
+>Note: You can also create the App registration later if you don't have the required permission in your Entra ID. Follow the instructions in the [Getting started post deployment](#getting-started-post-deployment) section to create the App registration and configure the Web Application.
+
+![Use Cases and Additional Services](./AppSetup1.png)
+
+When creating a new App Registration, this can be done directly in the deployment UX. Select New, and provide the necessary details for the App Registration, and the secret value.
+
+![Use Cases and Additional Services](./AppSetup2.png)
 
 ### Review + create
 
