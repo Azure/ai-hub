@@ -17,6 +17,7 @@ The Enterprise Azure OpenAI Hub is an advanced, scalable platform designed to ha
   - [Identity and Access Management](#identity-and-access-management)
   - [Data Protection](#data-protection)
   - [Logging and Threat Detection](#logging-and-threat-detection)
+- [Next steps](#next-steps)
 ---
 
 ## Overview
@@ -102,4 +103,4 @@ In the most simplistic form, users - assuming Azure RBAC has been granted to the
 
 ## Next Steps
 
-Learn more about the [use cases](./use-cases.md) that are available for the "Enterprise Azure OpenAI Hub" reference implementation.
+Learn more about the [use cases](./use-cases.md) that are available for the **Enterprise Azure OpenAI Hub** reference implementation.
