@@ -59,9 +59,13 @@ For a detailed walkthrough, you can go through the validation and realization st
 
 GPT4 Vision together with Azure AI Vision services can be used to recognize and understand the content of images and videos. This use case is designed to provide a comprehensive understanding of how to leverage the power of Azure AI Vision services to solve complex problems and develop cutting-edge AI solutions.
 
+!['Image and Video recognition'](./docs/azure-video-architecture.svg)
+
 #### 'On Your Data'
 
 Azure native RAG Architecture leveraging Azure AI search for vectorization and using Azure OpenAI for generating embeddings and decoding the embeddings to generate text. This use case is designed to provide a comprehensive understanding of how to leverage the power of Azure AI services to solve complex problems and develop cutting-edge AI solutions on your own Enterprise data.
+
+!['On Your Data'](./docs/azure-rag-architecture.svg)
 
 [Read the following guidance](./docs/rag.md) for the architecture setup and how to use.
 
