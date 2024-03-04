@@ -48,7 +48,7 @@ The following sections provide an overview of the design considerations and the 
 
 ### Scalability and reliability
 
-![Azure Open AI workload composition in a compliant corp connected landing zone](./architecturecontext.svg)
+![Azure Open AI workload composition in a compliant corp connected landing zone](./architecturecontext.png)
 
 The diagram above shows an example where the Enterprise Azure OpenAI Hub is being deployed to a compliant, corp connected landing zone, where all services are connected via private endpoint to the virtual network. The virtual network is connected to the hub virtual network via VNet peering, and the hub virtual network is connected to on-premises network via ExpressRoute.
 
