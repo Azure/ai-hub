@@ -15,10 +15,7 @@ The reference implementation has been developed, validated, and proven with seve
   - [Pre-requisites](#pre-requisites)
   - [Step-by-step deployment guidance](#step-by-step-deployment-guidance)
 - [Getting started post deployment](#getting-started-post-deployment)
-  - [Azure native RAG on your own data](#azure-native-rag-on-your-own-data)
-    - [PowerShell script for RAG enablement](#powershell-script-for-rag-enablement)
-      - [Ingestion job using Azure Open AI, AI Search, and Storage Account](#ingestion-job-using-azure-open-ai-ai-search-and-storage-account)
-      - [Content generation using Azure Open AI API endpoint](#content-generation-using-azure-open-ai-api-endpoint)
+- [Next Steps](#next-steps)
 
 ---
 

@@ -101,4 +101,4 @@ In the most simplistic form, users - assuming Azure RBAC has been granted to the
 
 ## Next Steps
 
-Learn more about the [use cases](./use-cases-overview.md) that are available for the "Enterprise Azure OpenAI Hub" reference implementation.
+Learn more about the [use cases](./use-cases.md) that are available for the "Enterprise Azure OpenAI Hub" reference implementation.
