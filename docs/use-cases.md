@@ -16,7 +16,7 @@ This article provides instructions for how to leverage and validate the use case
         - [Image recognition using Azure Open AI API endpoint](#image-recognition-using-azure-open-ai-api-endpoint)
         - [Video recognition using Azure Open AI API endpoint](#video-recognition-using-azure-open-ai-api-endpoint)
 - [Proof of Concept Deployment](#proof-of-concept-deployment)
-    - ['On Your Data' with sample Web Application](#on-your-data-with-sample-web-application)
+    - ['On Your Data' with sample Web App](#on-your-data-with-sample-web-app)
         - [Post deployment configuration for Sample Web App](#post-deployment-configuration-for-sample-web-app)
     - [Multi region deployment with APIM](#multi-region-deployment-with-apim)
         - [APIM validation steps](#apim-validation-steps)
@@ -199,6 +199,8 @@ Today, you have the following options to choose from when deploying the Proof of
 - Multi region deployment with APIM.
 
 ### 'On Your Data' with sample Web App
+
+>Note: Before proceeding with the steps below, ensure you have followed the same instructions in the 'On Your Data' section in the [Production Deployment](#production-deployment) section, to get the data into the storage account, and ingested into Azure AI Search.
 
 When selecting the "Proof of Concept" deployment intent, you have the option to deploy the 'On Your Data' use case, and a sample Web Application into a single Azure region. This deployment option is recommended for proof of concept, to validate the power of Azure OpenAI's RAG capabilities, and to validate the end to end flow of ingesting data, generating embeddings, and decoding the embeddings to generate text via a sample Web Application.
 
