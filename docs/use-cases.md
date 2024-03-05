@@ -1,5 +1,7 @@
 # Use Cases enabled by Enterprise Azure OpenAI Hub
 
+<img src="./usecases.png" alt="'On Your Data'" width="300" height="200">
+
 This article provides instructions for how to leverage and validate the use cases you deployed as part of the Enterprise Azure OpenAI Hub. The table of content is aligned with the high-level deployment options provided in the reference implementation, so jump straight to the relevant section based on your deployment choice.
 
 ## Table of Contents
@@ -14,11 +16,10 @@ This article provides instructions for how to leverage and validate the use case
         - [Image recognition using Azure Open AI API endpoint](#image-recognition-using-azure-open-ai-api-endpoint)
         - [Video recognition using Azure Open AI API endpoint](#video-recognition-using-azure-open-ai-api-endpoint)
 - [Proof of Concept Deployment](#proof-of-concept-deployment)
-    - ['On Your Data' with sample Web Application](#on-your-data-with-sample-web-application)
-        - [Post deployment configuration for Web Application](#post-deployment-configuration-for-web-application)
-        - [Validation steps](#validation-steps)
+    - ['On Your Data' with sample Web App](#on-your-data-with-sample-web-app)
+        - [Post deployment configuration for Sample Web App](#post-deployment-configuration-for-sample-web-app)
     - [Multi region deployment with APIM](#multi-region-deployment-with-apim)
-        - [Validation steps](#validation-steps)
+        - [APIM validation steps](#apim-validation-steps)
 
 ---
 
@@ -28,7 +29,7 @@ When selecting the production deployment option, you have the option to deploy t
 
 The following sections provide instructions for how to leverage and validate these use cases.
 
-## 'On Your Data'
+### 'On Your Data'
 
 When using Enterprise Azure OpenAI in a secure context, you may already have experienced that curated tools such as Azure OpenAI Studio will not be fully available, due to the following reasons:
 
@@ -49,7 +50,7 @@ If we assume you will take care of the connectivity aspect, such as accessing th
 
 3. Use the Azure Open AI API to interact with the Azure Open AI instance, and start generating content based on the data that you have uploaded to the storage account, and indexed in Azure AI Search.
 
-### PowerShell script for RAG enablement
+#### PowerShell script for RAG enablement
 
 The following PowerShell scripts can be used to 1) start an ingestion job on Azure Open AI to ingest the data from the storage account into Azure AI Search, and 2) access the Azure Open AI API to start generating content based on the data that you have ingested.
 
@@ -187,11 +188,58 @@ $Response = Invoke-WebRequest @AzureOAIRequest
 
 ```
 
-## Multi region deployment with APIM
+## Proof of Concept Deployment
+
+If you quickly need to explore what this is all about without conforming to all the networking pre-requisites. Perhaps you need spin up an internal demo to showcase core capabilities and relevance of the use cases, or even doing a larger hackathon with other engineers and architects to enumerate viable architectural patterns and best practices for both the front-end and the back-end, this is the deployment option for you.
+
+Today, you have the following options to choose from when deploying the Proof of Concept:
+
+- 'On Your Data' with sample Web Application.
+
+- Multi region deployment with APIM.
+
+### 'On Your Data' with sample Web App
+
+>Note: Before proceeding with the steps below, ensure you have followed the same instructions in the 'On Your Data' section in the [Production Deployment](#production-deployment) section, to get the data into the storage account, and ingested into Azure AI Search.
+
+When selecting the "Proof of Concept" deployment intent, you have the option to deploy the 'On Your Data' use case, and a sample Web Application into a single Azure region. This deployment option is recommended for proof of concept, to validate the power of Azure OpenAI's RAG capabilities, and to validate the end to end flow of ingesting data, generating embeddings, and decoding the embeddings to generate text via a sample Web Application.
+
+#### Post deployment configuration for Sample Web App
+
+Deploying the Sample App will in additon to creating the Resource Group containing the Azure OpenAI related services, create a dedicated Resource Group in your Azure subscription containing an App Service Plan, and the Web App as seen in the following image.
+
+<img src="./AppSetup8.png" alt="Sample App" height="150" width="800">
+
+When you select the option to deploy the Sample App, you are asked if you want to use existing - or create a new Application Registration in Entra ID. If using an existing App Registration, you can select the App Registration directly in the portal and the clientId will be provided to the Web App configuration, but you must also provide the client secret, which is only visible when you create the App Registration. If you create a new App Registration, you will be provided with the clientId and client secret, and you can use these values to configure the Web App.
+
+<img src="./AppSetup4.png" alt="Sample App" height="300" width="800">
+
+If you selected to not create an App Registration or use an existing one, you can at any time navigate to the App Registration in the Azure portal, and select the "Certificates & secrets" section to create a new client secret, and use the value to configure the Web App.
+
+Once this is completed, there's one final step that must be completed that we are currently not able to automate entirely during deployment.
+
+1. Navigate to the App Registration in Entra ID, and search for the display name of the App Registration.
+
+<img src="./AppSetup5.png" alt="Sample app" height="200" width="600">
+
+2. Select the App Registration, and in the new window in the "Overview" section, you can see an option for "Redirect URIs". Select this option, and add the following redirect URI to the list of redirect URIs, where the Web App name is in the following format: "https://<deploymentPrefix>-<region>-wa.azurewebsites.net/", and add the ".auth/login/aad/callback" to the end of the URL like below.
+
+```
+https://<deploymentPrefi-swedencentral-wa.azurewebsites.net/.auth/login/aad/callback
+```
+3. Once done, navigate to the Web App in the Azure portal and restart the Web App to ensure the changes are picked up.
+
+<img src="./AppSetup6.png" alt="Sample app" height="200" width="600">
+
+4. You can now access the Web App, and you should see the following page.
+
+<img src="./AppSetup7.png" alt="Sample app" height="400" width="600">
+
+### Multi region deployment with APIM
 
 When selecting the "Proof of Concept" deployment intent, you have the option to deploy Enterprise Azure OpenAI Hub into multiple Azure regions where Azure API Management (APIM) is used to provide a single endpoint for the use cases, and the use cases are deployed into a single Azure region. This deployment option is recommended for proof of concept, to validate the power of API Mangement's policy logic to distribute traffic, provide retry logic, and to do error handling.
 
-### Validation steps
+#### APIM validation steps
 
 When you have deployed Enterprise Azure OpenAI into multiple regions, you will see two Resource Groups in your Azure subscription, one Resource Group for the APIM instance together with the rest of the Azure services in the first region, and a second Resource Group in the second region. Assuming you have enabled RBAC and Managed Identity for the Azure services, you can follow the following steps to validate you can access the Azure OpenAI instances from APIM connected via Managed Identity.
 
@@ -215,7 +263,7 @@ And checking the "Rag-rg-swedencentral" Resource Group, you will see the followi
 
 <img src="./MultiRegion5.png" alt="Multi Region Deployment" width="800" height="400">
 
-4. Select the "POSTS - Creates a completion for the chat message" API operation and provide the following input parameters to test the API:
+4. Select the "POST - Creates a completion for the chat message" API operation and provide the following input parameters to test the API:
 - API-version: 2023-12-01-preview
 - Deployment-id: The deployment *name* of the GPT4 you created during the deployment
 
@@ -239,6 +287,7 @@ And checking the "Rag-rg-swedencentral" Resource Group, you will see the followi
     ]
 }
 ```
+
 Hit the "Send" button, and you should see a response from the Azure OpenAI instance in the "Sweden Central" region.
 
 <img src="./MultiRegion7.png" alt="Multi Region Deployment" width="800" height="400">

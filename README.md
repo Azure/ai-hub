@@ -19,7 +19,7 @@ Dive in and start exploring! The **Enterprise Azure OpenAI Hub** is your gateway
 - [Enterprise Azure OpenAI Hub reference implementation](#enterprise-azure-openai-hub-reference-implementation)
     - [Architecture and design](#letter-a)
     <!-- [Security and compliance](#letter-b)-->
-- [Use cases](#prescriptive-use-cases)
+- [Use cases](#use-cases)
 - [Contributing](#contributing)
 - [Roadmap](#roadmap)
 ---
