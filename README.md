@@ -1,4 +1,4 @@
-# Enterprise Azure OpenAI Hub on Azure
+# Enterprise Azure OpenAI Hub
 
 ![Benefits](./docs/ai-overview.png)
 

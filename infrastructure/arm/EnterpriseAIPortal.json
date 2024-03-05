@@ -768,57 +768,62 @@
                             "visible": "[and(equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
-                            "name": "aiNwLocationOption",
-                            "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Deploy the Private Endpoint for Azure OpenAI into the same region as the Azure OpenAI service",
-                            "defaultValue": "Yes",
-                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
-                            "constraints": {
-                                "allowedValues": [
-                                    {
-                                        "label": "Yes",
-                                        "value": "Yes"
-                                    },
-                                    {
-                                        "label": "No",
-                                        "value": "No"
-                                    }
-                                ],
-                                "required": true
-                            },
-                            "visible": "[equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes')]"
-                        },
-                        {
-                            "name": "aiLocationsApi",
-                            "type": "Microsoft.Solutions.ArmApiControl",
-                            "request": {
-                                "method": "GET",
-                                "path": "locations?api-version=2019-11-01"
+                            "name": "aiNetworkingInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "The VNet and subnet you select can be in a different Azure region then the Private Endpoint for Azure OpenAI service. Ensure you have connectivity to the other services you are creating."
                             }
                         },
-                        {
-                            "name": "aiNwLocation",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Select region for the Private Endpoint",
-                            "filter": true,
-                            "toolTip": "Select the target region for the Private Endpoint",
-                            "constraints": {
-                                "allowedValues": "[map(steps('aiSettings').aiLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
-                                "required": true
-                            },
-                            "visible": "[and(not(equals(steps('aiSettings').aiNwLocationOption, 'Yes')), equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes'))]"
+						{
+							"name": "vnetSelector",
+							"type": "Microsoft.Solutions.ResourceSelector",
+							"label": "Select an existing Virtual Network",
+							"resourceType": "Microsoft.Network/virtualNetworks",
+							"options": {
+								"filter": {
+									"subscription": "onBasics",
+									"location": "all"
+								}
+							},
+                            "visible": "[and(equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+						{
+							"name": "subnets",
+							"type": "Microsoft.Solutions.ArmApiControl",
+							"request": {
+								"method": "GET",
+								"path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiSettings').vnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiSettings').vnetSelector.name,'/subnets?api-version=2022-01-01')]"
+							}
+						},
+						{
+							"name": "subnetList",
+							"type": "Microsoft.Common.DropDown",
+							"label": "Select an existing Subnet",
+							"filter": true,
+							"constraints": {
+								"allowedValues": "[map(steps('aiSettings').subnets.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+								"required": true
+							},
+                            "visible": "[and(equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+                        {  
+                            "name": "selectedVnetDetails",  
+                            "type": "Microsoft.Solutions.ArmApiControl",  
+                            "request": {  
+                                "method": "GET",  
+                                "path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiSettings').vnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiSettings').vnetSelector.name, '?api-version=2022-01-01')]"  
+                            }  
                         },
                         {
-                            "name": "aiSubnetId",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
-                            "placeholder": "",
-                            "defaultValue": "",
-                            "toolTip": "Use only allowed characters",
-                            "constraints": {
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "name": "aiNetworkingRegionOutputInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiSettings').aiDisableNetworkAccess, 'Yes'), not(equals(steps('aiSettings').selectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "Note you are creating the Private Endpoint into a different Azure Region then the Azure OpenAI service. Ensure you have connectivity with the other Azure services you are creating in case their Private Endpoints are in different regions and Virtual Networks"
+                            }
                         },
                         {
                             "name": "authzSection",
@@ -2427,11 +2432,11 @@
                 "stRbacAuthz": "[steps('stSettings').stRbacAuthz]",
                 "aiRbacAuthz": "[steps('aiSettings').aiRbacAuthz]",
                 "aiDisableNetworkAccess": "[steps('aiSettings').aiDisableNetworkAccess]",
-                "aiSubnetId": "[steps('aiSettings').aiSubnetId]",
+                "aiSubnetId": "[steps('aiSettings').subnetList]",
                 "aiCmkKeyName": "[steps('aiSettings').aiCmkKeyName]",
                 "aiRestrictOutboundNetworkAccess": "[steps('aiSettings').aiRestrictOutboundNetworkAccess]",
                 "aiSystemIdentity": "[steps('aiSettings').aiSystemIdentity]",
-                "aiNwLocation": "[if(equals(steps('aiSettings').aiNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('aiSettings').aiNwLocation)]",
+                "aiNwLocation": "[steps('aiSettings').selectedVnetDetails.location]",
                 "location": "[steps('basics').resourceScope.location.name]",
                 "aiModelDeployment": "[steps('aiModelSettings').aiModelDeployment]",
                 "aiModelDeploymentName": "[steps('aiModelSettings').aiModelDeploymentName]",
