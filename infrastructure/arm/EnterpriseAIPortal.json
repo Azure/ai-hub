@@ -396,57 +396,62 @@
                             "visible": "[not(equals(steps('basics').aiIntention, 'Multiple'))]"
                         },
                         {
-                            "name": "kvNwLocationOption",
-                            "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Deploy the Private Endpoint for Key Vault into the same region as the Key Vault",
-                            "defaultValue": "Yes",
-                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
-                            "constraints": {
-                                "allowedValues": [
-                                    {
-                                        "label": "Yes",
-                                        "value": "Yes"
-                                    },
-                                    {
-                                        "label": "No",
-                                        "value": "No"
-                                    }
-                                ],
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
-                        },
-                        {
-                            "name": "kvLocationsApi",
-                            "type": "Microsoft.Solutions.ArmApiControl",
-                            "request": {
-                                "method": "GET",
-                                "path": "locations?api-version=2019-11-01"
+                            "name": "kvNetworkingInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "The VNet and subnet you select can be in a different Azure region then the Private Endpoint for Key Vault. Ensure you have connectivity to the other services you are creating."
                             }
                         },
                         {
-                            "name": "kvNwLocation",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Select region for the Private Endpoint",
-                            "filter": true,
-                            "toolTip": "Select the target region for the Private Endpoint",
-                            "constraints": {
-                                "allowedValues": "[map(steps('kvSettings').kvLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
-                                "required": true
-                            },
-                            "visible": "[and(not(equals(steps('kvSettings').kvNwLocationOption, 'Yes')), equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes'))]"
+							"name": "vnetSelector",
+							"type": "Microsoft.Solutions.ResourceSelector",
+							"label": "Select an existing Virtual Network",
+							"resourceType": "Microsoft.Network/virtualNetworks",
+							"options": {
+								"filter": {
+									"subscription": "onBasics",
+									"location": "all"
+								}
+							},
+                            "visible": "[and(equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+						{
+							"name": "subnets",
+							"type": "Microsoft.Solutions.ArmApiControl",
+							"request": {
+								"method": "GET",
+								"path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('kvSettings').vnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('kvSettings').vnetSelector.name,'/subnets?api-version=2022-01-01')]"
+							}
+						},
+						{
+							"name": "subnetList",
+							"type": "Microsoft.Common.DropDown",
+							"label": "Select an existing Subnet",
+							"filter": true,
+							"constraints": {
+								"allowedValues": "[map(steps('kvSettings').subnets.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+								"required": true
+							},
+                            "visible": "[and(equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+                        {  
+                            "name": "selectedVnetDetails",  
+                            "type": "Microsoft.Solutions.ArmApiControl",  
+                            "request": {  
+                                "method": "GET",  
+                                "path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('kvSettings').vnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('kvSettings').vnetSelector.name, '?api-version=2022-01-01')]"  
+                            }  
                         },
                         {
-                            "name": "kvSubnetId",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
-                            "placeholder": "",
-                            "defaultValue": "",
-                            "toolTip": "Use only allowed characters",
-                            "constraints": {
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "name": "kvNetworkingRegionOutputInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('kvSettings').kvDisableNetworkAccess, 'Yes'), not(equals(steps('kvSettings').selectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "Note you are creating the Private Endpoint into a different Azure Region then the Key Vault. Ensure you have connectivity with the other Azure services you are creating in case their Private Endpoints are in different regions and Virtual Networks"
+                            }
                         },
                         {
                             "name": "kvCmkSection",
@@ -568,57 +573,62 @@
                             "visible": "[not(equals(steps('basics').aiIntention, 'Multiple'))]"
                         },
                         {
-                            "name": "stNwLocationOption",
-                            "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Deploy the Private Endpoint for Storage Account into the same region as the Storage Account",
-                            "defaultValue": "Yes",
-                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
-                            "constraints": {
-                                "allowedValues": [
-                                    {
-                                        "label": "Yes",
-                                        "value": "Yes"
-                                    },
-                                    {
-                                        "label": "No",
-                                        "value": "No"
-                                    }
-                                ],
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('stSettings').stDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
-                        },
-                        {
-                            "name": "stLocationsApi",
-                            "type": "Microsoft.Solutions.ArmApiControl",
-                            "request": {
-                                "method": "GET",
-                                "path": "locations?api-version=2019-11-01"
+                            "name": "stNetworkingInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('stSettings').stDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "The VNet and subnet you select can be in a different Azure region then the Private Endpoint for Storage Account. Ensure you have connectivity to the other services you are creating."
                             }
                         },
-                        {
-                            "name": "stNwLocation",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Select region for the Private Endpoint",
-                            "filter": true,
-                            "toolTip": "Select the target region for the Private Endpoint",
-                            "constraints": {
-                                "allowedValues": "[map(steps('stSettings').stLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
-                                "required": true
-                            },
-                            "visible": "[and(not(equals(steps('stSettings').stNwLocationOption, 'Yes')), equals(steps('stSettings').stDisableNetworkAccess, 'Yes'))]"
+						{
+							"name": "vnetSelector",
+							"type": "Microsoft.Solutions.ResourceSelector",
+							"label": "Select an existing Virtual Network",
+							"resourceType": "Microsoft.Network/virtualNetworks",
+							"options": {
+								"filter": {
+									"subscription": "onBasics",
+									"location": "all"
+								}
+							},
+                            "visible": "[and(equals(steps('stSettings').stDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+						{
+							"name": "subnets",
+							"type": "Microsoft.Solutions.ArmApiControl",
+							"request": {
+								"method": "GET",
+								"path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('stSettings').vnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('stSettings').vnetSelector.name,'/subnets?api-version=2022-01-01')]"
+							}
+						},
+						{
+							"name": "subnetList",
+							"type": "Microsoft.Common.DropDown",
+							"label": "Select an existing Subnet",
+							"filter": true,
+							"constraints": {
+								"allowedValues": "[map(steps('stSettings').subnets.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+								"required": true
+							},
+                            "visible": "[and(equals(steps('stSettings').stDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+                        {  
+                            "name": "selectedVnetDetails",  
+                            "type": "Microsoft.Solutions.ArmApiControl",  
+                            "request": {  
+                                "method": "GET",  
+                                "path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('stSettings').vnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('stSettings').vnetSelector.name, '?api-version=2022-01-01')]"  
+                            }  
                         },
                         {
-                            "name": "stSubnetId",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
-                            "placeholder": "",
-                            "defaultValue": "",
-                            "toolTip": "Use only allowed characters",
-                            "constraints": {
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('stSettings').stDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "name": "stNetworkingRegionOutputInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('stSettings').stDisableNetworkAccess, 'Yes'), not(equals(steps('stSettings').selectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "Note you are creating the Private Endpoint into a different Azure Region then the Storage Account. Ensure you have connectivity with the other Azure services you are creating in case their Private Endpoints are in different regions and Virtual Networks"
+                            }
                         },
                         {
                             "name": "authzSection",
@@ -1859,6 +1869,64 @@
                             "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
+                            "name": "aiSearchNetworkingInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "The VNet and subnet you select can be in a different Azure region then the Private Endpoint for Azure AI search. Ensure you have connectivity to the other services you are creating."
+                            }
+                        },
+                        {
+							"name": "aiSearchVnetSelector",
+							"type": "Microsoft.Solutions.ResourceSelector",
+							"label": "Select an existing Virtual Network",
+							"resourceType": "Microsoft.Network/virtualNetworks",
+							"options": {
+								"filter": {
+									"subscription": "onBasics",
+									"location": "all"
+								}
+							},
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+						{
+							"name": "aiSearchSubnets",
+							"type": "Microsoft.Solutions.ArmApiControl",
+							"request": {
+								"method": "GET",
+								"path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiAuxiliarySettings').aiSearchVnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiAuxiliarySettings').aiSearchVnetSelector.name,'/subnets?api-version=2022-01-01')]"
+							}
+						},
+						{
+							"name": "aiSearchSubnetList",
+							"type": "Microsoft.Common.DropDown",
+							"label": "Select an existing Subnet",
+							"filter": true,
+							"constraints": {
+								"allowedValues": "[map(steps('aiAuxiliarySettings').aiSearchSubnets.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+								"required": true
+							},
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+                        {  
+                            "name": "aiSearchSelectedVnetDetails",  
+                            "type": "Microsoft.Solutions.ArmApiControl",  
+                            "request": {  
+                                "method": "GET",  
+                                "path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiAuxiliarySettings').aiSearchVnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiAuxiliarySettings').aiSearchVnetSelector.name, '?api-version=2022-01-01')]"  
+                            }  
+                        },
+                        {
+                            "name": "aiSearchNetworkingRegionOutputInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('aiAuxiliarySettings').aiSearchSelectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "Note you are creating the Private Endpoint into a different Azure Region then Azure AI Search. Ensure you have connectivity with the other Azure services you are creating in case their Private Endpoints are in different regions and Virtual Networks"
+                            }
+                        },
+                        {
                             "name": "aiSearchPrivateEndpointInfo",
                             "type": "Microsoft.Common.InfoBox",
                             "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'))]",
@@ -1867,59 +1935,6 @@
                                 "text": "To allow access to your Azure AI Search resource from Azure OpenAI resource, you need to submit an application form. The application will be reviewed in 10 business days and you will be contacted via email about the results. If you are eligible, we will provision the private endpoint in Microsoft managed virtual network, and send a private endpoint connection request to your search service, and you will need to approve the request.",
                                 "uri": "https://forms.office.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbRw_T3EIZ1KNCuv_1duLJBgpUMUcwV1Y5QjI3UTVTMkhSVUo3R09NNVQxSyQlQCN0PWcu"
                             }
-                        },
-                        {
-                            "name": "aiSearchNwLocationOption",
-                            "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Deploy the Private Endpoint for Azure AI Search into the same region as the Azure AI Search service",
-                            "defaultValue": "Yes",
-                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
-                            "constraints": {
-                                "allowedValues": [
-                                    {
-                                        "label": "Yes",
-                                        "value": "Yes"
-                                    },
-                                    {
-                                        "label": "No",
-                                        "value": "No"
-                                    }
-                                ],
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'))]"
-                        },
-                        {
-                            "name": "aiSearchLocationsApi",
-                            "type": "Microsoft.Solutions.ArmApiControl",
-                            "request": {
-                                "method": "GET",
-                                "path": "locations?api-version=2019-11-01"
-                            }
-                        },
-                        {
-                            "name": "aiSearchNwLocation",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Select region for the Private Endpoint",
-                            "filter": true,
-                            "toolTip": "Select the target region for the Private Endpoint",
-                            "constraints": {
-                                "allowedValues": "[map(steps('aiAuxiliarySettings').aiSearchLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
-                                "required": true
-                            },
-                            "visible": "[and(not(equals(steps('aiAuxiliarySettings').aiSearchNwLocationOption, 'Yes')), equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'))]"
-                        },
-                        {
-                            "name": "aiSearchSubnetId",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
-                            "placeholder": "",
-                            "defaultValue": "",
-                            "toolTip": "Use only allowed characters",
-                            "constraints": {
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'))]"
                         },
                         {
                             "name": "authzSection",
@@ -2075,57 +2090,62 @@
                             "visible": "[and(equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
-                            "name": "aiVisionNwLocationOption",
-                            "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Deploy the Private Endpoint for Azure AI Vision into the same region as the Azure AI Vision service",
-                            "defaultValue": "Yes",
-                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
-                            "constraints": {
-                                "allowedValues": [
-                                    {
-                                        "label": "Yes",
-                                        "value": "Yes"
-                                    },
-                                    {
-                                        "label": "No",
-                                        "value": "No"
-                                    }
-                                ],
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'))]"
-                        },
-                        {
-                            "name": "aiVisionLocationsApi",
-                            "type": "Microsoft.Solutions.ArmApiControl",
-                            "request": {
-                                "method": "GET",
-                                "path": "locations?api-version=2019-11-01"
+                            "name": "aiVisionNetworkingInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "The VNet and subnet you select can be in a different Azure region then the Private Endpoint for AI Vision. Ensure you have connectivity to the other services you are creating."
                             }
                         },
                         {
-                            "name": "aiVisionNwLocation",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Select region for the Private Endpoint",
-                            "filter": true,
-                            "toolTip": "Select the target region for the Private Endpoint",
-                            "constraints": {
-                                "allowedValues": "[map(steps('aiAuxiliarySettings').aiVisionLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
-                                "required": true
-                            },
-                            "visible": "[and(not(equals(steps('aiAuxiliarySettings').aiVisionNwLocationOption, 'Yes')), equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'))]"
+							"name": "aiVisionVnetSelector",
+							"type": "Microsoft.Solutions.ResourceSelector",
+							"label": "Select an existing Virtual Network",
+							"resourceType": "Microsoft.Network/virtualNetworks",
+							"options": {
+								"filter": {
+									"subscription": "onBasics",
+									"location": "all"
+								}
+							},
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+						{
+							"name": "aiVisionSubnets",
+							"type": "Microsoft.Solutions.ArmApiControl",
+							"request": {
+								"method": "GET",
+								"path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiAuxiliarySettings').aiVisionVnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiAuxiliarySettings').aiVisionVnetSelector.name,'/subnets?api-version=2022-01-01')]"
+							}
+						},
+						{
+							"name": "aiVisionSubnetList",
+							"type": "Microsoft.Common.DropDown",
+							"label": "Select an existing Subnet",
+							"filter": true,
+							"constraints": {
+								"allowedValues": "[map(steps('aiAuxiliarySettings').aiVisionSubnets.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+								"required": true
+							},
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+                        {  
+                            "name": "aiVisionSelectedVnetDetails",  
+                            "type": "Microsoft.Solutions.ArmApiControl",  
+                            "request": {  
+                                "method": "GET",  
+                                "path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiAuxiliarySettings').aiVisionVnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiAuxiliarySettings').aiVisionVnetSelector.name, '?api-version=2022-01-01')]"  
+                            }  
                         },
                         {
-                            "name": "aiVisionSubnetId",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
-                            "placeholder": "",
-                            "defaultValue": "",
-                            "toolTip": "Use only allowed characters",
-                            "constraints": {
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'))]"
+                            "name": "aiVisionNetworkingRegionOutputInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision'), not(equals(steps('aiAuxiliarySettings').aiVisionSelectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "Note you are creating the Private Endpoint into a different Azure Region then AI Vision. Ensure you have connectivity with the other Azure services you are creating in case their Private Endpoints are in different regions and Virtual Networks"
+                            }
                         },
                         {
                             "name": "aiVisionauthzSection",
@@ -2281,57 +2301,62 @@
                             "visible": "[and(equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
-                            "name": "aiDocNwLocationOption",
-                            "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Deploy the Private Endpoint for Azure AI Document Intelligence into the same region as the Azure AI Document Intelligence service",
-                            "defaultValue": "Yes",
-                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
-                            "constraints": {
-                                "allowedValues": [
-                                    {
-                                        "label": "Yes",
-                                        "value": "Yes"
-                                    },
-                                    {
-                                        "label": "No",
-                                        "value": "No"
-                                    }
-                                ],
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'))]"
-                        },
-                        {
-                            "name": "aiDocLocationsApi",
-                            "type": "Microsoft.Solutions.ArmApiControl",
-                            "request": {
-                                "method": "GET",
-                                "path": "locations?api-version=2019-11-01"
+                            "name": "aiDocNetworkingInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "The VNet and subnet you select can be in a different Azure region then the Private Endpoint for Document Intelligence. Ensure you have connectivity to the other services you are creating."
                             }
                         },
                         {
-                            "name": "aiDocNwLocation",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Select region for the Private Endpoint",
-                            "filter": true,
-                            "toolTip": "Select the target region for the Private Endpoint",
-                            "constraints": {
-                                "allowedValues": "[map(steps('aiAuxiliarySettings').aiDocLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
-                                "required": true
-                            },
-                            "visible": "[and(not(equals(steps('aiAuxiliarySettings').aiDocNwLocationOption, 'Yes')), equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'))]"
+							"name": "aiDocVnetSelector",
+							"type": "Microsoft.Solutions.ResourceSelector",
+							"label": "Select an existing Virtual Network",
+							"resourceType": "Microsoft.Network/virtualNetworks",
+							"options": {
+								"filter": {
+									"subscription": "onBasics",
+									"location": "all"
+								}
+							},
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+						{
+							"name": "aiDocSubnets",
+							"type": "Microsoft.Solutions.ArmApiControl",
+							"request": {
+								"method": "GET",
+								"path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiAuxiliarySettings').aiDocVnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiAuxiliarySettings').aiDocVnetSelector.name,'/subnets?api-version=2022-01-01')]"
+							}
+						},
+						{
+							"name": "aiDocSubnetList",
+							"type": "Microsoft.Common.DropDown",
+							"label": "Select an existing Subnet",
+							"filter": true,
+							"constraints": {
+								"allowedValues": "[map(steps('aiAuxiliarySettings').aiDocSubnets.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+								"required": true
+							},
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+                        {  
+                            "name": "aiDocSelectedVnetDetails",  
+                            "type": "Microsoft.Solutions.ArmApiControl",  
+                            "request": {  
+                                "method": "GET",  
+                                "path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiAuxiliarySettings').aiDocVnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiAuxiliarySettings').aiDocVnetSelector.name, '?api-version=2022-01-01')]"  
+                            }  
                         },
                         {
-                            "name": "aiDocSubnetId",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
-                            "placeholder": "",
-                            "defaultValue": "",
-                            "toolTip": "Use only allowed characters",
-                            "constraints": {
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'))]"
+                            "name": "aiDocNetworkingRegionOutputInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('aiAuxiliarySettings').aiDocSelectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "Note you are creating the Private Endpoint into a different Azure Region then Document Intelligence. Ensure you have connectivity with the other Azure services you are creating in case their Private Endpoints are in different regions and Virtual Networks"
+                            }
                         },
                         {
                             "name": "aiDocauthzSection",
@@ -2422,13 +2447,13 @@
                 "kvPurgeProtection": "[steps('kvSettings').kvPurgeProtection]",
                 "kvRbacAuthz": "[steps('kvSettings').kvRbacAuthz]",
                 "kvDisableNetworkAccess": "[steps('kvSettings').kvDisableNetworkAccess]",
-                "kvSubnetId": "[steps('kvSettings').kvSubnetId]",
-                "kvNwLocation": "[if(equals(steps('kvSettings').kvNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('kvSettings').kvNwLocation)]",
+                "kvSubnetId": "[steps('kvSettings').subnetList]",
+                "kvNwLocation": "[steps('kvSettings').selectedVnetDetails.location]",
                 "stCmkKeyName": "[steps('stSettings').stCmkKeyName]",
                 "stHttpsOnly": "[steps('stSettings').stHttpsOnly]",
                 "stDisableNetworkAccess": "[steps('stSettings').stDisableNetworkAccess]",
-                "stNwLocation": "[if(equals(steps('stSettings').stNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('stSettings').stNwLocation)]",
-                "stSubnetId": "[steps('stSettings').stSubnetId]",
+                "stNwLocation": "[steps('stSettings').selectedVnetDetails.location]",
+                "stSubnetId": "[steps('stSettings').subnetList]",
                 "stRbacAuthz": "[steps('stSettings').stRbacAuthz]",
                 "aiRbacAuthz": "[steps('aiSettings').aiRbacAuthz]",
                 "aiDisableNetworkAccess": "[steps('aiSettings').aiDisableNetworkAccess]",
@@ -2455,9 +2480,9 @@
                 "aiContentSexualFilterCompletion": "[steps('aiModelSettings').aiContentSexualFilterCompletion]",
                 "aiContentViolenceFilterCompletion": "[steps('aiModelSettings').aiContentViolenceFilterCompletion]",
                 "aiSearchDisableNetworkAccess": "[steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess]",
-                "aiSearchNwLocation": "[if(equals(steps('aiAuxiliarySettings').aiSearchNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('aiAuxiliarySettings').aiSearchNwLocation)]",
+                "aiSearchNwLocation": "[steps('aiAuxiliarySettings').aiSearchSelectedVnetDetails.location]",
                 "aiSearchRbacAuthz": "[steps('aiAuxiliarySettings').aiSearchRbacAuthz]",
-                "aiSearchSubnetId": "[steps('aiAuxiliarySettings').aiSearchSubnetId]",
+                "aiSearchSubnetId": "[steps('aiAuxiliarySettings').aiSearchSubnetList]",
                 "aiSearchSystemIdentity": "[steps('aiAuxiliarySettings').aiSearchSystemIdentity]",
                 "aiSearchReplicas": "[string(steps('aiAuxiliarySettings').aiSearchReplicas)]",
                 "aiSearchPartitions": "[string(steps('aiAuxiliarySettings').aiSearchPartitions)]",
@@ -2468,8 +2493,8 @@
                 "aiSearchMonCreation": "[steps('aiAuxiliarySettings').aiSearchMonCreation]",
                 "visionDisableNetworkAccess": "[steps('aiAuxiliarySettings').aiVisionDisableNetworkAccess]",
                 "visionRbacAuthz": "[steps('aiAuxiliarySettings').aiVisionRbacAuthz]",
-                "visionNwLocation": "[if(equals(steps('aiAuxiliarySettings').aiVisionNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('aiAuxiliarySettings').aiVisionNwLocation)]",
-                "visionSubnetId": "[steps('aiAuxiliarySettings').aiVisionSubnetId]",
+                "visionNwLocation": "[steps('aiAuxiliarySettings').aiVisionSelectedVnetDetails.location]",
+                "visionSubnetId": "[steps('aiAuxiliarySettings').aiVisionSubnetList]",
                 "visionSystemIdentity": "[steps('aiAuxiliarySettings').aiVisionSystemIdentity]",
                 "visionMonCreation": "[steps('aiAuxiliarySettings').aiVisionMonCreation]",
                 "visionRestrictOutboundNetworkAccess": "[steps('aiAuxiliarySettings').aiVisionRestrictOutboundNetworkAccess]",
@@ -2480,8 +2505,8 @@
                 "aiMultiLocation": "[steps('basics').aiMultiLocation]",
                 "docDisableNetworkAccess": "[steps('aiAuxiliarySettings').aiDocDisableNetworkAccess]",
                 "docRbacAuthz": "[steps('aiAuxiliarySettings').aiDocRbacAuthz]",
-                "docNwLocation": "[if(equals(steps('aiAuxiliarySettings').aiDocNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('aiAuxiliarySettings').aiDocNwLocation)]",
-                "docSubnetId": "[steps('aiAuxiliarySettings').aiDocSubnetId]",
+                "docNwLocation": "[steps('aiAuxiliarySettings').aiDocSelectedVnetDetails.location]",
+                "docSubnetId": "[steps('aiAuxiliarySettings').aiDocSubnetList]",
                 "docSystemIdentity": "[steps('aiAuxiliarySettings').aiDocSystemIdentity]",
                 "docMonCreation": "[steps('aiAuxiliarySettings').aiDocMonCreation]",
                 "docRestrictOutboundNetworkAccess": "[steps('aiAuxiliarySettings').aiDocRestrictOutboundNetworkAccess]",
