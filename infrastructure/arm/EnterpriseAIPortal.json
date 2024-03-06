@@ -2301,57 +2301,62 @@
                             "visible": "[and(equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
-                            "name": "aiDocNwLocationOption",
-                            "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Deploy the Private Endpoint for Azure AI Document Intelligence into the same region as the Azure AI Document Intelligence service",
-                            "defaultValue": "Yes",
-                            "toolTip": "This will deploy the Private Endpoint in the provided subnet and will also associate an Application Security Group",
-                            "constraints": {
-                                "allowedValues": [
-                                    {
-                                        "label": "Yes",
-                                        "value": "Yes"
-                                    },
-                                    {
-                                        "label": "No",
-                                        "value": "No"
-                                    }
-                                ],
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'))]"
-                        },
-                        {
-                            "name": "aiDocLocationsApi",
-                            "type": "Microsoft.Solutions.ArmApiControl",
-                            "request": {
-                                "method": "GET",
-                                "path": "locations?api-version=2019-11-01"
+                            "name": "aiDocNetworkingInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "The VNet and subnet you select can be in a different Azure region then the Private Endpoint for Document Intelligence. Ensure you have connectivity to the other services you are creating."
                             }
                         },
                         {
-                            "name": "aiDocNwLocation",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Select region for the Private Endpoint",
-                            "filter": true,
-                            "toolTip": "Select the target region for the Private Endpoint",
-                            "constraints": {
-                                "allowedValues": "[map(steps('aiAuxiliarySettings').aiDocLocationsApi.value,(item) => parse(concat('{\"label\":\"',item.displayName,'\",\"value\":\"',item.name,'\"}')))]",
-                                "required": true
-                            },
-                            "visible": "[and(not(equals(steps('aiAuxiliarySettings').aiDocNwLocationOption, 'Yes')), equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'))]"
+							"name": "aiDocVnetSelector",
+							"type": "Microsoft.Solutions.ResourceSelector",
+							"label": "Select an existing Virtual Network",
+							"resourceType": "Microsoft.Network/virtualNetworks",
+							"options": {
+								"filter": {
+									"subscription": "onBasics",
+									"location": "all"
+								}
+							},
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+						{
+							"name": "aiDocSubnets",
+							"type": "Microsoft.Solutions.ArmApiControl",
+							"request": {
+								"method": "GET",
+								"path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiAuxiliarySettings').aiDocVnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiAuxiliarySettings').aiDocVnetSelector.name,'/subnets?api-version=2022-01-01')]"
+							}
+						},
+						{
+							"name": "aiDocSubnetList",
+							"type": "Microsoft.Common.DropDown",
+							"label": "Select an existing Subnet",
+							"filter": true,
+							"constraints": {
+								"allowedValues": "[map(steps('aiAuxiliarySettings').aiDocSubnets.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+								"required": true
+							},
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+                        {  
+                            "name": "aiDocSelectedVnetDetails",  
+                            "type": "Microsoft.Solutions.ArmApiControl",  
+                            "request": {  
+                                "method": "GET",  
+                                "path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiAuxiliarySettings').aiDocVnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiAuxiliarySettings').aiDocVnetSelector.name, '?api-version=2022-01-01')]"  
+                            }  
                         },
                         {
-                            "name": "aiDocSubnetId",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "ResourceId of existing subnet for connecting Private Endpoint",
-                            "placeholder": "",
-                            "defaultValue": "",
-                            "toolTip": "Use only allowed characters",
-                            "constraints": {
-                                "required": true
-                            },
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'))]"
+                            "name": "aiDocNetworkingRegionOutputInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('aiAuxiliarySettings').aiDocSelectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "Note you are creating the Private Endpoint into a different Azure Region then Document Intelligence. Ensure you have connectivity with the other Azure services you are creating in case their Private Endpoints are in different regions and Virtual Networks"
+                            }
                         },
                         {
                             "name": "aiDocauthzSection",
@@ -2500,8 +2505,8 @@
                 "aiMultiLocation": "[steps('basics').aiMultiLocation]",
                 "docDisableNetworkAccess": "[steps('aiAuxiliarySettings').aiDocDisableNetworkAccess]",
                 "docRbacAuthz": "[steps('aiAuxiliarySettings').aiDocRbacAuthz]",
-                "docNwLocation": "[if(equals(steps('aiAuxiliarySettings').aiDocNwLocationOption, 'Yes'), steps('basics').resourceScope.location.name, steps('aiAuxiliarySettings').aiDocNwLocation)]",
-                "docSubnetId": "[steps('aiAuxiliarySettings').aiDocSubnetId]",
+                "docNwLocation": "[steps('aiAuxiliarySettings').aiDocSelectedVnetDetails.location]",
+                "docSubnetId": "[steps('aiAuxiliarySettings').aiDocSubnetList]",
                 "docSystemIdentity": "[steps('aiAuxiliarySettings').aiDocSystemIdentity]",
                 "docMonCreation": "[steps('aiAuxiliarySettings').aiDocMonCreation]",
                 "docRestrictOutboundNetworkAccess": "[steps('aiAuxiliarySettings').aiDocRestrictOutboundNetworkAccess]",
