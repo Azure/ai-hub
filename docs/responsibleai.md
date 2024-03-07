@@ -27,8 +27,12 @@ While LLMs offer many benefits, they also pose several risks and challenges that
 To mitigate the risks and challenges of using LLMs, it is recommended to adopt a comprehensive, iterative, and layered approach that involves the following steps:
 
 * Identify: The first step is to identify the potential harms and risks that the LLMs can cause or amplify, based on the use case, the domain, the audience, the data, and the model. This can be done by conducting a risk assessment, a stakeholder analysis, and a data audit, as well as consulting relevant guidelines, frameworks, and standards for responsible AI.
-* Prevent: The second step is to prevent or reduce the occurrence of the potential harms and risks, by applying appropriate design choices, techniques, and tools. This can include data cleaning, data augmentation, data labeling, model selection, model fine-tuning, model testing, prompt engineering, content filtering, and content moderation.
-* Detect: The third step is to detect or monitor the occurrence of the potential harms and risks, by applying appropriate methods and tools. This can include model evaluation, model benchmarking, model auditing, model monitoring, content analysis, content safety, and content quality.
+* Prevent: The second step is to prevent or reduce the occurrence of the potential harms and risks, by applying appropriate design choices, techniques, and tools. This can include data cleaning, data augmentation, data labeling, model selection, model fine-tuning, model testing, prompt engineering, content filtering, and content moderation. The Azure OpenAI service offers aditional content filters. In the reference implementation we include a set of recomended setting for these content filters.
+<img src="./ModelSetup3.png" alt="Content Filters" width="600" height="330">
+
+* Detect: The third step is to detect or monitor the occurrence of the potential harms and risks, by applying appropriate methods and tools. This can include model evaluation, model benchmarking, model auditing, model monitoring, content analysis, content safety, and content quality. We also recomend using aditional content safety models to run on top of your main filters (as seen in the reference implementation):
+<img src="./contentfilters.png" alt="Additional Content Filters" width="600" height="220">
+
 * Respond: The fourth step is to respond or remediate the occurrence of the potential harms and risks, by applying appropriate actions and tools. This can include model updating, model retraining, model deprecation, prompt revision, content correction, content deletion, content reporting, and content feedback.
 These steps should be performed in a cyclic and continuous manner, as the LLMs and the use cases evolve over time. The developers and the organizations should also document and communicate the process and the outcomes of the mitigation steps, to ensure transparency, accountability, and trustworthiness of the AI applications.
 
