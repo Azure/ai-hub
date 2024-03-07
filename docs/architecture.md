@@ -12,7 +12,7 @@ The Enterprise Azure OpenAI Hub is an advanced, scalable platform designed to ha
 - [Design areas](#design-areas)
   - [Scalability and reliability](#scalability-and-reliability)
   - [Compute and orchestration](#compute-and-orchestration)
-  - [Network security and connectivity](#network-security-and-connectivity)
+  - [Network and connectivity](#network-and-connectivity)
   - [Security, Governance, and Compliance](#security-governance-and-compliance)
   - [Identity and Access Management](#identity-and-access-management)
   - [Data Protection](#data-protection)
@@ -89,7 +89,7 @@ In the most simplistic form, users - assuming Azure RBAC has been granted to the
 * Empower the application to use dedicated, application-centric Log Analytics Workspace(s) for the Azure Open AI instance(s) and requisite components such as Key Vault, Storage Accounts, NSGs etc., to ensure that the logs are stored in a secure location, and can be accessed by the application team as needed, and where they can build out their own observability using dashboards, workbooks, and alerts.
 * Use Azure Policy to ensure that the Azure Open AI instance(s) are deployed with the right configuration, and that the configuration is maintained over time. For example, it is recommended to deploy Azure Open AI using a private endpoint, and not expose the service over the public internet.
 
-### Network security and connectivity
+### Network and connectivity
 
 ### Security, Governance, and Compliance
 

@@ -17,9 +17,12 @@ Dive in and start exploring! The **Enterprise Azure OpenAI Hub** is your gateway
 ## Table of Contents
 
 - [Enterprise Azure OpenAI Hub reference implementation](#enterprise-azure-openai-hub-reference-implementation)
+ - [Things that matters](#things-that-matters)
     - [Architecture and design](#letter-a)
-    <!-- [Security and compliance](#letter-b)-->
+    - [Security and compliance](#letter-b)
 - [Use cases](#use-cases)
+    - [Image and Video recognition](#image-and-video-recognition)
+    - ['On Your Data'](#on-your-data)
 - [Contributing](#contributing)
 - [Roadmap](#roadmap)
 ---
@@ -40,16 +43,17 @@ You can deploy the following reference implementations to your Azure subscriptio
 |:----------|:-------------------------|:------------|:-------|  
 | Enterprise Azure OpenAI Hub | Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into your Azure regions and subscriptions | <img src="./docs/media/deploytoazure.svg" alt="Deploy to Azure" width="100" height="60"> | [User Guide](./docs/EnterpriseAzureOpenAIHub.md) |  
 
+### Things that matters
+
+In the below sections, we will discuss the architecture and design, and security and compliance considerations of the **Enterprise Azure OpenAI Hub**, and go into the details of - well, the things that actually do matter for Enterprise organizations and their AI initiatives on Azure. These articles are designed to provide a comprehensive understanding of the principles and best practices, so architects and engineers, as well as cybersecurity and compliance professionals, can make informed decisions and take the right steps to ensure the success of their AI initiatives.
 
 <a id="letter-a"></a>![The letter A](./docs/a.png) [Architecture and design](./docs/architecture.md)
 
 The architecture and design is proven, prescriptive, with security and governance being front and center - but not at the expense of autonomy and developer freedom for innovation and exploration. It does not leave any room for interpretation, as its been validated with our largest and most complex customers in highly regulated industries. Yet, it provides a flexible starting point for the less complex, and smaller customers, and can scale alongside the organization, business requirements, use cases, and the Azure platform itself due to the design principles and patterns that are employed alongside with the alignment with the overall Azure platform roadmap.
 
-<!-- Commenting out for now
 <a id="letter-b"></a>![The letter B](./docs/b.png) [Security and compliance](./docs/security.md)
 
-Customers in regulated industries must define and enforce required controls in order to meet compliance and security requirements while empowering application teams with sufficient freedom to innovate and deploy Azure AI services in a safe and secure manner. To ensure the right balance for the central platform and the application teams, Enterprise Azure OpenAI Hubprovides a secure and compliant foundation for AI workloads, while also providing a secure-by-default Azure OpenAI workload composition into the designated Azure subscriptions.
--->
+Customers in regulated industries must define and enforce required controls in order to meet compliance and security requirements while empowering application teams with sufficient freedom to innovate and deploy Azure AI services in a safe and secure manner. To ensure the right balance for the central platform and the application teams, Enterprise Azure OpenAI Hub provides a secure and compliant foundation for AI workloads, while also providing a secure-by-default Azure OpenAI workload composition into the designated Azure subscriptions.
 
 ### Use cases
 
