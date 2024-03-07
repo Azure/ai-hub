@@ -20,6 +20,7 @@ Dive in and start exploring! The **Enterprise Azure OpenAI Hub** is your gateway
  - [Things that matters](#things-that-matters)
     - [Architecture and design](#letter-a)
     - [Security and compliance](#letter-b)
+    - [Responsible AI and prompt engineering](#letter-c)
 - [Use cases](#use-cases)
     - [Image and Video recognition](#image-and-video-recognition)
     - ['On Your Data'](#on-your-data)
@@ -54,6 +55,10 @@ The architecture and design is proven, prescriptive, with security and governanc
 <a id="letter-b"></a>![The letter B](./docs/b.png) [Security and compliance](./docs/security.md)
 
 Customers in regulated industries must define and enforce required controls in order to meet compliance and security requirements while empowering application teams with sufficient freedom to innovate and deploy Azure AI services in a safe and secure manner. To ensure the right balance for the central platform and the application teams, Enterprise Azure OpenAI Hub provides a secure and compliant foundation for AI workloads, while also providing a secure-by-default Azure OpenAI workload composition into the designated Azure subscriptions.
+
+<a id="letter-c"></a>![The letter C](./docs/c.png) [Responsible AI and prompt engineering](./docs/responsibleai.md)
+
+With great power comes great responsibility. As AI becomes more ubiquitous and influential, it is imperative to ensure that it is used in a responsible manner that adheres to ethical principles, respects human values, and minimizes potential harms. In this article, we will explore some of the challenges and opportunities of using large language models (LLMs), such as those developed by Azure OpenAI, to create AI applications. We will also introduce some of the tools and best practices that can help developers to use LLMs responsibly and effectively, such as mitigation strategies, prompt engineering, and monitoring. By the end of this post, you will have a better understanding of how to leverage the power of LLMs while ensuring the safety and quality of your AI applications.
 
 ### Use cases
 
