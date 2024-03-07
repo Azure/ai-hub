@@ -7,12 +7,12 @@
 With great power comes great responsibility. As AI becomes more ubiquitous and influential, it is imperative to ensure that it is used in a responsible manner that adheres to ethical principles, respects human values, and minimizes potential harms.
 In this article, we will explore some of the challenges and opportunities of using large language models (LLMs), such as those developed by Azure OpenAI, to create AI applications. We will also introduce some of the tools and best practices that can help developers to use LLMs responsibly and effectively, such as mitigation strategies, prompt engineering, and monitoring. By the end of this post, you will have a better understanding of how to leverage the power of LLMs while ensuring the safety and quality of your AI applications.
 
-### What are Large Language Models and Why are They Important?
+### What are Large Language Models and why are they important?
 
 Large language models are deep neural networks that are trained on massive amounts of text data to learn the patterns and structures of natural language. They can generate text and images on various topics and tasks, such as summarization, translation, question answering, and more. LLMs can also perform zero-shot or few-shot learning, which means they can perform tasks that they were not explicitly trained on, by using natural language prompts as inputs.
 LLMs are important because they can unlock new capabilities and opportunities for AI applications. They can provide natural and engaging user experiences, enable novel forms of creativity and expression, and solve complex problems that require natural language understanding and generation. LLMs can also reduce the need for large amounts of labeled data and domain-specific expertise, making AI development more accessible and efficient.
 
-### What are the Risks and Challenges of Using Large Language Models?
+### What are the risks and challenges of using Large Language Models?
 
 While LLMs offer many benefits, they also pose several risks and challenges that need to be addressed. Some of the potential harms that LLMs can cause or amplify are:
 
@@ -22,7 +22,7 @@ While LLMs offer many benefits, they also pose several risks and challenges that
 * Malicious Usage: LLMs can be used for malicious purposes, such as prompt injection attacks, also known as jailbreaks. This is when an adversary manipulates the input prompt to trick the LLM into generating harmful or undesirable outputs, such as commands, passwords, or secrets. This can compromise the integrity and functionality of the AI applications, as well as cause damage or harm to the users and the organizations.
 * Environmental Consequences: LLMs can have a significant environmental impact, due to the high computational cost and energy consumption of training and running large models. This can contribute to the global carbon footprint and climate change, as well as increase the operational costs and resource constraints of the developers and the organizations.
 
-### How to Mitigate the Risks and Challenges of Using Large Language Models?
+### How to mitigate the risks and challenges of using Large Language Models?
 
 To mitigate the risks and challenges of using LLMs, it is recommended to adopt a comprehensive, iterative, and layered approach that involves the following steps:
 
@@ -32,7 +32,7 @@ To mitigate the risks and challenges of using LLMs, it is recommended to adopt a
 * Respond: The fourth step is to respond or remediate the occurrence of the potential harms and risks, by applying appropriate actions and tools. This can include model updating, model retraining, model deprecation, prompt revision, content correction, content deletion, content reporting, and content feedback.
 These steps should be performed in a cyclic and continuous manner, as the LLMs and the use cases evolve over time. The developers and the organizations should also document and communicate the process and the outcomes of the mitigation steps, to ensure transparency, accountability, and trustworthiness of the AI applications.
 
-### How to Use Prompt Engineering to Create Effective and Responsible AI Applications?
+### How to use Prompt Engineering to create effective and responsible AI applications?
 
 Prompt engineering is the process of designing and refining natural language prompts that elicit the desired outputs from LLMs. Prompt engineering can help to improve the performance, quality, and safety of the AI applications, by providing additional context, data, and parameters to the LLMs. Prompt engineering can also help to reduce the need for model fine-tuning or retraining, by leveraging the zero-shot or few-shot learning capabilities of the LLMs.
 To use prompt engineering effectively and responsibly, it is recommended to follow these steps:
@@ -49,7 +49,7 @@ To facilitate the prompt engineering process, there are several tools and platfo
 * Semantic Kernel: Semantic Kernel is a platform that allows developers to create, manage, and share semantic data for LLMs. It also supports prompt engineering for LLMs, by providing features such as data ingestion, data cleaning, data annotation, data augmentation, data validation, data querying, data visualization, and data export. Semantic Kernel also allows developers to access and use LLMs from Azure OpenAI, as well as other platforms and providers.
 * LangChain: LangChain is a platform that allows developers to create, manage, and share natural language data for LLMs. It also supports prompt engineering for LLMs, by providing features such as data collection, data annotation, data verification, data distribution, data monetization, and data governance. LangChain also allows developers to access and use LLMs from Azure OpenAI, as well as other platforms and providers.
 
-### How to Monitor and Evaluate the Performance of Large Language Models in Production?
+### How to monitor and evaluate the performance of Large Language Models in production?
 
 Monitoring and evaluating the performance of LLMs in production is an essential step to ensure the quality, reliability, and safety of the AI applications. It can also help to identify and address any issues, gaps, or opportunities for improvement. To monitor and evaluate the performance of LLMs in production, it is recommended to use the following tools and methods:
 
