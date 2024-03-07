@@ -1,4 +1,4 @@
-# Responsible AI and Prompt Engineering: A Guide for Developers
+# Responsible AI and Prompt Engineering
 
 ## How to use Azure OpenAI and other tools to create safe and effective AI applications
 
