@@ -15,13 +15,19 @@ The pipelines available are designed to analyze documents and videos using diffe
 - Analyzing Videos using Vision  
 - Analyzing videos using Video Indexer  
 
+![Pipelines](./pipelines.png)
+
 Each pipeline involves different steps based on the services used in analyzing the data. They also have a set of parameters which allow flexibility and can be configured specifically for each use case.  
 
 ## Working of Batch Pipelines  
 
+![Batch Pipeline](./batchpipeline.png)
+
 The batch pipelines are quite similar in their functioning. The first activity after starting a batch pipeline is to retrieve the required keys from KeyVault, as some of the APIs used in the pipelines require API keys. We recommend using System assigned managed identity where possible. The second activity is to list all blobs in the assigned container (all videos or documents). For each blob in the list, the data factory activity will loop and run the relevant pipeline to analyze the content.
   
 ## Analyzing Documents Using Document Intelligence  
+
+![Document Pipeline](./docpipeline.png)
 
 One of the pipelines starts by ingesting the selected document using the Document Intelligence REST API. The body of the POST contains the URL source referencing the document being analyzed. This ingestion process responds with an ID, which is then used as a reference to the ongoing analyzation process performed by Document Intelligence.
   
@@ -34,6 +40,8 @@ In addition to the primary objective, this pipeline also accomplishes a couple o
 We also provide a separate pipeline that bypasses Document Intelligence and uses only OpenAI GPT-4 Vision to analyze the content of the documents.
 
 ## What is Azure Data Factory?  
+
+![Azure Data Factory](./adf.png)
 
 Azure Data Factory (ADF) is a cloud-based data integration service provided by Microsoft Azure. It allows you to create data-driven workflows for orchestrating and automating data movement and data transformation.
   
