@@ -1,0 +1,1694 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "topLevelManagementGroupPrefix": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "scope": "[concat('/providers/Microsoft.Management/managementGroups/', parameters('topLevelManagementGroupPrefix'))]",
+        "policies": {
+            "policyDefinitions": [
+                {
+                    "properties": {
+                        "displayName": "Storage accounts should use customer-managed key for encryption",
+                        "mode": "Indexed",
+                        "description": "Secure your blob and file storage account with greater flexibility using customer-managed keys. When you specify a customer-managed key, that key is used to protect and control access to the key that encrypts your data. Using customer-managed keys provides additional capabilities to control rotation of the key encryption key or cryptographically erase data.",
+                        "metadata": {
+                            "version": "1.0.3",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Audit",
+                                    "Deny",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "allOf": [
+                                    {
+                                        "field": "type",
+                                        "equals": "Microsoft.Storage/storageAccounts"
+                                    },
+                                    {
+                                        "not": {
+                                            "field": "Microsoft.Storage/storageAccounts/encryption.keySource",
+                                            "equals": "Microsoft.Keyvault"
+                                        }
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-Cmk"
+                },
+                {
+                    "properties": {
+                        "displayName": "Allowed Copy scope should be restricted for Storage Accounts",
+                        "mode": "Indexed",
+                        "description": "Azure Storage accounts should restrict the allowed copy scope. Enforce this for increased data exfiltration protection.",
+                        "metadata": {
+                            "version": "1.0.0",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Deny",
+                                    "Audit",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            },
+                            "allowedCopyScope": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Allowed Copy Scope",
+                                    "description": "Specify the allowed copy scope."
+                                },
+                                "allowedValues": [
+                                    "AAD",
+                                    "PrivateLink"
+                                ],
+                                "defaultValue": "AAD"
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "allOf": [
+                                    {
+                                        "field": "type",
+                                        "equals": "Microsoft.Storage/storageAccounts"
+                                    },
+                                    {
+                                        "anyOf": [
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/allowedCopyScope",
+                                                "exists": "false"
+                                            },
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/allowedCopyScope",
+                                                "notEquals": "[[parameters('allowedCopyScope')]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-CopyScope"
+                },
+                {
+                    "properties": {
+                        "displayName": "Encryption for storage services should be enforced for Storage Accounts",
+                        "mode": "Indexed",
+                        "description": "Azure Storage accounts should enforce encryption for all storage services. Enforce this for increased encryption scope.",
+                        "metadata": {
+                            "version": "1.0.0",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Deny",
+                                    "Audit",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "allOf": [
+                                    {
+                                        "field": "type",
+                                        "equals": "Microsoft.Storage/storageAccounts"
+                                    },
+                                    {
+                                        "anyOf": [
+                                            {
+                                                "anyOf": [
+                                                    {
+                                                        "field": "Microsoft.Storage/storageAccounts/encryption.services.blob.enabled",
+                                                        "exists": "false"
+                                                    },
+                                                    {
+                                                        "field": "Microsoft.Storage/storageAccounts/encryption.services.blob.enabled",
+                                                        "notEquals": true
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "anyOf": [
+                                                    {
+                                                        "field": "Microsoft.Storage/storageAccounts/encryption.services.file.enabled",
+                                                        "exists": "false"
+                                                    },
+                                                    {
+                                                        "field": "Microsoft.Storage/storageAccounts/encryption.services.file.enabled",
+                                                        "notEquals": true
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "anyOf": [
+                                                    {
+                                                        "field": "Microsoft.Storage/storageAccounts/encryption.services.queue.keyType",
+                                                        "exists": "false"
+                                                    },
+                                                    {
+                                                        "field": "Microsoft.Storage/storageAccounts/encryption.services.queue.keyType",
+                                                        "notEquals": "Account"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "anyOf": [
+                                                    {
+                                                        "field": "Microsoft.Storage/storageAccounts/encryption.services.table.keyType",
+                                                        "exists": "false"
+                                                    },
+                                                    {
+                                                        "field": "Microsoft.Storage/storageAccounts/encryption.services.table.keyType",
+                                                        "notEquals": "Account"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-ServicesEncryption"
+                },
+                {
+                    "properties": {
+                        "displayName": "Local users should be restricted for Storage Accounts",
+                        "mode": "Indexed",
+                        "description": "Azure Storage accounts should disable local users for features like SFTP. Enforce this for increased data exfiltration protection.",
+                        "metadata": {
+                            "version": "1.0.0",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Deny",
+                                    "Audit",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "allOf": [
+                                    {
+                                        "field": "type",
+                                        "equals": "Microsoft.Storage/storageAccounts"
+                                    },
+                                    {
+                                        "anyOf": [
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/isLocalUserEnabled",
+                                                "exists": "false"
+                                            },
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/isLocalUserEnabled",
+                                                "notEquals": false
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-LocalUser"
+                },
+                {
+                    "properties": {
+                        "displayName": "SFTP should be restricted for Storage Accounts",
+                        "mode": "Indexed",
+                        "description": "Azure Storage accounts should disable SFTP. Enforce this for increased data exfiltration protection.",
+                        "metadata": {
+                            "version": "1.0.0",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Deny",
+                                    "Audit",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "allOf": [
+                                    {
+                                        "field": "type",
+                                        "equals": "Microsoft.Storage/storageAccounts"
+                                    },
+                                    {
+                                        "anyOf": [
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/isSftpEnabled",
+                                                "exists": "false"
+                                            },
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/isSftpEnabled",
+                                                "notEquals": false
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-Sftp"
+                },
+                {
+                    "properties": {
+                        "displayName": "Network ACL bypass option should be restricted for Storage Accounts",
+                        "mode": "Indexed",
+                        "description": "Azure Storage accounts should restrict the bypass option for service-level network ACLs. Enforce this for increased data exfiltration protection.",
+                        "metadata": {
+                            "version": "1.0.0",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Deny",
+                                    "Audit",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            },
+                            "allowedBypassOptions": {
+                                "type": "Array",
+                                "metadata": {
+                                    "displayName": "Allowed Bypass Options",
+                                    "description": "Specifies which options are allowed to bypass the vnet configuration"
+                                },
+                                "allowedValues": [
+                                    "None",
+                                    "Logging",
+                                    "Metrics",
+                                    "AzureServices",
+                                    "Logging, Metrics",
+                                    "Logging, AzureServices",
+                                    "Metrics, AzureServices",
+                                    "Logging, Metrics, AzureServices",
+                                    "Logging, Metrics, AzureServices"
+                                ],
+                                "defaultValue": [
+                                    "Logging",
+                                    "Metrics",
+                                    "AzureServices",
+                                    "Logging, Metrics",
+                                    "Logging, AzureServices",
+                                    "Metrics, AzureServices",
+                                    "Logging, Metrics, AzureServices",
+                                    "Logging, Metrics, AzureServices"
+                                ]
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "allOf": [
+                                    {
+                                        "field": "type",
+                                        "equals": "Microsoft.Storage/storageAccounts"
+                                    },
+                                    {
+                                        "anyOf": [
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/networkAcls.bypass",
+                                                "exists": "false"
+                                            },
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/networkAcls.bypass",
+                                                "notIn": "[[parameters('allowedBypassOptions')]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-NetworkAclsBypass"
+                },
+                {
+                    "properties": {
+                        "displayName": "Resource Access Rules Tenants should be restricted for Storage Accounts",
+                        "mode": "Indexed",
+                        "description": "Azure Storage accounts should restrict the resource access rule for service-level network ACLs to service from the same AAD tenant. Enforce this for increased data exfiltration protection.",
+                        "metadata": {
+                            "version": "1.0.0",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Deny",
+                                    "Audit",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "allOf": [
+                                    {
+                                        "field": "type",
+                                        "equals": "Microsoft.Storage/storageAccounts"
+                                    },
+                                    {
+                                        "count": {
+                                            "field": "Microsoft.Storage/storageAccounts/networkAcls.resourceAccessRules[*]"
+                                        },
+                                        "greater": 0
+                                    },
+                                    {
+                                        "field": "Microsoft.Storage/storageAccounts/networkAcls.resourceAccessRules[*].tenantId",
+                                        "notEquals": "[[subscription().tenantId]"
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-ResourceAccessRulesTenantId"
+                },
+                {
+                    "properties": {
+                        "displayName": "Resource Access Rules resource IDs should be restricted for Storage Accounts",
+                        "mode": "Indexed",
+                        "description": "Azure Storage accounts should restrict the resource access rule for service-level network ACLs to services from a specific Azure subscription. Enforce this for increased data exfiltration protection.",
+                        "metadata": {
+                            "version": "1.0.0",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Deny",
+                                    "Audit",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "allOf": [
+                                    {
+                                        "field": "type",
+                                        "equals": "Microsoft.Storage/storageAccounts"
+                                    },
+                                    {
+                                        "count": {
+                                            "field": "Microsoft.Storage/storageAccounts/networkAcls.resourceAccessRules[*]"
+                                        },
+                                        "greater": 0
+                                    },
+                                    {
+                                        "count": {
+                                            "field": "Microsoft.Storage/storageAccounts/networkAcls.resourceAccessRules[*]",
+                                            "where": {
+                                                "value": "[[split(current('Microsoft.Storage/storageAccounts/networkAcls.resourceAccessRules[*].resourceId'), '/')[2]]",
+                                                "equals": "*"
+                                            }
+                                        },
+                                        "greater": 0
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-ResourceAccessRulesResourceId"
+                },
+                {
+                    "properties": {
+                        "displayName": "Virtual network rules should be restricted for Storage Accounts",
+                        "mode": "Indexed",
+                        "description": "Azure Storage accounts should restrict the virtual network service-level network ACLs. Enforce this for increased data exfiltration protection.",
+                        "metadata": {
+                            "version": "1.0.0",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Deny",
+                                    "Audit",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "allOf": [
+                                    {
+                                        "field": "type",
+                                        "equals": "Microsoft.Storage/storageAccounts"
+                                    },
+                                    {
+                                        "count": {
+                                            "field": "Microsoft.Storage/storageAccounts/networkAcls.virtualNetworkRules[*]"
+                                        },
+                                        "greater": 0
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-NetworkAclsVirtualNetworkRules"
+                },
+                {
+                    "properties": {
+                        "displayName": "Public blob access should be restricted for Storage Accounts",
+                        "mode": "Indexed",
+                        "description": "Azure Storage accounts should restrict blob access to private. Enforce this for increased data exfiltration protection.",
+                        "metadata": {
+                            "version": "1.0.0",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Deny",
+                                    "Audit",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "allOf": [
+                                    {
+                                        "field": "type",
+                                        "equals": "Microsoft.Storage/storageAccounts"
+                                    },
+                                    {
+                                        "anyOf": [
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/allowBlobPublicAccess",
+                                                "exists": false
+                                            },
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/allowBlobPublicAccess",
+                                                "notEquals": false
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-AllowBlobPublicAccess"
+                },
+                {
+                    "properties": {
+                        "displayName": "Storage Accounts should use a container delete retention policy",
+                        "mode": "All",
+                        "description": "Enforce container delete retention policies larger than seven days for storage account. Enable this for increased data loss protection",
+                        "metadata": {
+                            "version": "1.0.0",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Deny",
+                                    "Audit",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            },
+                            "minContainerDeleteRetentionInDays": {
+                                "type": "Integer",
+                                "metadata": {
+                                    "displayName": "Minimum Container Delete Retention in Days",
+                                    "description": "Specifies the minimum number of days for the container delete retention policy"
+                                },
+                                "defaultValue": 7
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "allOf": [
+                                    {
+                                        "field": "type",
+                                        "equals": "Microsoft.Storage/storageAccounts/blobServices"
+                                    },
+                                    {
+                                        "anyOf": [
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/blobServices/containerDeleteRetentionPolicy.enabled",
+                                                "exists": false
+                                            },
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/blobServices/containerDeleteRetentionPolicy.enabled",
+                                                "notEquals": true
+                                            },
+                                            {
+                                                "field": "Microsoft.Storage/storageAccounts/blobServices/containerDeleteRetentionPolicy.days",
+                                                "less": "[[parameters('minContainerDeleteRetentionInDays')]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-ContainerDeleteRetentionPolicy"
+                },
+                {
+                    "properties": {
+                        "displayName": "Storage Accounts should restrict CORS rules",
+                        "mode": "All",
+                        "description": "Deny cors rules for storage account for increased data exfiltration protection and endpoint protection.",
+                        "metadata": {
+                            "version": "1.0.0",
+                            "category": "Storage"
+                        },
+                        "parameters": {
+                            "effect": {
+                                "type": "String",
+                                "metadata": {
+                                    "displayName": "Effect",
+                                    "description": "Enable or disable the execution of the policy"
+                                },
+                                "allowedValues": [
+                                    "Deny",
+                                    "Audit",
+                                    "Disabled"
+                                ],
+                                "defaultValue": "Deny"
+                            }
+                        },
+                        "policyRule": {
+                            "if": {
+                                "anyOf": [
+                                    {
+                                        "allOf": [
+                                            {
+                                                "field": "type",
+                                                "equals": "Microsoft.Storage/storageAccounts/blobServices"
+                                            },
+                                            {
+                                                "count": {
+                                                    "field": "Microsoft.Storage/storageAccounts/blobServices/cors.corsRules[*]"
+                                                },
+                                                "greater": 0
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "allOf": [
+                                            {
+                                                "field": "type",
+                                                "equals": "Microsoft.Storage/storageAccounts/fileServices"
+                                            },
+                                            {
+                                                "count": {
+                                                    "field": "Microsoft.Storage/storageAccounts/fileServices/cors.corsRules[*]"
+                                                },
+                                                "greater": 0
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "allOf": [
+                                            {
+                                                "field": "type",
+                                                "equals": "Microsoft.Storage/storageAccounts/tableServices"
+                                            },
+                                            {
+                                                "count": {
+                                                    "field": "Microsoft.Storage/storageAccounts/tableServices/cors.corsRules[*]"
+                                                },
+                                                "greater": 0
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "allOf": [
+                                            {
+                                                "field": "type",
+                                                "equals": "Microsoft.Storage/storageAccounts/queueServices"
+                                            },
+                                            {
+                                                "count": {
+                                                    "field": "Microsoft.Storage/storageAccounts/queueServices/cors.corsRules[*]"
+                                                },
+                                                "greater": 0
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": {
+                                "effect": "[[parameters('effect')]"
+                            }
+                        }
+                    },
+                    "name": "Deny-Storage-CorsRules"
+                }
+            ]
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/policyDefinitions",
+            "name": "[variables('policies').policyDefinitions[copyIndex()].name]",
+            "apiVersion": "2019-09-01",
+            "copy": {
+                "name": "policyDefinitionCopy",
+                "count": "[length(variables('policies').policyDefinitions)]"
+            },
+            "properties": {
+                "displayName": "[variables('policies').policyDefinitions[copyIndex()].properties.displayName]",
+                "description": "[variables('policies').policyDefinitions[copyIndex()].properties.description]",
+                "mode": "[variables('policies').policyDefinitions[copyIndex()].properties.mode]",
+                "policyType": "Custom",
+                "parameters": "[variables('policies').policyDefinitions[copyIndex()].properties.parameters]",
+                "policyRule": "[variables('policies').policyDefinitions[copyIndex()].properties.policyRule]",
+                "metadata": "[variables('policies').policyDefinitions[copyIndex()].properties.metadata]"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/policySetDefinitions",
+            "apiVersion": "2021-06-01",
+            "name": "Compliant-Storage",
+            "dependsOn": [
+                "policyDefinitionCopy"
+            ],
+            "properties": {
+                "metadata": {
+                    "version": "1.0.0",
+                    "category": "Storage"
+                },
+                "displayName": "Enforce secure-by-default Storage Account for regulated industries",
+                "description": "This policy initiative is a group of policies that ensures Storage is compliant per regulated Landing Zones",
+                "policyDefinitionGroups": [
+                    {
+                        "name": "Encryption",
+                        "category": "Data Protection",
+                        "displayName": "Ensure Storage Account is using secure encryption",
+                        "description": "Policy to ensure Storage Account is using secure encryption"
+                    },
+                    {
+                        "name": "Network",
+                        "category": "Network Security",
+                        "displayName": "Ensure Storage Account is not accessible over the public internet",
+                        "description": "Policy to ensure Storage Account is not accessible over the public internet"
+                    },
+                    {
+                        "name": "Identity",
+                        "category": "Identity Management",
+                        "displayName": "Ensure usage of centralized identity and auhtorization system for Storage Account",
+                        "description": "Policy to ensure Storage Account is not using local authorization"
+                    },
+                    {
+                        "name": "Logging",
+                        "category": "Logging and Threat Detection",
+                        "displayName": "Ensure Storage Account is logging all events to Log Analytics",
+                        "description": "Policy to ensure Storage Account is logging all events to Log Analytics workspace"
+                    }
+                ],
+                "parameters": {
+                    "storageKeysExipiration": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "modifyStorageFileSyncPublicEndpoint": {
+                        "type": "string",
+                        "defaultValue": "Modify"
+                    },
+                    "storageFileSyncPublicEndpoint": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageFileSyncDiagnostics": {
+                        "type": "string",
+                        "defaultValue": "DeployIfNotExists"
+                    },
+                    "storageFileSyncLogAnalyticsWorkspaceId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageAccountNetworkRules": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageTableDiagnostics": {
+                        "type": "string",
+                        "defaultValue": "DeployIfNotExists"
+                    },
+                    "storageTableLogAnalyticsWorkspaceId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageAccountRestrictNetworkRules": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageThreatProtection": {
+                        "type": "string",
+                        "defaultValue": "DeployIfNotExists"
+                    },
+                    "storageClassicToArm": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountSecureTransfer": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountsInfraEncryption": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountsPublicAccess": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountsDiagnostics": {
+                        "type": "string",
+                        "defaultValue": "DeployIfNotExists"
+                    },
+                    "storageAccountsLogAnalyticsWorkspaceId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageAccountsCmk": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageQueueDiagnostics": {
+                        "type": "string",
+                        "defaultValue": "DeployIfNotExists"
+                    },
+                    "storageQueueLogAnalyticsWorkspaceId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageTableCmk": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountSharedKey": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountsCrossTenant": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountsModifyDisablePublicNetworkAccess": {
+                        "type": "string",
+                        "defaultValue": "Modify"
+                    },
+                    "storageAccountsDisablePublicNetworkAccess": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountsDoubleEncryption": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageQueueCmk": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountsTls": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountsEncryptionCmk": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountsCopyScope": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAccountsAllowedCopyScope": {
+                        "type": "string",
+                        "defaultValue": "AAD"
+                    },
+                    "storageServicesEncryption": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageLocalUser": {
+                        "type": "string",
+                        "defaultValue": "Disabled"
+                    },
+                    "storageSftp": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageNetworkAclsBypass": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAllowedNetworkAclsBypass": {
+                        "type": "array",
+                        "defaultValue": [
+                            "None"
+                        ]
+                    },
+                    "storageResourceAccessRulesTenantId": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageResourceAccessRulesResourceId": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageNetworkAclsVirtualNetworkRules": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageAllowBlobPublicAccess": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageContainerDeleteRetentionPolicy": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageMinContainerDeleteRetentionInDays": {
+                        "type": "Integer",
+                        "defaultValue": 7
+                    },
+                    "storageCorsRules": {
+                        "type": "string",
+                        "defaultValue": "Deny"
+                    },
+                    "storageBlobDiagnostics": {
+                        "type": "string",
+                        "defaultValue": "DeployIfNotExists"
+                    },
+                    "storageBlobLogAnalyticsWorkspaceId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageBlobPrivateDnsZone": {
+                        "type": "string",
+                        "defaultValue": "Disabled"
+                    },
+                    "storageBlobPrivateDnsZoneId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageSecondaryBlobPrivateDnsZone": {
+                        "type": "string",
+                        "defaultValue": "Disabled"
+                    },
+                    "storageSecondaryBlobPrivateDnsZoneId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageDfsPrivateDnsZone": {
+                        "type": "string",
+                        "defaultValue": "Disabled"
+                    },
+                    "storageDfsPrivateDnsZoneId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageSecondaryDfsPrivateDnsZone": {
+                        "type": "string",
+                        "defaultValue": "Disabled"
+                    },
+                    "storageSecondaryDfsPrivateDnsZoneId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageQueuePrivateDnsZone": {
+                        "type": "string",
+                        "defaultValue": "Disabled"
+                    },
+                    "storageQueuePrivateDnsZoneId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageSecondaryQueuePrivateDnsZone": {
+                        "type": "string",
+                        "defaultValue": "Disabled"
+                    },
+                    "storageSecondaryQueuePrivateDnsZoneId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageWebPrivateDnsZone": {
+                        "type": "string",
+                        "defaultValue": "Disabled"
+                    },
+                    "storageWebPrivateDnsZoneId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "storageSecondaryWebPrivateDnsZone": {
+                        "type": "string",
+                        "defaultValue": "Disabled"
+                    },
+                    "storageSecondaryWebPrivateDnsZoneId": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "modifyStorageAccountPublicEndpoint": {
+                        "type": "string",
+                        "defaultValue": "Modify"
+                    },
+                    "diagFileMetrics": {
+                        "type": "boolean",
+                        "defaultValue": false
+                    },
+                    "diagBlobMetrics": {
+                        "type": "boolean",
+                        "defaultValue": false
+                    },
+                    "diagQueueMetrics": {
+                        "type": "boolean",
+                        "defaultValue": false
+                    },
+                    "diagTableMetrics": {
+                        "type": "boolean",
+                        "defaultValue": false
+                    }
+                },
+                "policyDefinitions": [
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[0].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-Cmk",
+                        "groupNames": [
+                            "Encryption"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountsCmk')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[1].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-CopyScope",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountsCopyScope')]"
+                            },
+                            "allowedCopyScope": {
+                                "value": "[[parameters('storageAccountsAllowedCopyScope')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[2].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-ServicesEncryption",
+                        "groupNames": [
+                            "Encryption"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageServicesEncryption')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[3].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-LocalUser",
+                        "groupNames": [
+                            "Identity"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageLocalUser')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[4].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-Sftp",
+                        "groupNames": [
+                            "Identity"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageSftp')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[5].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-NetworkAclsBypass",
+                        "groupNames": [
+                            "Identity"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageNetworkAclsBypass')]"
+                            },
+                            "allowedBypassOptions": {
+                                "value": "[[parameters('storageAllowedNetworkAclsBypass')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[6].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-ResourceAccessRulesTenantId",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageResourceAccessRulesTenantId')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[7].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-ResourceAccessRulesResourceId",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageResourceAccessRulesResourceId')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[8].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-NetworkAclsVirtualNetworkRules",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageNetworkAclsVirtualNetworkRules')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[9].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-AllowBlobPublicAccess",
+                        "groupNames": [
+                            "Identity"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAllowBlobPublicAccess')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[10].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-ContainerDeleteRetentionPolicy",
+                        "groupNames": [
+                            "Encryption"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageContainerDeleteRetentionPolicy')]"
+                            },
+                            "minContainerDeleteRetentionInDays": {
+                                "value": "[[parameters('storageMinContainerDeleteRetentionInDays')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "[concat(variables('scope'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policies').policyDefinitions[11].name)]",
+                        "policyDefinitionReferenceId": "Deny-Storage-CorsRules",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageCorsRules')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/b4fe1a3b-0715-4c6c-a5ea-ffc33cf823cb",
+                        "policyDefinitionReferenceId": "Dine-Diagnostics-Storage-blob",
+                        "groupNames": [
+                            "Logging"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageBlobDiagnostics')]"
+                            },
+                            "logAnalytics": {
+                                "value": "[[parameters('storageBlobLogAnalyticsWorkspaceId')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/b5ec538c-daa0-4006-8596-35468b9148e8",
+                        "policyDefinitionReferenceId": "Deny-Storage-Encryption-Cmk",
+                        "groupNames": [
+                            "Encryption"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountsEncryptionCmk')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/fe83a0eb-a853-422d-aac2-1bffd182c5d0",
+                        "policyDefinitionReferenceId": "Deny-Storage-Tls",
+                        "groupNames": [
+                            "Network",
+                            "Encryption"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountsTls')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/f0e5abd0-2554-4736-b7c0-4ffef23475ef",
+                        "policyDefinitionReferenceId": "Deny-Storage-Queue-Cmk",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageQueueCmk')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/bfecdea6-31c4-4045-ad42-71b9dc87247d",
+                        "policyDefinitionReferenceId": "Deny-Storage-Account-Encryption",
+                        "groupNames": [
+                            "Encryption"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountsDoubleEncryption')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/b2982f36-99f2-4db5-8eff-283140c09693",
+                        "policyDefinitionReferenceId": "Deny-Storage-Account-PublicEndpoint",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountsDisablePublicNetworkAccess')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/a06d0189-92e8-4dba-b0c4-08d7669fce7d",
+                        "policyDefinitionReferenceId": "Modify-Storage-Account-PublicEndpoint",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountsModifyDisablePublicNetworkAccess')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/92a89a79-6c52-4a7e-a03f-61306fc49312",
+                        "policyDefinitionReferenceId": "Deny-Storage-Cross-Tenant",
+                        "groupNames": [
+                            "Encryption",
+                            "Identity"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountsCrossTenant')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/8c6a50c6-9ffd-4ae7-986f-5fa6111f9a54",
+                        "policyDefinitionReferenceId": "Deny-Storage-Shared-Key",
+                        "groupNames": [
+                            "Encryption",
+                            "Identity"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountSharedKey')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/7c322315-e26d-4174-a99e-f49d351b4688",
+                        "policyDefinitionReferenceId": "Deny-Storage-Table-Cmk",
+                        "groupNames": [
+                            "Encryption"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageTableCmk')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/7bd000e3-37c7-4928-9f31-86c4b77c5c45",
+                        "policyDefinitionReferenceId": "Dine-Storage-Queue-Diagnostics",
+                        "groupNames": [
+                            "Logging"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageQueueDiagnostics')]"
+                            },
+                            "logAnalytics": {
+                                "value": "[[parameters('storageQueueLogAnalyticsWorkspaceId')]"
+                            },
+                            "metricsEnabled": {
+                                "value": "[[parameters('diagQueueMetrics')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/75973700-529f-4de2-b794-fb9b6781b6b0",
+                        "policyDefinitionReferenceId": "Dine-Storage-Blob-PrivateDns",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageBlobPrivateDnsZone')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[[parameters('storageBlobPrivateDnsZoneId')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/d847d34b-9337-4e2d-99a5-767e5ac9c582",
+                        "policyDefinitionReferenceId": "Dine-Storage-SecondaryBlob-PrivateDns",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageSecondaryBlobPrivateDnsZone')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[[parameters('storageSecondaryBlobPrivateDnsZoneId')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/83c6fe0f-2316-444a-99a1-1ecd8a7872ca",
+                        "policyDefinitionReferenceId": "Dine-Storage-Dfs-PrivateDns",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageDfsPrivateDnsZone')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[[parameters('storageDfsPrivateDnsZoneId')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/90bd4cb3-9f59-45f7-a6ca-f69db2726671",
+                        "policyDefinitionReferenceId": "Dine-Storage-SecondaryDfs-PrivateDns",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageSecondaryDfsPrivateDnsZone')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[[parameters('storageSecondaryDfsPrivateDnsZoneId')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/bcff79fb-2b0d-47c9-97e5-3023479b00d1",
+                        "policyDefinitionReferenceId": "Dine-Storage-Queue-PrivateDns",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageQueuePrivateDnsZone')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[[parameters('storageQueuePrivateDnsZoneId')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/da9b4ae8-5ddc-48c5-b9c0-25f8abf7a3d6",
+                        "policyDefinitionReferenceId": "Dine-Storage-SecondaryQueue-PrivateDns",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageSecondaryQueuePrivateDnsZone')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[[parameters('storageSecondaryQueuePrivateDnsZoneId')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/9adab2a5-05ba-4fbd-831a-5bf958d04218",
+                        "policyDefinitionReferenceId": "Dine-Storage-Web-PrivateDns",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageWebPrivateDnsZone')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[[parameters('storageWebPrivateDnsZoneId')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/d19ae5f1-b303-4b82-9ca8-7682749faf0c",
+                        "policyDefinitionReferenceId": "Dine-Storage-SecondaryWeb-PrivateDns",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageSecondaryWebPrivateDnsZone')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[[parameters('storageSecondaryWebPrivateDnsZoneId')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/59759c62-9a22-4cdf-ae64-074495983fef",
+                        "policyDefinitionReferenceId": "Dine-Storage-Accounts-Diagnostics",
+                        "groupNames": [
+                            "Logging"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountsDiagnostics')]"
+                            },
+                            "logAnalytics": {
+                                "value": "[[parameters('storageAccountsLogAnalyticsWorkspaceId')]"
+                            },
+                            "metricsEnabled": {
+                                "value": "[[parameters('diagBlobMetrics')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/4fa4b6c0-31ca-4c0d-b10d-24b96f62a751",
+                        "policyDefinitionReferenceId": "Deny-Storage-Public-Access",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountsPublicAccess')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/4733ea7b-a883-42fe-8cac-97454c2a9e4a",
+                        "policyDefinitionReferenceId": "Deny-Storage-Infra-Encryption",
+                        "groupNames": [
+                            "Encryption"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountsInfraEncryption')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/404c3081-a854-4457-ae30-26a93ef643f9",
+                        "policyDefinitionReferenceId": "Deny-Storage-SecureTransfer",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountSecureTransfer')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/37e0d2fe-28a5-43d6-a273-67d37d1f5606",
+                        "policyDefinitionReferenceId": "Deny-Storage-Classic",
+                        "groupNames": [
+                            "Identity"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageClassicToArm')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/361c2074-3595-4e5d-8cab-4f21dffc835c",
+                        "policyDefinitionReferenceId": "Dine-Storage-Threat-Protection",
+                        "groupNames": [
+                            "Logging"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageThreatProtection')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/34c877ad-507e-4c82-993e-3452a6e0ad3c",
+                        "policyDefinitionReferenceId": "Deny-Storage-Restrict-NetworkRules",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountRestrictNetworkRules')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2fb86bf3-d221-43d1-96d1-2434af34eaa0",
+                        "policyDefinitionReferenceId": "Dine-Storage-Table-Diagnostics",
+                        "groupNames": [
+                            "Logging"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageTableDiagnostics')]"
+                            },
+                            "logAnalytics": {
+                                "value": "[[parameters('storageTableLogAnalyticsWorkspaceId')]"
+                            },
+                            "metricsEnabled": {
+                                "value": "[[parameters('diagTableMetrics')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a1a9cdf-e04d-429a-8416-3bfb72a1b26f",
+                        "policyDefinitionReferenceId": "Deny-Storage-NetworkRules",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageAccountNetworkRules')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/25a70cc8-2bd4-47f1-90b6-1478e4662c96",
+                        "policyDefinitionReferenceId": "Dine-Storage-FileSync-Diagnostics",
+                        "groupNames": [
+                            "Logging"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageFileSyncDiagnostics')]"
+                            },
+                            "logAnalytics": {
+                                "value": "[[parameters('storageFileSyncLogAnalyticsWorkspaceId')]"
+                            },
+                            "metricsEnabled": {
+                                "value": "[[parameters('diagFileMetrics')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/21a8cd35-125e-4d13-b82d-2e19b7208bb7",
+                        "policyDefinitionReferenceId": "Deny-Storage-FileSync-PublicEndpoint",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageFileSyncPublicEndpoint')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/13502221-8df0-4414-9937-de9c5c4e396b",
+                        "policyDefinitionReferenceId": "Modify-Blob-Storage-Account-PublicEndpoint",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('modifyStorageAccountPublicEndpoint')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/0e07b2e9-6cd9-4c40-9ccb-52817b95133b",
+                        "policyDefinitionReferenceId": "Modify-Storage-FileSync-PublicEndpoint",
+                        "groupNames": [
+                            "Network"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('modifyStorageFileSyncPublicEndpoint')]"
+                            }
+                        }
+                    },
+                    {
+                        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/044985bb-afe1-42cd-8a36-9d5d42424537",
+                        "policyDefinitionReferenceId": "Deny-Storage-Account-Keys-Expire",
+                        "groupNames": [
+                            "Encryption"
+                        ],
+                        "parameters": {
+                            "effect": {
+                                "value": "[[parameters('storageKeysExipiration')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
