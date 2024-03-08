@@ -35,9 +35,7 @@
             "location": "[steps('basics').resourceScope.location.name]",
             "managementGroupId": "[steps('basics').resourceScope.managementGroup.id]",
             "parameters": {
-                "topLevelManagementGroupPrefix": {
-                    "value": "[steps('basics').resourceScope.managementGroup.id]"
-                }
+                "topLevelManagementGroupPrefix": "[steps('basics').resourceScope.managementGroup.id]"
             }
         }
     }
