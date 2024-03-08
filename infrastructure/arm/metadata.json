@@ -1,0 +1,10 @@
+{
+    "$schema": "https://aka.ms/azure-quickstart-templates-metadata-schema#",
+    "itemDisplayName": "Enterprise Azure OpenAI Hub",
+    "description": "This template will deploy the entire Enterprise Azure OpenAI Hub.",
+    "summary": "This template will deploy the entire Enterprise Azure OpenAI Hub.",
+    "type": "Foundation",
+    "validationType": "Manual",
+    "githubUsername": "krnese",
+    "dateUpdated": "2024-08-03"
+}
