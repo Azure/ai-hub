@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json#",
+    "view": {
+        "kind": "Form",
+        "properties": {
+            "title": "Service Enablement for Enterprise Azure OpenAI Hub",
+            "steps": [
+                {
+                    "name": "basics",
+                    "label": "Policy Initiative for Azure App Service",
+                    "elements": [
+                        {
+                            "name": "PolicyInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "text": "The following policy definitions will be created for Azure App Service: <ul><li>Deploy Diagnostic Settings for App Service Web App to Log Analytics workspace<li>Deploy Diagnostic Settings for Azure Function App to Log Analytics workspace<li>API App should only be accessible over HTTPS<li>Logic apps should disable public network access<li>Logic app should only be accessible over HTTPS<li>Configure Logic apps to use the latest TLS version<li>Deploy Diagnostic Settings for Azure Logic App to Log Analytics workspace<li>App Service certificates must be stored in Key Vault<li>Configure Function app slots to use the latest TLS version<li>Configure Function app slots to only be accessible over HTTPS<li>Configure Function app slots to disable public network access<li>Configure App Service apps to use the latest TLS version<li>Configure App Service apps to turn off remote debugging<li>Configure App Service apps to disable public network access<li>Configure App Service app slots to disable public network access<li>Configure App Service app slots to turn off remote debugging<li>App Service Environment should be provisioned with latest versions<li>App Service apps should only be accessible over HTTPS<li>App Service apps should enable configuration routing to Azure Virtual Network<li>App Service app slots should only be accessible over HTTPS<li>App Service app slots should enable outbound non-RFC 1918 traffic to Azure Virtual Network<li>App Service apps should enable outbound non-RFC 1918 traffic to Azure Virtual Network<li>App Service Environment should have TLS 1.0 and 1.1 disablede<li>Function apps should disable public network access<li>Configure Function app slots to turn off remote debugging<li>App Service app slots should disable public network access<li>Function apps should only be accessible over HTTPS<li>Configure App Service apps to disable local authentication for SCM sites<li>Function app slots should only be accessible over HTTPS<li>App Service app slots should enable configuration routing to Azure Virtual Network<li>Configure App Service apps to disable local authentication for FTP deployments<li>App Service apps should use a SKU that supports private link<li>App Service Environment apps should not be reachable over public internet<li>Configure App Service app slots to disable local authentication for SCM sites<li>Configure Function apps to turn off remote debugging<li>Configure App Service app slots to use the latest TLS version<li>Configure App Service apps to only be accessible over HTTPS<li>Function app slots should disable public network access<li>App Service apps should disable public network access<li>Configure Function apps to use the latest TLS version</ul>",
+                                "uri": "https://github.com/Azure/ai-hub/blob/main/docs/security.md#app-service",
+                                "style": "Info"
+                            }
+                        },
+                        {
+                            "name": "resourceScope",
+                            "type": "Microsoft.Common.ResourceScope",
+                            "location": {
+                                "resourceTypes": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "outputs": {
+            "kind": "ManagementGroup",
+            "location": "[steps('basics').resourceScope.location.name]",
+            "managementGroupId": "[steps('basics').resourceScope.managementGroup.id]",
+            "parameters": {
+                "topLevelManagementGroupPrefix": "[steps('basics').resourceScope.managementGroup.id]"
+            }
+        }
+    }
+}

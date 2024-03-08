@@ -7,15 +7,15 @@
             "steps": [
                 {
                     "name": "basics",
-                    "label": "Policy Initiative for Azure API Management",
+                    "label": "Policy Initiative for Azure AI Search",
                     "elements": [
                         {
                             "name": "PolicyInfo",
                             "type": "Microsoft.Common.InfoBox",
                             "visible": true,
                             "options": {
-                                "text": "The following policy definitions will be created for APIM: <ul><li>API Management services should use a virtual network<li>API Management services should use TLS version 1.2<li>Enable logging by category group for API Management services (microsoft.apimanagement/service) to Log Analytics<li>API Management secret named values should be stored in Azure Key Vault<li>API Management APIs should use only encrypted protocols<li>API Management calls to API backends should be authenticated<li>API Management direct management endpoint should not be enabled<li>API Management calls to API backends should not bypass certificate thumbprint or name validation<li>Configure API Management services to disable access to API Management public service configuration endpoints<li>API Management service should use a SKU that supports virtual networks<li>API Management minimum API version should be set to 2019-12-01 or higher<li>API Management subscriptions should not be scoped to all APIs</ul>",
-                                "uri": "https://github.com/Azure/ai-hub/blob/main/docs/security.md#api-management",
+                                "text": "The following policy definitions will be created for Azure AI Search: <ul><li>Deploy Diagnostic Settings for Azure AI Search to Log Analytics workspace<li>Azure Azure AI Search service should use a SKU that supports private link<li>Azure Azure AI Search services should disable public network access<li>Azure Azure AI Search services should have local authentication methods disabled<li>Azure Azure AI Search services should use customer-managed keys to encrypt data at rest<li>Configure Azure Azure AI Search services to disable local authentication<li>Configure Azure Azure AI Search services to disable public network access</ul>",
+                                "uri": "https://github.com/Azure/ai-hub/blob/main/docs/security.md#azure-ai-search",
                                 "style": "Info"
                             }
                         },

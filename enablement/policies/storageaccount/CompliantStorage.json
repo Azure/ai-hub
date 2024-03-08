@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json#",
+    "view": {
+        "kind": "Form",
+        "properties": {
+            "title": "Service Enablement for Enterprise Azure OpenAI Hub",
+            "steps": [
+                {
+                    "name": "basics",
+                    "label": "Policy Initiative for Azure Storage Account",
+                    "elements": [
+                        {
+                            "name": "PolicyInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "text": "The following policy definitions will be created for Azure Storage Account: <ul><li>Storage accounts should use customer-managed key for encryption<li>Allowed Copy scope should be restricted for Storage Accounts<li>Encryption for storage services should be enforced for Storage Accounts<li>Local users should be restricted for Storage Accounts<li>SFTP should be restricted for Storage Accounts<li>Network ACL bypass option should be restricted for Storage Accounts<li>Resource Access Rules Tenants should be restricted for Storage Accounts<li>Resource Access Rules resource IDs should be restricted for Storage Accounts<li>Virtual network rules should be restricted for Storage Accounts<li>Public blob access should be restricted for Storage Accounts<li>Storage Accounts should use a container delete retention policy<li>Storage Accounts should restrict CORS rules<li>Configure diagnostic settings for Blob Services to Log Analytics workspace<li>Storage account encryption scopes should use customer-managed keys to encrypt data at rest<li>Storage accounts should have the specified minimum TLS version<li>Queue Storage should use customer-managed key for encryptions<li>Storage account encryption scopes should use double encryption for data at rest<li>Storage accounts should disable public network access<li>Configure storage accounts to disable public network access<li>Storage accounts should prevent cross tenant object replication<li>Storage accounts should prevent shared key access<li>Table Storage should use customer-managed key for encryption<li>Configure diagnostic settings for Queue Services to Log Analytics workspace<li>Configure diagnostic settings for Storage Accounts to Log Analytics workspace<li>[Preview]: Storage account public access should be disallowed<li>Storage accounts should have infrastructure encryption<li>Secure transfer to storage accounts should be enabled<li>Storage accounts should be migrated to new Azure Resource Manager resources<li>Deploy Defender for Storage (Classic) on storage accounts<li>Storage accounts should restrict network access<li>Storage accounts should restrict network access using virtual network rules<li>Configure your Storage account public access to be disallowed<li>Storage account keys should not be expired</ul>",
+                                "uri": "https://github.com/Azure/ai-hub/blob/main/docs/security.md#azure-storage-account",
+                                "style": "Info"
+                            }
+                        },
+                        {
+                            "name": "resourceScope",
+                            "type": "Microsoft.Common.ResourceScope",
+                            "location": {
+                                "resourceTypes": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "outputs": {
+            "kind": "ManagementGroup",
+            "location": "[steps('basics').resourceScope.location.name]",
+            "managementGroupId": "[steps('basics').resourceScope.managementGroup.id]",
+            "parameters": {
+                "topLevelManagementGroupPrefix": "[steps('basics').resourceScope.managementGroup.id]"
+            }
+        }
+    }
+}
