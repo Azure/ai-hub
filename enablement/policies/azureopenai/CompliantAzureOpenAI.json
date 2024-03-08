@@ -7,15 +7,15 @@
             "steps": [
                 {
                     "name": "basics",
-                    "label": "Policy Initiative for Azure API Management",
+                    "label": "Policy Initiative for Azure OpenAI",
                     "elements": [
                         {
                             "name": "PolicyInfo",
                             "type": "Microsoft.Common.InfoBox",
                             "visible": true,
                             "options": {
-                                "text": "The following policy definitions will be created for APIM: <ul><li>API Management services should use a virtual network<li>API Management services should use TLS version 1.2<li>Enable logging by category group for API Management services (microsoft.apimanagement/service) to Log Analytics<li>API Management secret named values should be stored in Azure Key Vault<li>API Management APIs should use only encrypted protocols<li>API Management calls to API backends should be authenticated<li>API Management direct management endpoint should not be enabled<li>API Management calls to API backends should not bypass certificate thumbprint or name validation<li>Configure API Management services to disable access to API Management public service configuration endpoints<li>API Management service should use a SKU that supports virtual networks<li>API Management minimum API version should be set to 2019-12-01 or higher<li>API Management subscriptions should not be scoped to all APIs</ul>",
-                                "uri": "https://github.com/Azure/ai-hub/blob/main/docs/security.md#api-management",
+                                "text": "The following policy definitions will be created for Azure OpenAI: <ul><li>Outbound network access should be restricted for Cognitive Services<li>Network ACLs should be restricted for Cognitive Services<li>Deploy Diagnostic Settings for Azure OpenAI (Cognitive Services) to Log Analytics workspace<li>Cognitive Services accounts should use a managed identity<li>Cognitive Services accounts should have local authentication methods disabled<li>Cognitive Services accounts should enable data encryption with a customer-managed key<li>Configure Cognitive Services accounts to disable public network access<li>Cognitive Services accounts should use customer owned storage<li>Configure Cognitive Services accounts to disable local authentication methods<li>Cognitive Services accounts should disable public network access<li>Cognitive Services accounts should restrict network access</ul>",
+                                "uri": "https://github.com/Azure/ai-hub/blob/main/docs/security.md#azure-openai",
                                 "style": "Info"
                             }
                         },

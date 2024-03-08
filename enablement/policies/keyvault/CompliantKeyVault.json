@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json#",
+    "view": {
+        "kind": "Form",
+        "properties": {
+            "title": "Service Enablement for Enterprise Azure OpenAI Hub",
+            "steps": [
+                {
+                    "name": "basics",
+                    "label": "Policy Initiative for Azure Key Vault",
+                    "elements": [
+                        {
+                            "name": "PolicyInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "text": "The following policy definitions will be created for Azure Key Vault: <ul><li>[Preview]: Certificates should not expire within the specified number of days<li>[Preview]: Azure Key Vault Managed HSM keys using elliptic curve cryptography should have the specified curve names<li>[Preview]: Azure Key Vault Managed HSM Keys should have more than the specified number of days before expiration<li>Certificates should be issued by the specified integrated certificate authority<li>Certificates should be issued by the specified non-integrated certificate authority<li>Secrets should have content type set<li>Enable logging by category group for Managed HSMs (microsoft.keyvault/managedhsms) to Log Analytics<li>Secrets should not be active for longer than the specified number of days<li>Secrets should have more than the specified number of days before expiration<li>Keys using elliptic curve cryptography should have the specified curve names<li>Keys should not be active for longer than the specified number of days<li>Keys should have more than the specified number of days before expiration<li>Keys should be the specified cryptographic type RSA or EC<li>Configure key vaults to enable firewall<li>Certificates using elliptic curve cryptography should have allowed curve names<li>Certificates should use allowed key types<li>Azure Key Vault should have firewall enabled<li>Secrets should have the specified maximum validity period<li>Keys should have the specified maximum validity period<li>Key Vault secrets should have an expiration date<li>[Preview]: Azure Key Vault Managed HSM keys should have an expiration date<li>Key Vault keys should have an expiration date<li>[Preview]: Certificates should have the specified maximum validity period<li>Azure Key Vault Managed HSM should have purge protection enabled<li>Deploy - Configure diagnostic settings for Azure Key Vault to Log Analytics workspace<li>[Preview]: Configure Azure Key Vault Managed HSM to disable public network access<li>Azure Key Vault should disable public network access<li>Key vaults should have soft delete enabled<li>[Preview]: Azure Key Vault Managed HSM should disable public network access<li>[Preview]: Azure Key Vault should use RBAC permission model<li>Key vaults should have deletion protection enabled<li>Certificates should have the specified lifetime action triggers<li>Keys using RSA cryptography should have a specified minimum key size<li>[Preview]: Azure Key Vault Managed HSM keys using RSA cryptography should have a specified minimum key size<li>Certificates using RSA cryptography should have the specified minimum key size</ul>",
+                                "uri": "https://github.com/Azure/ai-hub/blob/main/docs/security.md#azure-openai",
+                                "style": "Info"
+                            }
+                        },
+                        {
+                            "name": "resourceScope",
+                            "type": "Microsoft.Common.ResourceScope",
+                            "location": {
+                                "resourceTypes": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "outputs": {
+            "kind": "ManagementGroup",
+            "location": "[steps('basics').resourceScope.location.name]",
+            "managementGroupId": "[steps('basics').resourceScope.managementGroup.id]",
+            "parameters": {
+                "topLevelManagementGroupPrefix": "[steps('basics').resourceScope.managementGroup.id]"
+            }
+        }
+    }
+}

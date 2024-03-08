@@ -15,6 +15,7 @@ Azure provides multiple options and services to help you secure your data and ap
     - [API Management](#api-management)
     - [Azure AI Search](#azure-ai-search)
     - [App Service](#app-service)
+- [Deploy recommended Azure policies for the Enterprise Azure OpenAI Hub](#deploy-recommended-azure-policies-for-the-enterprise-azure-openai-hub)
 - [Next steps](#next-steps)
 ---
 
@@ -391,6 +392,6 @@ However, we have provided a set of recommended Azure policies that you can use t
 | Enforce secure-by-default API Management for Enterprises | API Management minimum API version should be set to 2019-12-01 or higher | To prevent service secrets from being shared with read-only users, the minimum API version should be set to 2019-12-01 or higher. |
 | Enforce secure-by-default API Management for Enterprises | API Management subscriptions should not be scoped to all APIs | API Management subscriptions should be scoped to a product or an individual API instead of all APIs, which could result in an excessive data exposure. |
 
-## Next Steps
+## Deploy recommended Azure policies for the Enterprise Azure OpenAI Hub
 
-Deploy one or more of the recommended Azure policies suited for the Enterprise Azure OpenAI Hub enabelment from [here](./AzPolicies.md).
+Deploy one or more of the recommended Azure policies suited for the Enterprise Azure OpenAI Hub enabelment from [here](../enablement/README.md).
