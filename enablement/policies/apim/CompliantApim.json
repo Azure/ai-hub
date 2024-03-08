@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json#",
+    "view": {
+        "kind": "Form",
+        "properties": {
+            "title": "Secure and Compliant APIM for Enterprise Scale Azure OpenAI Hub",
+            "steps": [
+                {
+                    "name": "basics",
+                    "label": "Policy Initiative",
+                    "elements": [
+                        {
+                            "name": "PolicyInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "text": "The following policy definitions will be created for APIM: <ul><li>API Management services should use a virtual network<li>API Management services should use TLS version 1.2<li>Enable logging by category group for API Management services (microsoft.apimanagement/service) to Log Analytics<li>API Management secret named values should be stored in Azure Key Vault<li>API Management APIs should use only encrypted protocols<li>API Management calls to API backends should be authenticated<li>API Management direct management endpoint should not be enabled<li>API Management calls to API backends should not bypass certificate thumbprint or name validation<li>Configure API Management services to disable access to API Management public service configuration endpoints<li>API Management service should use a SKU that supports virtual networks<li>API Management minimum API version should be set to 2019-12-01 or higher<li>API Management subscriptions should not be scoped to all APIs</ul>",
+                                "uri": "https://github.com/Azure/ai-hub/blob/main/docs/security.md#api-management",
+                                "style": "Info"
+                            }
+                        },
+                        {
+                            "name": "resourceScope",
+                            "type": "Microsoft.Common.ResourceScope",
+                            "location": {
+                                "resourceTypes": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "outputs": {
+            "kind": "ManagementGroup",
+            "location": "[steps('basics').resourceScope.location.name]",
+            "managementGroupId": "[steps('basics').resourceScope.managementGroup.id]",
+            "parameters": {
+                "topLevelManagementGroupPrefix": {
+                    "value": "[steps('basics').resourceScope.managementGroup.id]"
+                }
+            }
+        }
+    }
+}
