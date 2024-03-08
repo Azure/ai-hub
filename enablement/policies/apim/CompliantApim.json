@@ -28,15 +28,15 @@
                         }
                     ]
                 }
-            ],
-            "outputs": {
-                "kind": "ManagementGroup",
-                "location": "[steps('basics').resourceScope.location.name]",
-                "managementGroupId": "[steps('basics').resourceScope.managementGroup.id]",
-                "parameters": {
-                    "topLevelManagementGroupPrefix": {
-                        "value": "[steps('basics').resourceScope.managementGroup.id]"
-                    }
+            ]
+        },
+        "outputs": {
+            "kind": "ManagementGroup",
+            "location": "[steps('basics').resourceScope.location.name]",
+            "managementGroupId": "[steps('basics').resourceScope.managementGroup.id]",
+            "parameters": {
+                "topLevelManagementGroupPrefix": {
+                    "value": "[steps('basics').resourceScope.managementGroup.id]"
                 }
             }
         }
