@@ -156,6 +156,16 @@ When deploying the Enterprise Azure OpenAI Hub into your subscription, there wil
 
 However, we have provided a set of recommended Azure policies that you can use to ensure that the Azure services included in the Enterprise Azure OpenAI Hub are deployed with the right configuration, and that the configuration is maintained over time. The recommended Azure policies are based on the Microsoft Cloud Security Benchmark and the Azure Security Benchmark, and are designed to help you meet your security and compliance requirements.
 
+The recommended Azure policies are organized by service, and include the following services:
+
+- [Azure Key Vault](#azure-key-vault)
+- [Azure Networking](#azure-networking)
+- [Azure OpenAI](#azure-openai)
+- [Azure Storage Account](#azure-storage-account)
+- [API Management](#api-management)
+- [Azure AI Search](#azure-ai-search)
+- [App Service](#app-service)
+
 ### Azure Key Vault
 
 | PolicySetDefinition | PolicyDefinition DisplayName | PolicyDefinition Description |
