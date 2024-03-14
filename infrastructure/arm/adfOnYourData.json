@@ -316,7 +316,6 @@
                                 },
                                 "annotations": [],
                                 "type": "RestResource",
-                                "typeProperties": {},
                                 "schema": []
                             }
                         },
@@ -542,7 +541,7 @@
                                             "sys_message": "[parameters('systemMessage')]",
                                             "user_prompt": "[parameters('userPrompt')]",
                                             "storageaccounturl": "[parameters('storageAccountBlobEndpoint')]",
-                                            "storageaccountfolder": "[parameters('storageAccountContainer')]",
+                                            "storageAccountContainer": "[parameters('storageAccountContainer')]",
                                             "temperature": "[parameters('temperature')]",
                                             "top_p": "[parameters('topP')]",
                                             "cosmosaccount": "[parameters('cosmosDbNoSqlEndpoint')]",
@@ -635,7 +634,7 @@
                                                                 {
                                                                     "name": "fileurl",
                                                                     "value": {
-                                                                        "value": "@{pipeline().parameters.storageaccounturl}@{pipeline().parameters.storageaccountfolder}/@{pipeline().parameters.fileName}",
+                                                                        "value": "@{pipeline().parameters.storageaccounturl}@{pipeline().parameters.storageAccountContainer}/@{pipeline().parameters.fileName}",
                                                                         "type": "Expression"
                                                                     }
                                                                 },
@@ -818,8 +817,6 @@
                                                 {
                                                     "name": "Move file to processed container",
                                                     "type": "Copy",
-                                                    "state": "Inactive",
-                                                    "onInactiveMarkAs": "Succeeded",
                                                     "dependsOn": [
                                                         {
                                                             "activity": "Copy GPT4 Response to Cosmos",
@@ -862,7 +859,7 @@
                                                             "type": "DatasetReference",
                                                             "parameters": {
                                                                 "container": {
-                                                                    "value": "@pipeline().parameters.storageaccountfolder",
+                                                                    "value": "@pipeline().parameters.storageaccountcontainer",
                                                                     "type": "Expression"
                                                                 },
                                                                 "filename": {
@@ -878,13 +875,9 @@
                                                             "referenceName": "blobfile",
                                                             "type": "DatasetReference",
                                                             "parameters": {
-                                                                "container": "videosprocessed",
+                                                                "container": "processed",
                                                                 "filename": {
                                                                     "value": "@pipeline().parameters.fileName",
-                                                                    "type": "Expression"
-                                                                },
-                                                                "folder": {
-                                                                    "value": "@variables('processedfolder')",
                                                                     "type": "Expression"
                                                                 }
                                                             }
@@ -980,7 +973,6 @@
                                                     "userProperties": [],
                                                     "typeProperties": {
                                                         "method": "GET",
-                                                        "headers": {},
                                                         "url": {
                                                             "value": "@{pipeline().parameters.openai_api_base}openai/extensions/on-your-data/ingestion-jobs/@{pipeline().parameters.indexName}?api-version=2023-10-01-preview",
                                                             "type": "Expression"
@@ -1020,7 +1012,7 @@
                                                     "type": "Expression"
                                                 },
                                                 "storageContainer": {
-                                                    "value": "@pipeline().parameters.storageaccountfolder",
+                                                    "value": "@pipeline().parameters.storageAccountContainer",
                                                     "type": "Expression"
                                                 },
                                                 "searchServiceEndpoint": {
@@ -1076,7 +1068,7 @@
                                         "type": "string",
                                         "defaultValue": "[parameters('storageAccountBlobEndpoint')]"
                                     },
-                                    "storageaccountfolder": {
+                                    "storageAccountContainer": {
                                         "type": "string",
                                         "defaultValue": "[parameters('storageAccountContainer')]"
                                     },
@@ -1099,17 +1091,6 @@
                                     "cosmoscontainer": {
                                         "type": "string",
                                         "defaultValue": "[parameters('cosmosDbNoSqlContainer')]"
-                                    },
-                                    "documentIntelligenceAPI": {
-                                        "type": "string",
-                                        "defaultValue": "[parameters('documentIntelligenceEndpoint')]"
-                                    },
-                                    "modelId": {
-                                        "type": "string",
-                                        "defaultValue": "[parameters('documentIntelligenceModelId')]"
-                                    },
-                                    "resultID": {
-                                        "type": "string"
                                     },
                                     "searchServiceEndpoint": {
                                         "type": "string",
@@ -1332,7 +1313,6 @@
                                                     "userProperties": [],
                                                     "typeProperties": {
                                                         "method": "GET",
-                                                        "headers": {},
                                                         "url": {
                                                             "value": "@{pipeline().parameters.documentIntelligenceAPI}documentintelligence/documentModels/@{pipeline().parameters.modelId}/analyzeResults/@{variables('resultID')}?api-version=2023-10-31-preview\n",
                                                             "type": "Expression"
@@ -1403,7 +1383,7 @@
                                                                 {
                                                                     "name": "fileurl",
                                                                     "value": {
-                                                                        "value": "@{pipeline().parameters.storageaccounturl}@{pipeline().parameters.storageaccountfolder}/@{pipeline().parameters.fileName}",
+                                                                        "value": "@{pipeline().parameters.storageaccounturl}@{pipeline().parameters.storageAccountContainer}/@{pipeline().parameters.fileName}",
                                                                         "type": "Expression"
                                                                     }
                                                                 },
@@ -1586,8 +1566,6 @@
                                                 {
                                                     "name": "Move file to processed container",
                                                     "type": "Copy",
-                                                    "state": "Inactive",
-                                                    "onInactiveMarkAs": "Succeeded",
                                                     "dependsOn": [
                                                         {
                                                             "activity": "Copy GPT4 Response to Cosmos",
@@ -1609,7 +1587,7 @@
                                                             "type": "BinarySource",
                                                             "storeSettings": {
                                                                 "type": "AzureBlobStorageReadSettings",
-                                                                "recursive": true,
+                                                                "recursive": false,
                                                                 "deleteFilesAfterCompletion": true
                                                             },
                                                             "formatSettings": {
@@ -1630,7 +1608,7 @@
                                                             "type": "DatasetReference",
                                                             "parameters": {
                                                                 "container": {
-                                                                    "value": "@pipeline().parameters.storageaccountfolder",
+                                                                    "value": "@pipeline().parameters.storageAccountContainer",
                                                                     "type": "Expression"
                                                                 },
                                                                 "filename": {
@@ -1646,13 +1624,9 @@
                                                             "referenceName": "blobfile",
                                                             "type": "DatasetReference",
                                                             "parameters": {
-                                                                "container": "videosprocessed",
+                                                                "container": "processed",
                                                                 "filename": {
                                                                     "value": "@pipeline().parameters.fileName",
-                                                                    "type": "Expression"
-                                                                },
-                                                                "folder": {
-                                                                    "value": "@variables('processedfolder')",
                                                                     "type": "Expression"
                                                                 }
                                                             }
@@ -1708,7 +1682,7 @@
                                                 "type": "Expression"
                                             },
                                             "body": {
-                                                "value": "{\"urlSource\":\"@{pipeline().parameters.storageaccounturl}@{pipeline().parameters.storageaccountfolder}/@{pipeline().parameters.fileName}\"}",
+                                                "value": "{\"urlSource\":\"@{pipeline().parameters.storageaccounturl}@{pipeline().parameters.storageAccountContainer}/@{pipeline().parameters.fileName}\"}",
                                                 "type": "Expression"
                                             },
                                             "authentication": {
@@ -1885,7 +1859,6 @@
                                                     "userProperties": [],
                                                     "typeProperties": {
                                                         "method": "GET",
-                                                        "headers": {},
                                                         "url": {
                                                             "value": "@{pipeline().parameters.openai_api_base}openai/extensions/on-your-data/ingestion-jobs/@{pipeline().parameters.indexName}?api-version=2023-10-01-preview",
                                                             "type": "Expression"
@@ -1929,7 +1902,7 @@
                                         "type": "string",
                                         "defaultValue": "[parameters('storageAccountBlobEndpoint')]"
                                     },
-                                    "storageaccountfolder": {
+                                    "storageAccountContainer": {
                                         "type": "string",
                                         "defaultValue": "[parameters('storageAccountContainer')]"
                                     },
@@ -2113,16 +2086,16 @@
                                                                 "value": "@pipeline().parameters.storageaccounturl",
                                                                 "type": "Expression"
                                                             },
-                                                            "storageaccountfolder": {
+                                                            "storageAccountContainer": {
                                                                 "value": "@pipeline().parameters.storageaccountcontainer",
                                                                 "type": "Expression"
                                                             },
                                                             "temperature": {
-                                                                "value": "@variables('temperature')",
+                                                                "value": "@pipeline().parameters.temperature",
                                                                 "type": "Expression"
                                                             },
                                                             "top_p": {
-                                                                "value": "@variables('top_p')",
+                                                                "value": "@pipeline().parameters.top_p",
                                                                 "type": "Expression"
                                                             },
                                                             "cosmosaccount": {
@@ -2137,8 +2110,16 @@
                                                                 "value": "@pipeline().parameters.cosmoscontainer",
                                                                 "type": "Expression"
                                                             },
-                                                            "documentIntelligenceAPI": {
-                                                                "value": "@pipeline().parameters.documentIntelligenceAPI",
+                                                            "searchServiceEndpoint": {
+                                                                "value": "@pipeline().parameters.searchServiceEndpoint",
+                                                                "type": "Expression"
+                                                            },
+                                                            "embeddingDeploymentName": {
+                                                                "value": "@pipeline().parameters.embeddingDeploymentName",
+                                                                "type": "Expression"
+                                                            },
+                                                            "storageAccountResourceId": {
+                                                                "value": "@pipeline().parameters.storageAccountResourceId",
                                                                 "type": "Expression"
                                                             },
                                                             "indexName": {
@@ -2208,10 +2189,6 @@
                                         "type": "bool",
                                         "defaultValue": true
                                     },
-                                    "documentIntelligenceAPI": {
-                                        "type": "string",
-                                        "defaultValue": "[parameters('documentIntelligenceEndpoint')]"
-                                    },
                                     "openAIAPI": {
                                         "type": "string",
                                         "defaultValue": "[parameters('azureOpenAiEndpoint')]"
@@ -2231,6 +2208,10 @@
                                     "aiSearchIndexName": {
                                         "type": "string",
                                         "defaultValue": "[parameters('indexName')]"
+                                    },
+                                    "storageAccountResourceId": {
+                                        "type": "string",
+                                        "defaultValue": "[parameters('storageAccountResourceId')]"
                                     }
                                 },
                                 "variables": {
@@ -2257,151 +2238,159 @@
                             ],
                             "properties": {
                                 "activities": [
-                                    {
-                                        "name": "Get documents",
-                                        "type": "GetMetadata",
-                                        "dependsOn": [],
-                                        "policy": {
-                                            "timeout": "0.12:00:00",
-                                            "retry": 0,
-                                            "retryIntervalInSeconds": 30,
-                                            "secureOutput": false,
-                                            "secureInput": false
-                                        },
-                                        "userProperties": [],
-                                        "typeProperties": {
-                                            "dataset": {
-                                                "referenceName": "blob",
-                                                "type": "DatasetReference",
-                                                "parameters": {
-                                                    "container": {
-                                                        "value": "@pipeline().parameters.storageaccountcontainer",
-                                                        "type": "Expression"
-                                                    },
-                                                    "endpoint": {
-                                                        "value": "@pipeline().parameters.storageaccounturl",
-                                                        "type": "Expression"
-                                                    }
-                                                }
-                                            },
-                                            "fieldList": [
-                                                "childItems"
-                                            ],
-                                            "storeSettings": {
-                                                "type": "AzureBlobStorageReadSettings",
-                                                "recursive": true,
-                                                "enablePartitionDiscovery": false
-                                            },
-                                            "formatSettings": {
-                                                "type": "BinaryReadSettings"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "ForEach Document File",
-                                        "type": "ForEach",
-                                        "dependsOn": [
                                             {
-                                                "activity": "Get documents",
-                                                "dependencyConditions": [
-                                                    "Succeeded"
-                                                ]
-                                            }
-                                        ],
-                                        "userProperties": [],
-                                        "typeProperties": {
-                                            "items": {
-                                                "value": "@activity('Get documents').output.childItems",
-                                                "type": "Expression"
-                                            },
-                                            "isSequential": false,
-                                            "activities": [
-                                                {
-                                                    "name": "Analyze Documents",
-                                                    "type": "ExecutePipeline",
-                                                    "dependsOn": [],
-                                                    "policy": {
-                                                        "secureInput": false
-                                                    },
-                                                    "userProperties": [],
-                                                    "typeProperties": {
-                                                        "pipeline": {
-                                                            "referenceName": "singleAnalyzeDocument",
-                                                            "type": "PipelineReference"
-                                                        },
-                                                        "waitOnCompletion": true,
+                                                "name": "Get documents",
+                                                "type": "GetMetadata",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "timeout": "0.12:00:00",
+                                                    "retry": 0,
+                                                    "retryIntervalInSeconds": 30,
+                                                    "secureOutput": false,
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "dataset": {
+                                                        "referenceName": "blob",
+                                                        "type": "DatasetReference",
                                                         "parameters": {
-                                                            "fileName": {
-                                                                "value": "@item().name",
-                                                                "type": "Expression"
-                                                            },
-                                                            "gpt4_deployment_name": {
-                                                                "value": "@pipeline().parameters.gpt4_deployment_name",
-                                                                "type": "Expression"
-                                                            },
-                                                            "openai_api_base": {
-                                                                "value": "@pipeline().parameters.openAIAPI",
-                                                                "type": "Expression"
-                                                            },
-                                                            "sys_message": {
-                                                                "value": "@pipeline().parameters.sys_message",
-                                                                "type": "Expression"
-                                                            },
-                                                            "user_prompt": {
-                                                                "value": "@pipeline().parameters.user_prompt",
-                                                                "type": "Expression"
-                                                            },
-                                                            "storageaccounturl": {
-                                                                "value": "@pipeline().parameters.storageaccounturl",
-                                                                "type": "Expression"
-                                                            },
-                                                            "storageaccountfolder": {
+                                                            "container": {
                                                                 "value": "@pipeline().parameters.storageaccountcontainer",
                                                                 "type": "Expression"
                                                             },
-                                                            "temperature": {
-                                                                "value": "@variables('temperature')",
-                                                                "type": "Expression"
-                                                            },
-                                                            "top_p": {
-                                                                "value": "@variables('top_p')",
-                                                                "type": "Expression"
-                                                            },
-                                                            "cosmosaccount": {
-                                                                "value": "@pipeline().parameters.cosmosaccount",
-                                                                "type": "Expression"
-                                                            },
-                                                            "cosmosdb": {
-                                                                "value": "@pipeline().parameters.cosmosdb",
-                                                                "type": "Expression"
-                                                            },
-                                                            "cosmoscontainer": {
-                                                                "value": "@pipeline().parameters.cosmoscontainer",
-                                                                "type": "Expression"
-                                                            },
-                                                            "documentIntelligenceAPI": {
-                                                                "value": "@pipeline().parameters.documentIntelligenceAPI",
-                                                                "type": "Expression"
-                                                            },
-                                                            "searchServiceEndpoint": {
-                                                                "value": "@pipeline().parameters.searchServiceEndpoint",
-                                                                "type": "Expression"
-                                                            },
-                                                            "embeddingDeploymentName": {
-                                                                "value": "@pipeline().parameters.embeddingDeploymentName",
-                                                                "type": "Expression"
-                                                            },
-                                                            "indexName": {
-                                                                "value": "@pipeline().parameters.aiSearchIndexName",
+                                                            "endpoint": {
+                                                                "value": "@pipeline().parameters.storageaccounturl",
                                                                 "type": "Expression"
                                                             }
                                                         }
+                                                    },
+                                                    "fieldList": [
+                                                        "childItems"
+                                                    ],
+                                                    "storeSettings": {
+                                                        "type": "AzureBlobStorageReadSettings",
+                                                        "recursive": true,
+                                                        "enablePartitionDiscovery": false
+                                                    },
+                                                    "formatSettings": {
+                                                        "type": "BinaryReadSettings"
                                                     }
                                                 }
-                                            ]
-                                        }
-                                    }
-                                ],
+                                            },
+                                            {
+                                                "name": "ForEach Document File",
+                                                "type": "ForEach",
+                                                "dependsOn": [
+                                                    {
+                                                        "activity": "Get documents",
+                                                        "dependencyConditions": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                ],
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "items": {
+                                                        "value": "@activity('Get documents').output.childItems",
+                                                        "type": "Expression"
+                                                    },
+                                                    "isSequential": false,
+                                                    "activities": [
+                                                        {
+                                                            "name": "Analyze Documents",
+                                                            "type": "ExecutePipeline",
+                                                            "dependsOn": [],
+                                                            "policy": {
+                                                                "secureInput": false
+                                                            },
+                                                            "userProperties": [],
+                                                            "typeProperties": {
+                                                                "pipeline": {
+                                                                    "referenceName": "singleAnalyzeDocument",
+                                                                    "type": "PipelineReference"
+                                                                },
+                                                                "waitOnCompletion": true,
+                                                                "parameters": {
+                                                                    "fileName": {
+                                                                        "value": "@item().name",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "gpt4_deployment_name": {
+                                                                        "value": "@pipeline().parameters.gpt4_deployment_name",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "openai_api_base": {
+                                                                        "value": "@pipeline().parameters.openAIAPI",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "sys_message": {
+                                                                        "value": "@pipeline().parameters.sys_message",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "user_prompt": {
+                                                                        "value": "@pipeline().parameters.user_prompt",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "storageaccounturl": {
+                                                                        "value": "@pipeline().parameters.storageaccounturl",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "storageAccountContainer": {
+                                                                        "value": "@pipeline().parameters.storageaccountcontainer",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "temperature": {
+                                                                        "value": "@pipeline().parameters.temperature",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "top_p": {
+                                                                        "value": "@pipeline().parameters.top_p",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "cosmosaccount": {
+                                                                        "value": "@pipeline().parameters.cosmosaccount",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "cosmosdb": {
+                                                                        "value": "@pipeline().parameters.cosmosdb",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "cosmoscontainer": {
+                                                                        "value": "@pipeline().parameters.cosmoscontainer",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "documentIntelligenceAPI": {
+                                                                        "value": "@pipeline().parameters.documentIntelligenceAPI",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "modelId": {
+                                                                        "value": "@pipeline().parameters.modelId",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "searchServiceEndpoint": {
+                                                                        "value": "@pipeline().parameters.searchServiceEndpoint",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "embeddingDeploymentName": {
+                                                                        "value": "@pipeline().parameters.embeddingDeploymentName",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "storageAccountResourceId": {
+                                                                        "value": "@pipeline().parameters.storageAccountResourceId",
+                                                                        "type": "Expression"
+                                                                    },
+                                                                    "indexName": {
+                                                                        "value": "@pipeline().parameters.aiSearchIndexName",
+                                                                        "type": "Expression"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ],
                                 "policy": {
                                     "elapsedTimeMetric": {}
                                 },
@@ -2481,6 +2470,14 @@
                                     "aiSearchIndexName": {
                                         "type": "string",
                                         "defaultValue": "[parameters('indexName')]"
+                                    },
+                                    "storageAccountResourceId": {
+                                        "type": "string",
+                                        "defaultValue": "[parameters('storageAccountResourceId')]"
+                                    },
+                                    "modelId": {
+                                        "type": "string",
+                                        "defaultValue": "[parameters('documentIntelligenceModelId')]"
                                     }
                                 },
                                 "variables": {
