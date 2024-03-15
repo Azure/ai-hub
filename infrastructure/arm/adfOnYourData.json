@@ -139,7 +139,7 @@
     },
     "variables": {
         "name-compliant-df": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf')]",
-        "name-compliant-df-pe": "[concat(parameters('prefix'), '-azdf-pe')]",
+        "name-compliant-df-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf-pe')]",
         "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
         "dfIdentity": {
             "type": "SystemAssigned"
@@ -2477,7 +2477,7 @@
                                     },
                                     "modelId": {
                                         "type": "string",
-                                        "defaultValue": "[parameters('documentIntelligenceModelId')]"
+                                        "": "[parameters('documentIntelligenceModelId')]"
                                     }
                                 },
                                 "variables": {
