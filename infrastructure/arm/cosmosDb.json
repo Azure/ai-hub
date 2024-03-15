@@ -52,10 +52,6 @@
                 "No"
             ]
         },
-        "cosmosDbNoSqlEndpoint": {
-            "type": "string",
-            "defaultValue": "https://esp1-swedencentral-cosmosdb.documents.azure.com:443/"
-        },
         "cosmosDbNoSqlDatabase": {
             "type": "string",
             "defaultValue": "responses"
@@ -169,7 +165,7 @@
                         {
                             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
                             "apiVersion": "2023-11-15",
-                            "name": "[concat(variables('name-compliant-cosmosDb'), '/doc')]",
+                            "name": "[concat(variables('name-compliant-cosmosDb'), '/', parameters('cosmosDbNoSqlDatabase'))]",
                             "dependsOn": [
                                 "[concat('Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'))]"
                             ],
@@ -182,10 +178,10 @@
                         {
                             "type": "Microsoft.DocumentDB/databaseAccounts/sqlContainers",
                             "apiVersion": "2023-11-15",
-                            "name": "[concat(variables('name-compliant-cosmosDb'), '/doc/', 'responses')]",
+                            "name": "[concat(variables('name-compliant-cosmosDb'), '/', parameters('cosmosDbNoSqlDatabase'))]",
                             "dependsOn": [
                                 "[concat('Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'))]",
-                                "[concat('Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'), '/sqlDatabases', '/doc')]"
+                                "[concat('Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'), '/sqlDatabases/', parameters('cosmosDbNoSqlDatabase'))]"
                             ],
                             "properties": {
                                 "resource": {
