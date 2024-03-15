@@ -1085,6 +1085,7 @@
                 }
             }
         },
+        // Deploying Storage Account into primary region
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
@@ -1133,6 +1134,9 @@
                     },
                     "stMonCreation": {
                         "value": "[parameters('stMonCreation')]"
+                    },
+                    "aiUseCaseSelection": {
+                        "value": "[parameters('aiUseCaseSelection')]"
                     }
                 }
             }
