@@ -1,0 +1,126 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "uniqueValue": {
+            "type": "string",
+            "defaultValue": "[deployment().name]"
+        },
+        "prefix": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "roles": {
+            "roleDefinitions": [
+                {
+                    "properties": {
+                        "roleName": "[concat(parameters('prefix'), '-', 'DocumentIntelligenceDataContributor')]",
+                        "description": "Document Intelligence Data Contributor",
+                        "type": "customRole",
+                        "permissions": [
+                            {
+                                "actions": [
+                                    "Microsoft.CognitiveServices/*/read"
+                                ],
+                                "notActions": [],
+                                "dataActions": [
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels:analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/read/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels:build/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels:compose/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels:copyto/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels:authorizecopy/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/businesscard/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/businesscard/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/train/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/delete",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/copyauthorization/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/copy/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/compose/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/copyresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/custom/models/keys/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/layout/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/layout/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/creation/build/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/creation/classify/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/creation/compose/model/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/creation/copy/model/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/creation/generate/copyauthorization/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/analysis/analyze/document/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/analysis/batchanalyze/document/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/analysis/get/analyze/result/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/analysis/get/batchanalyze/result/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/classification/analyze/document/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/classification/get/analyze/result/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/management/classifier/delete",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/management/get/classifier/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/management/get/info/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/management/get/model/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/management/model/delete",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/operation/get/operation/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/operation/list/operations/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/receipt/asyncbatchanalyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/receipt/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/receipt/operations/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels/delete",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/documentmodels/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/iddocument/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/iddocument/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/info/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/invoice/analyze/action",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/prebuilt/invoice/analyzeresults/read",
+                                    "Microsoft.CognitiveServices/accounts/FormRecognizer/operations/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/document:translate/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/detect/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/breaksentence/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/translate/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/transliterate/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/batches/delete",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/batches/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/batches/write",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/batches/documents/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/documents/formats/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/glossaries/formats/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/storagesources/read",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/dictionary/examples/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/dictionary/lookup/action",
+                                    "Microsoft.CognitiveServices/accounts/TextTranslation/languages/read"
+                                ],
+                                "notDataActions": []
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/roleDefinitions",
+            "name": "[guid(parameters('uniqueValue'), variables('roles').roleDefinitions[0].properties.roleName)]",
+            "apiVersion": "2018-01-01-preview",
+            "properties": {
+                "roleName": "[variables('roles').roleDefinitions[0].properties.roleName]",
+                "description": "[variables('roles').roleDefinitions[0].properties.description]",
+                "type": "[variables('roles').roleDefinitions[0].properties.type]",
+                "permissions": "[variables('roles').roleDefinitions[0].properties.permissions]",
+                "assignableScopes": [
+                    "[subscription().id]"
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "docIntelCustomRbacId": {
+            "type": "string",
+            "value": "[last(split(resourceId('Microsoft.Authorization/roleDefinitions', guid(parameters('uniqueValue'), variables('roles').roleDefinitions[0].properties.roleName)), '/'))]"
+        }
+    }
+}

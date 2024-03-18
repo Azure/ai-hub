@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "apiVersion": {
+            "type": "string",
+            "defaultValue": "2021-10-01"
+        }
+    },
+    "variables": {
+    },
+    "resources": [],
+    "outputs": {
+        "systemIdentityId": {
+            "type": "string",
+            "value": "[reference(parameters('resourceId'), parameters('apiVersion'), 'Full').identity.principalId]"
+        }
+    }
+}
