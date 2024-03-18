@@ -81,6 +81,7 @@
         "name-compliant-keyvault": "[concat(parameters('prefix'), '-', parameters('location'), '-kv')]",
         "name-compliant-storage-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-storage-asg')]",
         "name-compliant-storage-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-storage-pe')]",
+        "name-compliant-storage-nic": "[concat(variables('name-compliant-storage'), '-nic')]",
         "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
         "cmk": {
             "requireInfrastructureEncryption": true,
@@ -288,7 +289,7 @@
                         {
                             "condition": "[and(equals(parameters('stDisableNetworkAccess'), 'Yes'), not(empty(parameters('stSubnetId'))))]",
                             "type": "Microsoft.Network/privateEndpoints",
-                            "apiVersion": "2021-03-01",
+                            "apiVersion": "2021-05-01",
                             "name": "[variables('name-compliant-storage-pe')]",
                             "location": "[parameters('stNwLocation')]",
                             "dependsOn": [
@@ -298,6 +299,7 @@
                             "properties": {
                                 "privateLinkServiceConnections": [
                                     {
+                                        "customNetworkInterfaceName": "[variables('name-compliant-storage-nic')]",
                                         "name": "[variables('name-compliant-storage-pe')]",
                                         "properties": {
                                             "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'))]",

@@ -80,6 +80,7 @@
         "name-compliant-cosmosDb": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb')]",
         "name-compliant-cosmosDb-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb-pe')]",
         "name-compliant-cosmosDb-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb-asg')]",
+        "name-compliant-cosmosDb-nic": "[concat(variables('name-compliant-cosmosDb'), '-nic')]",
         "cosmosDbIdentity": {
             "type": "SystemAssigned"
         }
@@ -275,7 +276,7 @@
                         {
                             "condition": "[and(equals(parameters('cosmosDbDisableNetworkAccess'), 'Yes'), not(empty(parameters('cosmosDbSubnetId'))))]",
                             "type": "Microsoft.Network/privateEndpoints",
-                            "apiVersion": "2021-03-01",
+                            "apiVersion": "2021-05-01",
                             "name": "[variables('name-compliant-cosmosDb-pe')]",
                             "location": "[parameters('cosmosDbNwLocation')]",
                             "dependsOn": [
@@ -285,6 +286,7 @@
                             "properties": {
                                 "privateLinkServiceConnections": [
                                     {
+                                        "customNetworkInterfaceName": "[variables('name-compliant-cosmosDb-nic')]",
                                         "name": "[variables('name-compliant-cosmosDb')]",
                                         "properties": {
                                             "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'))]",
