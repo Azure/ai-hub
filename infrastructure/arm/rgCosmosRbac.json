@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "principalId": {
+            "type": "string"
+        },
+        "cosmosResourceName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "rgName": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+            "apiVersion": "2023-11-15",
+            "name": "[concat(parameters('cosmosResourceName'), '/', guid(deployment().name))]",
+            "properties": {
+                "roleDefinitionId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.DocumentDB/databaseAccounts/', parameters('cosmosResourceName'), '/sqlRoleDefinitions/', '00000000-0000-0000-0000-000000000002')]",
+                "principalId": "[parameters('principalId')]",
+                "scope": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.DocumentDB/databaseAccounts/', parameters('cosmosResourceName'))]"
+            }
+        }
+    ]
+}
