@@ -52,6 +52,13 @@
                 "No"
             ]
         },
+        "azMonWorkspaceName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the resource name of the Azure Monitor workspace where the Azure Open AI instance that will be connected"
+            }
+        },
         "storageAccountBlobEndpoint": {
             "type": "string",
             "defaultValue": "https://kn10swedencentralwzvpra.blob.core.windows.net/"
@@ -157,7 +164,6 @@
         "name-compliant-df": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf')]",
         "name-compliant-df-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf-asg')]",
         "name-compliant-df-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf-pe')]",
-        "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
         "dfIdentity": {
             "type": "SystemAssigned"
         },
@@ -367,7 +373,7 @@
                                 "[variables('factoryId')]"
                             ],
                             "properties": {
-                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', variables('name-compliant-azMon'))]",
+                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('azMonWorkspaceName'))]",
                                 "logs": [
                                     {
                                         "categoryGroup": "allLogs",

@@ -67,13 +67,19 @@
                 "Yes",
                 "No"
             ]
+        },
+        "azMonWorkspaceName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the resource name of the Azure Monitor workspace where the Azure Open AI instance that will be connected"
+            }
         }
     },
     "variables": {
         "name-compliant-cosmosDb": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb')]",
         "name-compliant-cosmosDb-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb-pe')]",
         "name-compliant-cosmosDb-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb-asg')]",
-        "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
         "cosmosDbIdentity": {
             "type": "SystemAssigned"
         }
@@ -246,7 +252,7 @@
                                 "[concat('Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'))]"
                             ],
                             "properties": {
-                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', variables('name-compliant-azMon'))]",
+                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('azMonWorkspaceName'))]",
                                 "logs": [
                                     {
                                         "categoryGroup": "allLogs",
