@@ -2499,7 +2499,7 @@
                     "cosmosDbRbacAuthz": {
                         "value": "[parameters('cosmosDbRbacAuthz')]"
                     },
-                    "aiSubnetId": {
+                    "cosmosDbSubnetId": {
                         "value": "[parameters('cosmosDbSubnetId')]"
                     },
                     "prefix": {
@@ -2550,7 +2550,7 @@
                     "location": {
                         "value": "[parameters('location')]"
                     },
-                    "dfDbRbacAuthz": {
+                    "dfRbacAuthz": {
                         "value": "[parameters('dfRbacAuthz')]"
                     },
                     "dfSubnetId": {
