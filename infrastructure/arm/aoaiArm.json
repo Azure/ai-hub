@@ -557,6 +557,86 @@
                 "Yes",
                 "No"
             ]
+        },
+        "cosmosDbDisableNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "cosmosDbRbacAuthz": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "cosmosDbSubnetId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "cosmosDbSystemIdentity": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "cosmosDbNwLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]"
+        },
+        "cosmosDbMonCreation": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "dfDisableNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "dfRbacAuthz": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "dfSubnetId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "dfSystemIdentity": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "dfNwLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]"
+        },
+        "dfMonCreation": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
         }
     },
     "variables": {
@@ -582,7 +662,10 @@
             "azureComputerVisionTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureComputerVision.json')]",
             "azureDocumentIntelligenceTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureDocumentIntelligence.json')]",
             "azureApimTemplateUri": "[uri(deployment().properties.templateLink.uri, 'apimPublic.json')]",
-            "aiSampleAppTemplateUri": "[uri(deployment().properties.templateLink.uri, 'aiSampleApp.json')]"
+            "aiSampleAppTemplateUri": "[uri(deployment().properties.templateLink.uri, 'aiSampleApp.json')]",
+            "cosmosDbTemplateUri": "[uri(deployment().properties.templateLink.uri, 'cosmosDb.json')]",
+            "adfOnYourDataTemplateUri": "[uri(deployment().properties.templateLink.uri, 'adfOnYourData.json')]",
+            "rgCosmosRbacTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgCosmosRbac.json')]"
         },
         "deploymentSuffix": "[concat('-', guid(parameters('prefix')))]",
         "deploymentNames": {
@@ -628,7 +711,10 @@
             "azureComputerVisionDeploymentName": "[take(concat(parameters('prefix'), '-aicomputervision-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "azureDocumentIntelligenceDeploymentName": "[take(concat(parameters('prefix'), '-aidocumentintelligence-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "apimDeploymentName": "[take(concat(parameters('prefix'), '-apim-', parameters('apimLocation'), variables('deploymentSuffix')), 64)]",
-            "aiSampleAppDeploymentName": "[take(concat(parameters('prefix'), '-aiSampleApp-', parameters('location'), variables('deploymentSuffix')), 64)]"
+            "aiSampleAppDeploymentName": "[take(concat(parameters('prefix'), '-aiSampleApp-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "cosmosDbDeploymentName": "[take(concat(parameters('prefix'), '-cosmos-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "adfOnYourDataDeploymentName": "[take(concat(parameters('prefix'), '-adfOnYourData-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "rgCosmosRbacDeploymentName": "[take(concat(parameters('prefix'), '-cosmos-rbac-', parameters('location'), variables('deploymentSuffix')), 64)]"
         },
         "sampleAppRepoUrl" : "https://github.com/microsoft/sample-app-aoai-chatGPT.git",
         "onYourDataSampleVariables": {
@@ -645,14 +731,26 @@
             "azureAiSearchName": "[toLower(concat(parameters('prefix'), '-', parameters('location'), '-azaisearch'))]",
             "azureAiSearchIndexName": "eaoaiindex",
             "azureOpenAiName": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai')]",
-            "azMonWorkspaceName": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]"
+            "azMonWorkspaceName": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
+            "cosmosDbName": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb')]",
+            "azAiDocumentIntelligenceName": "[concat(parameters('prefix'), '-', parameters('location'), '-azdocintel')]",
+            "storageAccountName": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(variables('deploymentNames').storageDeploymentName)), 23))]"
         },
-        // Multi region variables for N deployments and endpoint references
+        "resourceIds": {
+            "storageAccountResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.Storage/storageAccounts/', variables('resourceNames').storageAccountName)]",
+            "azureOpenAiResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.CognitiveServices/accounts/', variables('resourceNames').azureOpenAiName)]",
+            "azureAiSearchResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.Search/searchServices/', variables('resourceNames').azureAiSearchName)]",
+            "cosmosDbResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.DocumentDB/databaseAccounts/', variables('resourceNames').cosmosDbName)]",
+            "azAiDocumentIntelligenceResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.CognitiveServices/accounts/', variables('resourceNames').azAiDocumentIntelligenceName)]"
+        }
+        // Endpoint references
         "aoaiEndpoint1": "[toLower(concat('https://', parameters('prefix'), '-', parameters('location'), '-azopenai', '.openai.azure.com/'))]",
         "aoaiEndpoint2": "[toLower(concat('https://', parameters('prefix'), '-', parameters('aiMultiLocation'), '-azopenai', '.openai.azure.com/'))]",
-        "storageAccountName": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(deployment().name)), 23))]",
-        "blobStorageEndpoint": "[concat('https://', variables('storageAccountName'), '.blob.core.windows.net/')]",
+        "blobStorageEndpoint": "[concat('https://', variables('resourceNames').storageAccountName, '.blob.core.windows.net/')]",
         "keyVaultEndpoint": "[concat('https://', parameters('prefix'), '-', parameters('location'), '-kv', '.vault.azure.net/')]",
+        "cosmosDbEndpoint": "[concat('https://', variables('resourceNames').cosmosDbName, '.documents.azure.com:443/')]",
+        "azAiDocumentIntelligenceEndpoint": "[concat('https://', variables('resourceNames').azAiDocumentIntelligenceName, '.cognitiveservices.azure.com/')]",
+        "azureAiSearchEndpoint": "[concat('https://', variables('resourceNames').azureAiSearchName, '.search.windows.net/')]",
         // Multi region value for ARM to pass validation when parameter is not used
         "armLocationValidation": "[if(empty(parameters('aiMultiLocation')), parameters('location'), parameters('aiMultiLocation'))]"
     },
@@ -931,7 +1029,7 @@
         },
         // Creating required custom RoleDefinitions with Data Plane permissions for Document Intelligence and Computer Vision
         {
-            "condition": "[equals(parameters('createDataPlaneRbacDef'), 'Yes')]",
+            "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').customDataPlaneRbacDeploymentName]",
@@ -2368,6 +2466,188 @@
                     },
                     "azMonRgName": {
                         "value": "[variables('resourceNames').rgName]"
+                    }
+                }
+            }
+        },
+        // Deploying Cosmos DB into the primary region if 'on your data' use case is being selected
+        {
+            "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').cosmosDbDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').cosmosDbTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "cosmosDbRbacAuthz": {
+                        "value": "[parameters('cosmosDbRbacAuthz')]"
+                    },
+                    "aiSubnetId": {
+                        "value": "[parameters('cosmosDbSubnetId')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "cosmosDbNwLocation": {
+                        "value": "[parameters('cosmosDbNwLocation')]"
+                    },
+                    "cosmosDbDisableNetworkAccess": {
+                        "value": "[parameters('cosmosDbDisableNetworkAccess')]"
+                    },
+                    "cosmosDbSystemIdentity": {
+                        "value": "[parameters('cosmosDbSystemIdentity')]"
+                    },
+                    "cosmosDbMonCreation": {
+                        "value": "[parameters('cosmosDbMonCreation')]"
+                    },
+                    "azMonWorkspaceName": {
+                        "value": "[variables('resourceNames').azMonWorkspaceName]"
+                    }
+                }
+            }
+        },
+        // Deploying Data Factory into the primary region if 'on your data' use case is being select
+        {
+            "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').adfOnYourDataDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').cosmosDbDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').adfOnYourDataTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "dfDbRbacAuthz": {
+                        "value": "[parameters('dfRbacAuthz')]"
+                    },
+                    "dfSubnetId": {
+                        "value": "[parameters('dfSubnetId')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "dfNwLocation": {
+                        "value": "[parameters('dfNwLocation')]"
+                    },
+                    "dfDisableNetworkAccess": {
+                        "value": "[parameters('dfDisableNetworkAccess')]"
+                    },
+                    "dfSystemIdentity": {
+                        "value": "[parameters('dfSystemIdentity')]"
+                    },
+                    "dfMonCreation": {
+                        "value": "[parameters('dfMonCreation')]"
+                    },
+                    "azMonWorkspaceName": {
+                        "value": "[variables('resourceNames').azMonWorkspaceName]"
+                    },
+                    "storageAccountBlobEndpoint": {
+                        "value": "[variables('blobStorageEndpoint')]"
+                    },
+                    "cosmosDbNoSqlEndpoint": {
+                        "value": "[variables('cosmosDbEndpoint')]"
+                    },
+                    "cosmosDbNoSqlDatabase": {
+                        "value": "responses"
+                    },
+                    "cosmosDbNoSqlContainer": {
+                        "value": "doc"
+                    },
+                    "onYourData_properties_typeProperties_url": {
+                        "value": "@{linkedService().documentIntelligenceAPI}documentintelligence/documentModels/@{linkedService().modelId}/analyzeResults/@{linkedService().resultID}?api-version=2023-10-31-preview"
+                    },
+                    "GPT4Deployment_properties_typeProperties_url": {
+                        "value": "@{linkedService().open_ai_base}"
+                    },
+                    "triggerDocBlob_properties_singleAnalyzeDocument_parameters_fileName": {
+                        "value": "@triggerBody().fileName"
+                    },
+                    "azureOpenAiEndpoint": {
+                        "value": "[variables('aoaiEndpoint1')]"
+                    },
+                    "systemMessage": {
+                        "value": "You are an AI assistant that helps people find information."
+                    },
+                    "userPrompt": {
+                        "value": "Summarize the data for me."
+                    },
+                    "storageAccountContainer": {
+                        "value": "docs"
+                    },
+                    "temperature": {
+                        "value": "1"
+                    },
+                    "topP": {
+                        "value": "1"
+                    },
+                    "documentIntelligenceEndpoint": {
+                        "value": "[variables('azAiDocumentIntelligenceEndpoint')]"
+                    },
+                    "documentIntelligenceModelId": {
+                        "value": "prebuilt-layout"
+                    },
+                    "triggerDocBlob_properties_singleAnalyzeDocument_parameters_resultID": {
+                        "value": ""
+                    },
+                    "aiSearchServiceEndpoint": {
+                        "value": "[variables('azureAiSearchEndpoint')]"
+                    },
+                    "embeddingsDeploymentName": {
+                        "value": "[variables('onYourDataSampleVariables').embeddingDeploymentName]"
+                    },
+                    "gpt4DeploymentName": {
+                        "value": "[variables('onYourDataSampleVariables').gptDeploymentName]"
+                    },
+                    "storageAccountResourceId": {
+                        "value": "[variables('resourceIds').storageAccountResourceId]"
+                    },
+                    "indexName": {
+                        "value": "dataindex"
+                    },
+                    "cosmosDbNoSqlResourceId": {
+                        "value": "[variables('resourceIds').cosmosDbResourceId]"
+                    },
+                    "aiSearchResourceId": {
+                        "value": "[variables('resourceIds').azureAiSearchResourceId]"
+                    },
+                    "azureOpenAiResourceId": {
+                        "value": "[variables('resourceIds').azureOpenAiResourceId]"
+                    },
+                    "documentIntelligenceResourceId": {
+                        "value": "[variables('resourceIds').azAiDocumentIntelligenceResourceId]"
                     }
                 }
             }
