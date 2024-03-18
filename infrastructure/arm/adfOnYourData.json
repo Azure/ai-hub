@@ -1231,7 +1231,7 @@
                                 "parameters": {
                                     "fileName": {
                                         "type": "string",
-                                        "defaultValue": "layout.png"
+                                        "defaultValue": ""
                                     },
                                     "gpt4_deployment_name": {
                                         "type": "string",
@@ -2065,7 +2065,7 @@
                                 "parameters": {
                                     "fileName": {
                                         "type": "string",
-                                        "defaultValue": "layout.png"
+                                        "defaultValue": ""
                                     },
                                     "gpt4_deployment_name": {
                                         "type": "string",
