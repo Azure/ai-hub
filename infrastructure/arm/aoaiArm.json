@@ -742,7 +742,7 @@
             "azureAiSearchResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.Search/searchServices/', variables('resourceNames').azureAiSearchName)]",
             "cosmosDbResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.DocumentDB/databaseAccounts/', variables('resourceNames').cosmosDbName)]",
             "azAiDocumentIntelligenceResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.CognitiveServices/accounts/', variables('resourceNames').azAiDocumentIntelligenceName)]"
-        }
+        },
         // Endpoint references
         "aoaiEndpoint1": "[toLower(concat('https://', parameters('prefix'), '-', parameters('location'), '-azopenai', '.openai.azure.com/'))]",
         "aoaiEndpoint2": "[toLower(concat('https://', parameters('prefix'), '-', parameters('aiMultiLocation'), '-azopenai', '.openai.azure.com/'))]",
