@@ -606,14 +606,6 @@
                 "No"
             ]
         },
-        "dfRbacAuthz": {
-            "type": "string",
-            "defaultValue": "No",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ]
-        },
         "dfSubnetId": {
             "type": "string",
             "defaultValue": ""
@@ -2549,9 +2541,6 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
-                    },
-                    "dfRbacAuthz": {
-                        "value": "[parameters('dfRbacAuthz')]"
                     },
                     "dfSubnetId": {
                         "value": "[parameters('dfSubnetId')]"

@@ -2746,27 +2746,6 @@
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
                         },
                         {
-                            "name": "dfRbacAuthz",
-                            "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Enable Azure RBAC authorization",
-                            "defaultValue": "Yes (recommended)",
-                            "toolTip": "",
-                            "constraints": {
-                                "allowedValues": [
-                                    {
-                                        "label": "Yes (recommended)",
-                                        "value": "Yes"
-                                    },
-                                    {
-                                        "label": "No, use local authorization with API key",
-                                        "value": "No"
-                                    }
-                                ],
-                                "required": true
-                            },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
-                        },
-                        {
                             "name": "dfSystemIdentity",
                             "type": "Microsoft.Common.OptionsGroup",
                             "label": "Enable Managed Identity (System-assigned) for Data Factory",
@@ -2901,7 +2880,6 @@
                 "cosmosDbSystemIdentity": "[steps('aiAuxiliarySettings').cosmosSystemIdentity]",
                 "cosmosDbMonCreation": "[steps('aiAuxiliarySettings').cosmosMonCreation]",
                 "dfDisableNetworkAccess": "[steps('aiAuxiliarySettings').dfDisableNetworkAccess]",
-                "dfRbacAuthz": "[steps('aiAuxiliarySettings').dfRbacAuthz]",
                 "dfNwLocation": "[steps('aiAuxiliarySettings').dfSelectedVnetDetails.location]",
                 "dfSubnetId": "[steps('aiAuxiliarySettings').dfSubnetList]",
                 "dfSystemIdentity": "[steps('aiAuxiliarySettings').dfSystemIdentity]",
