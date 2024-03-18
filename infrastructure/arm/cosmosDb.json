@@ -58,7 +58,7 @@
         },
         "cosmosDbNoSqlContainer": {
             "type": "string",
-            "defaultValue": "doc"
+            "defaultValue": "docs"
         },
         "cosmosDbRbacAuthz": {
             "type": "string",
@@ -67,13 +67,6 @@
                 "Yes",
                 "No"
             ]
-        },
-        "objectId": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Provide the object id of the user or group that will be assigned to the role"
-            }
         }
     },
     "variables": {
@@ -83,8 +76,7 @@
         "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
         "cosmosDbIdentity": {
             "type": "SystemAssigned"
-        },
-        "cosmosDbId": "[concat('Microsoft.DataFactory/factories/', variables('name-compliant-cosmosDb'))]"
+        }
     },
     "resources": [
         {
@@ -171,49 +163,50 @@
                             ],
                             "properties": {
                                 "resource": {
-                                    "id": "doc"
+                                    "id": "responses"
                                 }
                             }
                         },
                         {
-                            "type": "Microsoft.DocumentDB/databaseAccounts/sqlContainers",
+                            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
                             "apiVersion": "2023-11-15",
-                            "name": "[concat(variables('name-compliant-cosmosDb'), '/', parameters('cosmosDbNoSqlDatabase'))]",
+                            "name": "[concat(variables('name-compliant-cosmosDb'), '/', parameters('cosmosDbNoSqlDatabase'), '/', parameters('cosmosDbNoSqlContainer'))]",
                             "dependsOn": [
-                                "[concat('Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'))]",
-                                "[concat('Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'), '/sqlDatabases/', parameters('cosmosDbNoSqlDatabase'))]"
+                                "[concat('Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'), '/sqlDatabases/', parameters('cosmosDbNoSqlDatabase'))]",
+                                "[concat('Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'))]"
                             ],
                             "properties": {
                                 "resource": {
-                                    "id": "responses",
+                                    "id": "docs",
+                                    "indexingPolicy": {
+                                        "indexingMode": "consistent",
+                                        "automatic": true,
+                                        "includedPaths": [
+                                            {
+                                                "path": "/*"
+                                            }
+                                        ],
+                                        "excludedPaths": [
+                                            {
+                                                "path": "/\"_etag\"/?"
+                                            }
+                                        ]
+                                    },
                                     "partitionKey": {
                                         "paths": [
                                             "/id"
                                         ],
-                                        "kind": "Hash"
+                                        "kind": "Hash",
+                                        "version": 2
                                     },
-                                    "indexingPolicy": {
-                                        "automatic": true,
-                                        "indexingMode": "consistent",
-                                        "includedPaths": [
-                                            {
-                                                "path": "/*",
-                                                "indexes": [
-                                                    {
-                                                        "kind": "Range",
-                                                        "dataType": "Number",
-                                                        "precision": -1
-                                                    },
-                                                    {
-                                                        "kind": "Range",
-                                                        "dataType": "String",
-                                                        "precision": -1
-                                                    }
-                                                ]
-                                            }
-                                        ],
-                                        "excludedPaths": []
-                                    }
+                                    "uniqueKeyPolicy": {
+                                        "uniqueKeys": []
+                                    },
+                                    "conflictResolutionPolicy": {
+                                        "mode": "LastWriterWins",
+                                        "conflictResolutionPath": "/_ts"
+                                    },
+                                    "computedProperties": []
                                 }
                             }
                         },
@@ -241,20 +234,6 @@
                                         "notDataActions": []
                                     }
                                 ]
-                            }
-                        },
-                        {
-                            "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
-                            "apiVersion": "2023-11-15",
-                            "name": "[concat(variables('name-compliant-cosmosDb'), '/', guid(variables('name-compliant-cosmosDb')))]",
-                            "dependsOn": [
-                                "[concat('Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'))]",
-                                "[concat('Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'), '/sqlRoleDefinitions', '/00000000-0000-0000-0000-000000000002')]"
-                            ],
-                            "properties": {
-                                "roleDefinitionId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'), '/sqlRoleDefinitions/', '00000000-0000-0000-0000-000000000002')]",
-                                "principalId": "[parameters('objectId')]",
-                                "scope": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'))]"
                             }
                         },
                         {

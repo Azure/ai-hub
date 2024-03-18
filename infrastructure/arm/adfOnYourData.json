@@ -54,11 +54,11 @@
         },
         "storageAccountBlobEndpoint": {
             "type": "string",
-            "defaultValue": "https://useme.blob.core.windows.net/"
+            "defaultValue": "https://kn10swedencentralwzvpra.blob.core.windows.net/"
         },
         "cosmosDbNoSqlEndpoint": {
             "type": "string",
-            "defaultValue": "https://esp1-swedencentral-cosmosdb.documents.azure.com:443/"
+            "defaultValue": "https://kn10-swedencentral-cosmosdb.documents.azure.com:443/"
         },
         "cosmosDbNoSqlDatabase": {
             "type": "string",
@@ -82,7 +82,7 @@
         },
         "azureOpenAiEndpoint": {
             "type": "string",
-            "defaultValue": "https://esp1-swedencentral-azopenai.openai.azure.com/"
+            "defaultValue": "https://kn10-swedencentral-azopenai.openai.azure.com/"
         },
         "systemMessage": {
             "type": "string",
@@ -94,7 +94,7 @@
         },
         "storageAccountContainer": {
             "type": "string",
-            "defaultValue": "docsin"
+            "defaultValue": "docs"
         },
         "temperature": {
             "type": "string",
@@ -106,7 +106,7 @@
         },
         "documentIntelligenceEndpoint": {
             "type": "string",
-            "defaultValue": "https://esp1-westeurope-docintel.cognitiveservices.azure.com/"
+            "defaultValue": "https://kn10-swedencentral-azdocintel.cognitiveservices.azure.com/"
         },
         "documentIntelligenceModelId": {
             "type": "string",
@@ -114,38 +114,62 @@
         },
         "triggerDocBlob_properties_singleAnalyzeDocument_parameters_resultID": {
             "type": "string",
-            "defaultValue": " "
+            "defaultValue": ""
         },
         "aiSearchServiceEndpoint": {
             "type": "string",
-            "defaultValue": "https://esp1-swedencentral-azaisearch.search.windows.net"
+            "defaultValue": "https://kn10-swedencentral-azaisearch.search.windows.net"
         },
         "embeddingsDeploymentName": {
             "type": "string",
-            "defaultValue": "embedding"
+            "defaultValue": "hub-embedding-text-embedding-ada-002"
         },
         "gpt4DeploymentName": {
             "type": "string",
-            "defaultValue": "gpt-4"
+            "defaultValue": "hub-gpt4-gpt-4"
         },
         "storageAccountResourceId": {
             "type": "string",
-            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/esp1-rg-swedencentral/providers/Microsoft.Storage/storageAccounts/useme"
+            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/kn10-rg-swedencentral/providers/Microsoft.Storage/storageAccounts/kn10swedencentralwzvpra"
         },
         "indexName": {
             "type": "string",
-            "defaultValue": "esp1doc"
+            "defaultValue": "dataindex"
+        },
+        "cosmosDbNoSqlResourceId": {
+            "type": "string",
+            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/kn10-rg-swedencentral/providers/Microsoft.DocumentDB/databaseAccounts/kn10-swedencentral-cosmosdb"
+        },
+        "aiSearchResourceId": {
+            "type": "string",
+            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/kn10-rg-swedencentral/providers/Microsoft.Search/searchServices/kn10-swedencentral-azaisearch"
+        },
+        "azureOpenAiResourceId": {
+            "type": "string",
+            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/kn10-rg-swedencentral/providers/Microsoft.CognitiveServices/accounts/kn10-swedencentral-azopenai"
+        },
+        "documentIntelligenceResourceId": {
+            "type": "string",
+            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/kn10-rg-swedencentral/providers/Microsoft.CognitiveServices/accounts/kn10-swedencentral-azdocintel"
         }
     },
     "variables": {
         "name-compliant-df": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf')]",
+        "name-compliant-df-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf-asg')]",
         "name-compliant-df-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf-pe')]",
         "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
         "dfIdentity": {
             "type": "SystemAssigned"
         },
         "factoryId": "[concat('Microsoft.DataFactory/factories/', variables('name-compliant-df'))]",
-        "msiAuthEndpoint": "https://cognitiveservices.azure.com"
+        "msiAuthEndpoint": "https://cognitiveservices.azure.com",
+        "managedIntegrationRuntime": {
+            "referenceName": "AzureIntegrationRuntime",
+            "type": "IntegrationRuntimeReference"
+        },
+        "azPolicyEnabled": {
+            "PolicyValidationEnabled": "true"
+        }
     },
     "resources": [
         {
@@ -177,7 +201,160 @@
                             "location": "[parameters('location')]",
                             "identity": "[if(equals(parameters('dfSystemIdentity'), 'Yes'), variables('dfIdentity'), json('null'))]",
                             "properties": {
-                                //"publicNetworkAccess": "[parameters('dfDisableNetworkAccess')]"
+                                "publicNetworkAccess": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]",
+                                "globalConfigurations": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), variables('azPolicyEnabled'), json('null'))]"
+                            }
+                        },
+                        {
+                            "condition": "[equals(parameters('dfDisableNetworkAccess'), 'Yes')]",
+                            "name": "[concat(variables('name-compliant-df'), '/default')]",
+                            "type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+                            "apiVersion": "2018-06-01",
+                            "properties": {},
+                            "dependsOn": [
+                                "[concat('Microsoft.DataFactory/factories/', variables('name-compliant-df'))]"
+                            ]
+                        },
+                        {
+                            "condition": "[equals(parameters('dfDisableNetworkAccess'), 'Yes')]",
+                            "name": "[concat(variables('name-compliant-df'), '/default/AzureBlobStorage')]",
+                            "type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+                            "apiVersion": "2018-06-01",
+                            "properties": {
+                                "privateLinkResourceId": "[parameters('storageAccountResourceId')]",
+                                "groupId": "blob"
+                            },
+                            "dependsOn": [
+                                "[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+                            ]
+                        },
+                        {
+                            "condition": "[equals(parameters('dfDisableNetworkAccess'), 'Yes')]",
+                            "name": "[concat(variables('name-compliant-df'), '/default/AzureCosmosDb')]",
+                            "type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+                            "apiVersion": "2018-06-01",
+                            "properties": {
+                                "privateLinkResourceId": "[parameters('cosmosDbNoSqlResourceId')]",
+                                "groupId": "Sql"
+                            },
+                            "dependsOn": [
+                                "[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+                            ]
+                        },
+                        {
+                            "condition": "[equals(parameters('dfDisableNetworkAccess'), 'Yes')]",
+                            "name": "[concat(variables('name-compliant-df'), '/default/AzureAiSearch')]",
+                            "type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+                            "apiVersion": "2018-06-01",
+                            "properties": {
+                                "privateLinkResourceId": "[parameters('aiSearchResourceId')]",
+                                "groupId": "searchService"
+                            },
+                            "dependsOn": [
+                                "[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+                            ]
+                        },
+                        {
+                            "condition": "[equals(parameters('dfDisableNetworkAccess'), 'Yes')]",
+                            "name": "[concat(variables('name-compliant-df'), '/default/AzureOpenAi')]",
+                            "type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+                            "apiVersion": "2018-06-01",
+                            "properties": {
+                                "privateLinkResourceId": "[parameters('azureOpenAiResourceId')]",
+                                "groupId": "account"
+                            },
+                            "dependsOn": [
+                                "[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+                            ]
+                        },
+                        {
+                            "condition": "[equals(parameters('dfDisableNetworkAccess'), 'Yes')]",
+                            "name": "[concat(variables('name-compliant-df'), '/default/DocumentIntelligence')]",
+                            "type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+                            "apiVersion": "2018-06-01",
+                            "properties": {
+                                "privateLinkResourceId": "[parameters('documentIntelligenceResourceId')]",
+                                "groupId": "account"
+                            },
+                            "dependsOn": [
+                                "[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+                            ]
+                        },
+                        {
+                            "condition": "[equals(parameters('dfDisableNetworkAccess'), 'Yes')]",
+                            "name": "[concat(variables('name-compliant-df'), '/AzureIntegrationRuntime')]",
+                            "type": "Microsoft.DataFactory/factories/integrationRuntimes",
+                            "apiVersion": "2018-06-01",
+                            "properties": {
+                                "type": "Managed",
+                                "typeProperties": {
+                                    "computeProperties": {
+                                        "location": "[parameters('location')]",
+                                        "dataFlowProperties": {
+                                            "computeType": "General",
+                                            "coreCount": 8,
+                                            "timeToLive": 10,
+                                            "cleanup": false,
+                                            "customProperties": []
+                                        },
+                                        "pipelineExternalComputeScaleProperties": {
+                                            "timeToLive": 60,
+                                            "numberOfPipelineNodes": 1,
+                                            "numberOfExternalNodes": 1
+                                        }
+                                    }
+                                },
+                                "managedVirtualNetwork": {
+                                    "type": "ManagedVirtualNetworkReference",
+                                    "referenceName": "default"
+                                }
+                            },
+                            "dependsOn": [
+                                "[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+                            ]
+                        },
+                        {
+                            "condition": "[and(equals(parameters('dfDisableNetworkAccess'), 'Yes'), not(empty(parameters('dfSubnetId'))))]",
+                            "type": "Microsoft.Network/applicationSecurityGroups",
+                            "apiVersion": "2023-04-01",
+                            "name": "[variables('name-compliant-df-asg')]",
+                            "location": "[parameters('dfNwLocation')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.DataFactory/factories/', variables('name-compliant-df'))]"
+                            ],
+                            "properties": {}
+                        },
+                        {
+                            "condition": "[and(equals(parameters('dfDisableNetworkAccess'), 'Yes'), not(empty(parameters('dfSubnetId'))))]",
+                            "type": "Microsoft.Network/privateEndpoints",
+                            "apiVersion": "2021-05-01",
+                            "name": "[variables('name-compliant-df-pe')]",
+                            "location": "[parameters('dfNwLocation')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.DataFactory/factories/', variables('name-compliant-df'))]",
+                                "[concat('Microsoft.Network/applicationSecurityGroups/', variables('name-compliant-df-asg'))]"
+                            ],
+                            "properties": {
+                                "customNetworkInterfaceName": "[variables('name-compliant-df')]",
+                                "privateLinkServiceConnections": [
+                                    {
+                                        "name": "[variables('name-compliant-df-pe')]",
+                                        "properties": {
+                                            "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.DataFactory/factories/', variables('name-compliant-df'))]",
+                                            "groupIds": [
+                                                "dataFactory"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "subnet": {
+                                    "id": "[parameters('dfSubnetId')]"
+                                },
+                                "applicationSecurityGroups": [
+                                    {
+                                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.Network/applicationSecurityGroups/', variables('name-compliant-df-asg'))]"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -435,7 +612,8 @@
                             "type": "Microsoft.DataFactory/factories/linkedServices",
                             "apiVersion": "2018-06-01",
                             "dependsOn": [
-                                "[variables('factoryId')]"
+                                "[variables('factoryId')]",
+                                "[concat(variables('factoryId'), '/integrationRuntimes/AzureIntegrationRuntime')]"
                             ],
                             "properties": {
                                 "parameters": {
@@ -455,7 +633,8 @@
                                     "enableServerCertificateValidation": true,
                                     "authenticationType": "ManagedServiceIdentity",
                                     "aadResourceId": "[variables('msiAuthEndpoint')]"
-                                }
+                                },
+                                "connectVia": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), variables('managedIntegrationRuntime'), json('null'))]"
                             }
                         },
                         {
@@ -463,7 +642,8 @@
                             "type": "Microsoft.DataFactory/factories/linkedServices",
                             "apiVersion": "2018-06-01",
                             "dependsOn": [
-                                "[variables('factoryId')]"
+                                "[variables('factoryId')]",
+                                "[concat(variables('factoryId'), '/integrationRuntimes/AzureIntegrationRuntime')]"
                             ],
                             "properties": {
                                 "annotations": [],
@@ -471,7 +651,8 @@
                                 "typeProperties": {
                                     "accountEndpoint": "[parameters('cosmosDbNoSqlEndpoint')]",
                                     "database": "[parameters('CosmosDbNoSqlDatabase')]"
-                                }
+                                },
+                                "connectVia": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), variables('managedIntegrationRuntime'), json('null'))]"
                             }
                         },
                         {
@@ -479,7 +660,8 @@
                             "type": "Microsoft.DataFactory/factories/linkedServices",
                             "apiVersion": "2018-06-01",
                             "dependsOn": [
-                                "[variables('factoryId')]"
+                                "[variables('factoryId')]",
+                                "[concat(variables('factoryId'), '/integrationRuntimes/AzureIntegrationRuntime')]"
                             ],
                             "properties": {
                                 "parameters": {
@@ -500,7 +682,8 @@
                                     "enableServerCertificateValidation": true,
                                     "authenticationType": "ManagedServiceIdentity",
                                     "aadResourceId": "[variables('msiAuthEndpoint')]"
-                                }
+                                },
+                                "connectVia": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), variables('managedIntegrationRuntime'), json('null'))]"
                             }
                         },
                         {
@@ -508,7 +691,8 @@
                             "type": "Microsoft.DataFactory/factories/linkedServices",
                             "apiVersion": "2018-06-01",
                             "dependsOn": [
-                                "[variables('factoryId')]"
+                                "[variables('factoryId')]",
+                                "[concat(variables('factoryId'), '/integrationRuntimes/AzureIntegrationRuntime')]"
                             ],
                             "properties": {
                                 "annotations": [],
@@ -516,7 +700,8 @@
                                 "typeProperties": {
                                     "serviceEndpoint": "[parameters('storageAccountBlobEndpoint')]",
                                     "accountKind": "StorageV2"
-                                }
+                                },
+                                "connectVia": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), variables('managedIntegrationRuntime'), json('null'))]"
                             }
                         },
                         {
@@ -559,7 +744,7 @@
                                 ],
                                 "type": "BlobEventsTrigger",
                                 "typeProperties": {
-                                    "blobPathBeginsWith": "/docsin/blobs/",
+                                    "blobPathBeginsWith": "/docs/blobs/",
                                     "ignoreEmptyBlobs": true,
                                     "scope": "[parameters('storageAccountResourceId')]",
                                     "events": [
@@ -1046,7 +1231,7 @@
                                 "parameters": {
                                     "fileName": {
                                         "type": "string",
-                                        "defaultValue": "layout.png"
+                                        "defaultValue": ""
                                     },
                                     "gpt4_deployment_name": {
                                         "type": "string",
@@ -1880,7 +2065,7 @@
                                 "parameters": {
                                     "fileName": {
                                         "type": "string",
-                                        "defaultValue": "layout.png"
+                                        "defaultValue": ""
                                     },
                                     "gpt4_deployment_name": {
                                         "type": "string",
@@ -2499,5 +2684,27 @@
                 }
             }
         }
-    ]
+    ],
+    "outputs": { 
+        "cosmosDbNoSqlPrivateEndpointRequest": {
+            "type": "string",
+            "value": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), last(split(reference(parameters('cosmosDbNoSqlResourceId'), '2023-11-15', 'Full').properties.privateEndpointConnections[0].id, '/')), 'na')]"
+        },
+        "storagePrivateEndpointRequest": {
+            "type": "string",
+            "value": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), reference(parameters('storageAccountResourceId'), '2023-01-01', 'Full').properties.privateEndpointConnections[0].name, 'na')]"
+        },
+        "aiSearchPrivateEndpointRequest": {
+            "type": "string",
+            "value": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), reference(parameters('aiSearchResourceId'), '2022-09-01', 'Full').properties.privateEndpointConnections[0].name, 'na')]"
+        },
+        "docIntelPrivateEndpointRequest": {
+            "type": "string",
+            "value": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), last(split(reference(parameters('documentIntelligenceResourceId'), '2022-03-01', 'Full').properties.privateEndpointConnections[0].name, '/')), 'na')]"
+        },
+        "azureOpenAiPrivateEndpointRequest": {
+            "type": "string",
+            "value": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), last(split(reference(parameters('azureOpenAiResourceId'), '2022-03-01', 'Full').properties.privateEndpointConnections[0].name, '/')), 'na')]"
+        }
+    }
 }
