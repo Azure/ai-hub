@@ -342,7 +342,7 @@
                                 "[concat('Microsoft.Network/applicationSecurityGroups/', variables('name-compliant-df-asg'))]"
                             ],
                             "properties": {
-                                "customNetworkInterfaceName": "[variables('name-compliant-df')]",
+                                "customNetworkInterfaceName": "[variables('name-compliant-df-nic')]",
                                 "privateLinkServiceConnections": [
                                     {
                                         "name": "[variables('name-compliant-df-pe')]",
