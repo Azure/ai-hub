@@ -284,9 +284,9 @@
                                 "[concat('Microsoft.Network/applicationSecurityGroups/', variables('name-compliant-cosmosDb-asg'))]"
                             ],
                             "properties": {
+                                "customNetworkInterfaceName": "[variables('name-compliant-cosmosDb-nic')]",
                                 "privateLinkServiceConnections": [
                                     {
-                                        "customNetworkInterfaceName": "[variables('name-compliant-cosmosDb-nic')]",
                                         "name": "[variables('name-compliant-cosmosDb')]",
                                         "properties": {
                                             "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.DocumentDB/databaseAccounts/', variables('name-compliant-cosmosDb'))]",

@@ -345,7 +345,6 @@
                                 "customNetworkInterfaceName": "[variables('name-compliant-df')]",
                                 "privateLinkServiceConnections": [
                                     {
-                                        "customNetworkInterfaceName": "[variables('name-compliant-df-nic')]",
                                         "name": "[variables('name-compliant-df-pe')]",
                                         "properties": {
                                             "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.DataFactory/factories/', variables('name-compliant-df'))]",
