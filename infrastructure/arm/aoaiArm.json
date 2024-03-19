@@ -642,11 +642,6 @@
             "azureOpenAiTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureOpenAi.json')]",
             "rgKeyVersionTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgKey.json')]",
             "rgAzureObjectId": "[uri(deployment().properties.templateLink.uri, 'rgAzureObjectId.json')]",
-            "rgAzureOpenAiObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureAiObjectId.json')]",
-            "rgAzureAiSearchObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureAiSearchObjectId.json')]",
-            "rgAzureDocumentIntelligenceObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureDocumentIntelligenceObjectId.json')]",
-            "rgAzureApimObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureApimObjectId.json')]",
-            "rgAzureWebAppObjectIdTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgAzureWebAppObjectId.json')]",
             "rgRbacTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgRbac.json')]",
             "azureOpenAiCmkTemplateUri": "[uri(deployment().properties.templateLink.uri, 'cmkAzureOpenAi.json')]",
             "azureOpenAiModelTemplateUri": "[uri(deployment().properties.templateLink.uri, 'modelDeployment.json')]",
@@ -734,7 +729,9 @@
             "cosmosDbName": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb')]",
             "azAiDocumentIntelligenceName": "[concat(parameters('prefix'), '-', parameters('location'), '-azdocintel')]",
             "storageAccountName": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(variables('deploymentNames').storageDeploymentName)), 23))]",
-            "adfOnYourDataName": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf')]"
+            "adfOnYourDataName": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf')]",
+            "apimName": "[concat(parameters('prefix'), '-', parameters('apimLocation'), '-apim')]",
+            "appName": "[concat(parameters('prefix'), '-', parameters('location'), '-wa')]"
         },
         "resourceIds": {
             "storageAccountResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.Storage/storageAccounts/', variables('resourceNames').storageAccountName)]",
@@ -742,7 +739,10 @@
             "azureAiSearchResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.Search/searchServices/', variables('resourceNames').azureAiSearchName)]",
             "cosmosDbResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.DocumentDB/databaseAccounts/', variables('resourceNames').cosmosDbName)]",
             "azAiDocumentIntelligenceResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.CognitiveServices/accounts/', variables('resourceNames').azAiDocumentIntelligenceName)]",
-            "adfOnYourDataResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.DataFactory/factories/', variables('resourceNames').adfOnYourDataName)]"
+            "adfOnYourDataResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.DataFactory/factories/', variables('resourceNames').adfOnYourDataName)]",
+            "aoaiOrchestratorResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.CognitiveServices/accounts/', variables('resourceNames').aoaiOrchestratorName)]",
+            "apimResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.ApiManagement/service/', variables('resourceNames').apimName)]",
+            "appResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').appRgName, '/providers/Microsoft.Web/sites/', variables('resourceNames').appName)]"
         },
         "apiVersions": {
             "dataFactory": "2018-06-01",
@@ -750,9 +750,9 @@
             "cosmosDb": "2023-11-15",
             "storageAccount": "2023-01-01",
             "apim": "2023-03-01-preview",
-            "webApp": "2021-02-01",
             "azAiDocumentIntelligence": "2022-03-01",
-            "azureAiSearch": "2022-09-01"
+            "azureAiSearch": "2022-09-01",
+            "webSites": "2021-02-01"
         },
         // Endpoint references
         "aoaiEndpoint1": "[toLower(concat('https://', parameters('prefix'), '-', parameters('location'), '-azopenai', '.openai.azure.com/'))]",
@@ -1571,14 +1571,14 @@
                 "mode": "Incremental",
                 "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "uri": "[variables('templateUris').rgAzureOpenAiObjectIdTemplateUri]"
+                    "uri": "[variables('templateUris').rgAzureObjectId]"
                 },
                 "parameters": {
-                    "prefix": {
-                        "value": "[parameters('prefix')]"
+                    "resourceId": {
+                        "value": "[variables('resourceIds').azureOpenAiResourceId]"
                     },
-                    "location": {
-                        "value": "[parameters('location')]"
+                    "apiVersion": {
+                        "value": "[variables('apiVersions').azureOpenAi]"
                     }
                 }
             }
@@ -1597,14 +1597,14 @@
                 "mode": "Incremental",
                 "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "uri": "[variables('templateUris').rgAzureOpenAiObjectIdTemplateUri]"
+                    "uri": "[variables('templateUris').rgAzureObjectId]"
                 },
                 "parameters": {
-                    "prefix": {
-                        "value": "[parameters('prefix')]"
+                    "resourceId": {
+                        "value": "[variables('resourceIds').aoaiOrchestratorResourceId]"
                     },
-                    "location": {
-                        "value": "[parameters('location')]"
+                    "apiVersion": {
+                        "value": "[variables('apiVersions').azureOpenAi]"
                     }
                 }
             }
@@ -1624,14 +1624,14 @@
                 "mode": "Incremental",
                 "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "uri": "[variables('templateUris').rgAzureAiSearchObjectIdTemplateUri]"
+                    "uri": "[variables('templateUris').rgAzureObjectId]"
                 },
                 "parameters": {
-                    "prefix": {
-                        "value": "[parameters('prefix')]"
+                    "resourceId": {
+                        "value": "[variables('resourceIds').azureAiSearchResourceId]"
                     },
-                    "location": {
-                        "value": "[parameters('location')]"
+                    "apiVersion": {
+                        "value": "[variables('apiVersions').azureAiSearch]"
                     }
                 }
             }
@@ -1650,21 +1650,21 @@
                 "mode": "Incremental",
                 "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "uri": "[variables('templateUris').rgAzureDocumentIntelligenceObjectIdTemplateUri]"
+                    "uri": "[variables('templateUris').rgAzureObjectId]"
                 },
                 "parameters": {
-                    "prefix": {
-                        "value": "[parameters('prefix')]"
+                    "resourceId": {
+                        "value": "[variables('resourceIds').azAiDocumentIntelligenceResourceId]"
                     },
-                    "location": {
-                        "value": "[parameters('location')]"
+                    "apiVersion": {
+                        "value": "[variables('apiVersions').azAiDocumentIntelligence]"
                     }
                 }
             }
         },
         // Retrieving objectId of the API Management system identity
         {
-            "condition": "[and(not(empty(parameters('aiMultiLocation'))), equals(parameters('aiSystemIdentity'), 'Yes'))]",
+            "condition": "[and(not(empty(parameters('aiMultiLocation'))), equals(parameters('aiSystemIdentity'), 'Yes'), equals(parameters('aiRbacAuthz'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').rgAzureApimObjectIdDeploymentName]",
@@ -1676,14 +1676,14 @@
                 "mode": "Incremental",
                 "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "uri": "[variables('templateUris').rgAzureApimObjectIdTemplateUri]"
+                    "uri": "[variables('templateUris').rgAzureObjectId]"
                 },
                 "parameters": {
-                    "prefix": {
-                        "value": "[parameters('prefix')]"
+                    "resourceId": {
+                        "value": "[variables('resourceIds').apimResourceId]"
                     },
-                    "location": {
-                        "value": "[parameters('apimLocation')]"
+                    "apiVersion": {
+                        "value": "[variables('apiVersions').apim]"
                     }
                 }
             }
@@ -1702,14 +1702,14 @@
                 "mode": "Incremental",
                 "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "uri": "[variables('templateUris').rgAzureWebAppObjectIdTemplateUri]"
+                    "uri": "[variables('templateUris').rgAzureObjectId]"
                 },
                 "parameters": {
-                    "prefix": {
-                        "value": "[parameters('prefix')]"
+                    "resourceId": {
+                        "value": "[variables('resourceIds').appResourceId]"
                     },
-                    "location": {
-                        "value": "[parameters('location')]"
+                    "apiVersion": {
+                        "value": "[variables('apiVersions').webSites]"
                     }
                 }
             }
@@ -2637,7 +2637,7 @@
                         "value": "[variables('resourceIds').storageAccountResourceId]"
                     },
                     "indexName": {
-                        "value": "dataindex"
+                        "value": "[variables('resourceNames').azureAiSearchIndexName]"
                     },
                     "cosmosDbNoSqlResourceId": {
                         "value": "[variables('resourceIds').cosmosDbResourceId]"
