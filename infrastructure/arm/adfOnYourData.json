@@ -164,6 +164,7 @@
         "name-compliant-df": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf')]",
         "name-compliant-df-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf-asg')]",
         "name-compliant-df-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf-pe')]",
+        "name-compliant-df-nic": "[concat(variables('name-compliant-df'), '-nic')]",
         "dfIdentity": {
             "type": "SystemAssigned"
         },
@@ -344,6 +345,7 @@
                                 "customNetworkInterfaceName": "[variables('name-compliant-df')]",
                                 "privateLinkServiceConnections": [
                                     {
+                                        "customNetworkInterfaceName": "[variables('name-compliant-df-nic')]",
                                         "name": "[variables('name-compliant-df-pe')]",
                                         "properties": {
                                             "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.DataFactory/factories/', variables('name-compliant-df'))]",

@@ -93,6 +93,7 @@
         "name-compliant-azureOpenAi": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai')]",
         "name-compliant-openAi-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai-pe')]",
         "name-compliant-openAi-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai-asg')]",
+        "name-compliant-azureOpenAi-nic": "[concat(variables('name-compliant-azureOpenAi'), '-nic')]",
         "aiIdentity": {
             "type": "SystemAssigned"
         },
@@ -176,7 +177,7 @@
                         {
                             "condition": "[and(equals(parameters('aiDisableNetworkAccess'), 'Yes'), not(empty(parameters('aiSubnetId'))))]",
                             "type": "Microsoft.Network/privateEndpoints",
-                            "apiVersion": "2021-03-01",
+                            "apiVersion": "2021-05-01",
                             "name": "[variables('name-compliant-openAi-pe')]",
                             "location": "[parameters('aiNwLocation')]",
                             "dependsOn": [
@@ -186,6 +187,7 @@
                             "properties": {
                                 "privateLinkServiceConnections": [
                                     {
+                                        "customNetworkInterfaceName": "[variables('name-compliant-azureOpenAi-nic')]",
                                         "name": "[variables('name-compliant-azureOpenAi')]",
                                         "properties": {
                                             "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.CognitiveServices/accounts/', variables('name-compliant-azureOpenAi'))]",
