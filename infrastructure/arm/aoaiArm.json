@@ -2588,7 +2588,7 @@
                         "value": "responses"
                     },
                     "cosmosDbNoSqlContainer": {
-                        "value": "doc"
+                        "value": "docs"
                     },
                     "onYourData_properties_typeProperties_url": {
                         "value": "@{linkedService().documentIntelligenceAPI}documentintelligence/documentModels/@{linkedService().modelId}/analyzeResults/@{linkedService().resultID}?api-version=2023-10-31-preview"
