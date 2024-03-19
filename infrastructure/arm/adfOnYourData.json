@@ -979,7 +979,7 @@
                                                                     "type": "Expression"
                                                                 },
                                                                 "relative_url": {
-                                                                    "value": "@{pipeline().parameters.openai_api_base}/openai/deployments/@{pipeline().parameters.gpt4_deployment_name}/extensions/chat/completions?api-version=2023-12-01-preview",
+                                                                    "value": "@{pipeline().parameters.openai_api_base}openai/deployments/@{pipeline().parameters.gpt4_deployment_name}/extensions/chat/completions?api-version=2023-12-01-preview",
                                                                     "type": "Expression"
                                                                 }
                                                             }
@@ -1728,7 +1728,7 @@
                                                                     "type": "Expression"
                                                                 },
                                                                 "relative_url": {
-                                                                    "value": "@{pipeline().parameters.openai_api_base}/openai/deployments/@{pipeline().parameters.gpt4_deployment_name}/extensions/chat/completions?api-version=2023-12-01-preview",
+                                                                    "value": "@{pipeline().parameters.openai_api_base}openai/deployments/@{pipeline().parameters.gpt4_deployment_name}/extensions/chat/completions?api-version=2023-12-01-preview",
                                                                     "type": "Expression"
                                                                 }
                                                             }

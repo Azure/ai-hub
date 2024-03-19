@@ -2630,10 +2630,10 @@
                         "value": "[variables('azureAiSearchEndpoint')]"
                     },
                     "embeddingsDeploymentName": {
-                        "value": "[variables('onYourDataSampleVariables').embeddingDeploymentName]"
+                        "value": "[concat(variables('onYourDataSampleVariables').embeddingDeploymentName, '-', variables('onYourDataSampleVariables').embeddingModelName)]"
                     },
                     "gpt4DeploymentName": {
-                        "value": "[variables('onYourDataSampleVariables').gptDeploymentName]"
+                        "value": "[concat(variables('onYourDataSampleVariables').gptDeploymentName, '-', variables('onYourDataSampleVariables').gptModelName)]"
                     },
                     "storageAccountResourceId": {
                         "value": "[variables('resourceIds').storageAccountResourceId]"
