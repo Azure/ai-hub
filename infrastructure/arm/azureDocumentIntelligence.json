@@ -173,9 +173,9 @@
                                 "[concat('Microsoft.Network/applicationSecurityGroups/', variables('name-compliant-doc-asg'))]"
                             ],
                             "properties": {
+                                "customNetworkInterfaceName": "[variables('name-compliant-azureDocumentIntelligence-nic')]",
                                 "privateLinkServiceConnections": [
                                     {
-                                        "customNetworkInterfaceName": "[variables('name-compliant-azureDocumentIntelligence-nic')]",
                                         "name": "[variables('name-compliant-azureDocumentIntelligence')]",
                                         "properties": {
                                             "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.CognitiveServices/accounts/', variables('name-compliant-azureDocumentIntelligence'))]",

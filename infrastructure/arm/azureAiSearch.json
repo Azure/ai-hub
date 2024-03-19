@@ -139,7 +139,6 @@
                                 "disableLocalAuth": "[if(equals(parameters('aiSearchRbacAuthz'), 'Yes'), bool('true'), bool('false'))]",
                                 "encryptionWithCmk": {
                                     "enforcement": "[if(equals(parameters('aiSearchEncryption'), 'Yes'), 'Enabled', 'Disabled')]"
-
                                 }
                             }
                         },
@@ -182,12 +181,11 @@
                             "dependsOn": [
                                 "[concat('Microsoft.Search/searchServices/', variables('name-compliant-azureAiSearch'))]",
                                 "[concat('Microsoft.Network/applicationSecurityGroups/', variables('name-compliant-azureAiSearch-asg'))]"
-
                             ],
                             "properties": {
+                                "customNetworkInterfaceName": "[variables('name-compliant-azureAiSearch-nic')]",
                                 "privateLinkServiceConnections": [
                                     {
-                                        "customNetworkInterfaceName": "[variables('name-compliant-azureAiSearch-nic')]",
                                         "name": "[variables('name-compliant-azureAiSearch')]",
                                         "properties": {
                                             "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.Search/searchServices/', variables('name-compliant-azureAiSearch'))]",
