@@ -119,10 +119,6 @@
             "type": "string",
             "defaultValue": "prebuilt-layout"
         },
-        "triggerDocBlob_properties_singleAnalyzeDocument_parameters_resultID": {
-            "type": "string",
-            "defaultValue": ""
-        },
         "aiSearchServiceEndpoint": {
             "type": "string",
             "defaultValue": "https://kn10-swedencentral-azaisearch.search.windows.net"
@@ -741,7 +737,6 @@
                                             "cosmoscontainer": "[parameters('cosmosDbNoSqlContainer')]",
                                             "documentIntelligenceAPI": "[parameters('documentIntelligenceEndpoint')]",
                                             "modelId": "[parameters('documentIntelligenceModelId')]",
-                                            "resultID": "[parameters('triggerDocBlob_properties_singleAnalyzeDocument_parameters_resultID')]",
                                             "searchServiceEndpoint": "[parameters('aiSearchServiceEndpoint')]",
                                             "embeddingDeploymentName": "[parameters('embeddingsDeploymentName')]",
                                             "storageAccountResourceId": "[parameters('storageAccountResourceId')]",
@@ -2193,9 +2188,6 @@
                                     "modelId": {
                                         "type": "string",
                                         "defaultValue": "[parameters('documentIntelligenceModelId')]"
-                                    },
-                                    "resultID": {
-                                        "type": "string"
                                     },
                                     "searchServiceEndpoint": {
                                         "type": "string",
