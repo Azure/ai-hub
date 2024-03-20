@@ -2669,7 +2669,7 @@
                                     },
                                     "modelId": {
                                         "type": "string",
-                                        "": "[parameters('documentIntelligenceModelId')]"
+                                        "defaultValue": "[parameters('documentIntelligenceModelId')]"
                                     }
                                 },
                                 "variables": {
