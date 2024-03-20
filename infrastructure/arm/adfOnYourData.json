@@ -2194,9 +2194,6 @@
                                         "type": "string",
                                         "defaultValue": "[parameters('documentIntelligenceModelId')]"
                                     },
-                                    "resultID": {
-                                        "type": "string"
-                                    },
                                     "searchServiceEndpoint": {
                                         "type": "string",
                                         "defaultValue": "[parameters('aiSearchServiceEndpoint')]"
