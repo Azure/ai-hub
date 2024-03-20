@@ -1457,7 +1457,7 @@
                                                                         "type": "DatasetReference",
                                                                         "parameters": {
                                                                             "filename": {
-                                                                                "value": "@pipeline().parameters.fileName",
+                                                                                "value": "@{pipeline().parameters.fileName}.txt",
                                                                                 "type": "Expression"
                                                                             }
                                                                         }
