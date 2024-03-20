@@ -1824,7 +1824,7 @@
                                                             }
                                                         }
                                                     ]
-                                                }
+                                                },
                                                 {
                                                     "name": "Move temp file to processed container",
                                                     "type": "Copy",
