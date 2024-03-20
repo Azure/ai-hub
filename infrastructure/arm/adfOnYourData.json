@@ -73,7 +73,7 @@
         },
         "cosmosDbNoSqlContainer": {
             "type": "string",
-            "defaultValue": "doc"
+            "defaultValue": "docs"
         },
         "onYourData_properties_typeProperties_url": {
             "type": "string",
