@@ -119,10 +119,6 @@
             "type": "string",
             "defaultValue": "prebuilt-layout"
         },
-        "triggerDocBlob_properties_singleAnalyzeDocument_parameters_resultID": {
-            "type": "string",
-            "defaultValue": ""
-        },
         "aiSearchServiceEndpoint": {
             "type": "string",
             "defaultValue": "https://kn10-swedencentral-azaisearch.search.windows.net"
