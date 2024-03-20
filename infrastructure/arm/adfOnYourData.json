@@ -737,7 +737,6 @@
                                             "cosmoscontainer": "[parameters('cosmosDbNoSqlContainer')]",
                                             "documentIntelligenceAPI": "[parameters('documentIntelligenceEndpoint')]",
                                             "modelId": "[parameters('documentIntelligenceModelId')]",
-                                            "resultID": "[parameters('triggerDocBlob_properties_singleAnalyzeDocument_parameters_resultID')]",
                                             "searchServiceEndpoint": "[parameters('aiSearchServiceEndpoint')]",
                                             "embeddingDeploymentName": "[parameters('embeddingsDeploymentName')]",
                                             "storageAccountResourceId": "[parameters('storageAccountResourceId')]",
