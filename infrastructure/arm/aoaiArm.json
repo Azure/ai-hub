@@ -2623,9 +2623,6 @@
                     "documentIntelligenceModelId": {
                         "value": "prebuilt-layout"
                     },
-                    "triggerDocBlob_properties_singleAnalyzeDocument_parameters_resultID": {
-                        "value": ""
-                    },
                     "aiSearchServiceEndpoint": {
                         "value": "[variables('azureAiSearchEndpoint')]"
                     },
