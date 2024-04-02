@@ -61,11 +61,11 @@
         },
         "storageAccountBlobEndpoint": {
             "type": "string",
-            "defaultValue": "https://kn10swedencentralwzvpra.blob.core.windows.net/"
+            "defaultValue": "https://tfswitzerlandnorthnzglm.blob.core.windows.net/"
         },
         "cosmosDbNoSqlEndpoint": {
             "type": "string",
-            "defaultValue": "https://kn10-swedencentral-cosmosdb.documents.azure.com:443/"
+            "defaultValue": "https://tf-switzerlandnorth-cosmosdb.documents.azure.com:443/"
         },
         "cosmosDbNoSqlDatabase": {
             "type": "string",
@@ -89,7 +89,7 @@
         },
         "azureOpenAiEndpoint": {
             "type": "string",
-            "defaultValue": "https://kn10-swedencentral-azopenai.openai.azure.com/"
+            "defaultValue": "https://tf-switzerlandnorth-azopenai.openai.azure.com/"
         },
         "systemMessage": {
             "type": "string",
@@ -113,7 +113,7 @@
         },
         "documentIntelligenceEndpoint": {
             "type": "string",
-            "defaultValue": "https://kn10-swedencentral-azdocintel.cognitiveservices.azure.com/"
+            "defaultValue": "https://tf-westeurope-azdocintel.cognitiveservices.azure.com/"
         },
         "documentIntelligenceModelId": {
             "type": "string",
@@ -121,7 +121,7 @@
         },
         "aiSearchServiceEndpoint": {
             "type": "string",
-            "defaultValue": "https://kn10-swedencentral-azaisearch.search.windows.net"
+            "defaultValue": "https://tf-switzerlandnorth-azaisearch.search.windows.net/"
         },
         "embeddingsDeploymentName": {
             "type": "string",
@@ -133,27 +133,27 @@
         },
         "storageAccountResourceId": {
             "type": "string",
-            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/kn10-rg-swedencentral/providers/Microsoft.Storage/storageAccounts/kn10swedencentralwzvpra"
+            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/tf-rg-switzerlandnorth/providers/Microsoft.Storage/storageAccounts/tfswitzerlandnorthnzglm"
         },
         "indexName": {
             "type": "string",
-            "defaultValue": "dataindex"
+            "defaultValue": "eaoaiindex"
         },
         "cosmosDbNoSqlResourceId": {
             "type": "string",
-            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/kn10-rg-swedencentral/providers/Microsoft.DocumentDB/databaseAccounts/kn10-swedencentral-cosmosdb"
+            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/tf-rg-switzerlandnorth/providers/Microsoft.DocumentDB/databaseAccounts/tf-switzerlandnorth-cosmosdb"
         },
         "aiSearchResourceId": {
             "type": "string",
-            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/kn10-rg-swedencentral/providers/Microsoft.Search/searchServices/kn10-swedencentral-azaisearch"
+            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/tf-rg-switzerlandnorth/providers/Microsoft.Search/searchServices/tf-switzerlandnorth-azaisearch"
         },
         "azureOpenAiResourceId": {
             "type": "string",
-            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/kn10-rg-swedencentral/providers/Microsoft.CognitiveServices/accounts/kn10-swedencentral-azopenai"
+            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/tf-rg-switzerlandnorth/providers/Microsoft.CognitiveServices/accounts/tf-switzerlandnorth-azopenai"
         },
         "documentIntelligenceResourceId": {
             "type": "string",
-            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/kn10-rg-swedencentral/providers/Microsoft.CognitiveServices/accounts/kn10-swedencentral-azdocintel"
+            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/tf-rg-switzerlandnorth/providers/Microsoft.CognitiveServices/accounts/tf-westeurope-azdocintel"
         }
     },
     "variables": {
@@ -2490,159 +2490,159 @@
                             ],
                             "properties": {
                                 "activities": [
-                                            {
-                                                "name": "Get documents",
-                                                "type": "GetMetadata",
-                                                "dependsOn": [],
-                                                "policy": {
-                                                    "timeout": "0.12:00:00",
-                                                    "retry": 0,
-                                                    "retryIntervalInSeconds": 30,
-                                                    "secureOutput": false,
-                                                    "secureInput": false
-                                                },
-                                                "userProperties": [],
-                                                "typeProperties": {
-                                                    "dataset": {
-                                                        "referenceName": "blob",
-                                                        "type": "DatasetReference",
-                                                        "parameters": {
-                                                            "container": {
-                                                                "value": "@pipeline().parameters.storageaccountcontainer",
-                                                                "type": "Expression"
-                                                            },
-                                                            "endpoint": {
-                                                                "value": "@pipeline().parameters.storageaccounturl",
-                                                                "type": "Expression"
-                                                            }
-                                                        }
+                                    {
+                                        "name": "Get documents",
+                                        "type": "GetMetadata",
+                                        "dependsOn": [],
+                                        "policy": {
+                                            "timeout": "0.12:00:00",
+                                            "retry": 0,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "dataset": {
+                                                "referenceName": "blob",
+                                                "type": "DatasetReference",
+                                                "parameters": {
+                                                    "container": {
+                                                        "value": "@pipeline().parameters.storageaccountcontainer",
+                                                        "type": "Expression"
                                                     },
-                                                    "fieldList": [
-                                                        "childItems"
-                                                    ],
-                                                    "storeSettings": {
-                                                        "type": "AzureBlobStorageReadSettings",
-                                                        "recursive": true,
-                                                        "enablePartitionDiscovery": false
-                                                    },
-                                                    "formatSettings": {
-                                                        "type": "BinaryReadSettings"
+                                                    "endpoint": {
+                                                        "value": "@pipeline().parameters.storageaccounturl",
+                                                        "type": "Expression"
                                                     }
                                                 }
                                             },
+                                            "fieldList": [
+                                                "childItems"
+                                            ],
+                                            "storeSettings": {
+                                                "type": "AzureBlobStorageReadSettings",
+                                                "recursive": true,
+                                                "enablePartitionDiscovery": false
+                                            },
+                                            "formatSettings": {
+                                                "type": "BinaryReadSettings"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "ForEach Document File",
+                                        "type": "ForEach",
+                                        "dependsOn": [
                                             {
-                                                "name": "ForEach Document File",
-                                                "type": "ForEach",
-                                                "dependsOn": [
-                                                    {
-                                                        "activity": "Get documents",
-                                                        "dependencyConditions": [
-                                                            "Succeeded"
-                                                        ]
-                                                    }
-                                                ],
-                                                "userProperties": [],
-                                                "typeProperties": {
-                                                    "items": {
-                                                        "value": "@activity('Get documents').output.childItems",
-                                                        "type": "Expression"
-                                                    },
-                                                    "isSequential": false,
-                                                    "activities": [
-                                                        {
-                                                            "name": "Analyze Documents",
-                                                            "type": "ExecutePipeline",
-                                                            "dependsOn": [],
-                                                            "policy": {
-                                                                "secureInput": false
-                                                            },
-                                                            "userProperties": [],
-                                                            "typeProperties": {
-                                                                "pipeline": {
-                                                                    "referenceName": "singleAnalyzeDocument",
-                                                                    "type": "PipelineReference"
-                                                                },
-                                                                "waitOnCompletion": true,
-                                                                "parameters": {
-                                                                    "fileName": {
-                                                                        "value": "@item().name",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "gpt4_deployment_name": {
-                                                                        "value": "@pipeline().parameters.gpt4_deployment_name",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "openai_api_base": {
-                                                                        "value": "@pipeline().parameters.openAIAPI",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "sys_message": {
-                                                                        "value": "@pipeline().parameters.sys_message",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "user_prompt": {
-                                                                        "value": "@pipeline().parameters.user_prompt",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "storageaccounturl": {
-                                                                        "value": "@pipeline().parameters.storageaccounturl",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "storageAccountContainer": {
-                                                                        "value": "@pipeline().parameters.storageaccountcontainer",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "temperature": {
-                                                                        "value": "@pipeline().parameters.temperature",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "top_p": {
-                                                                        "value": "@pipeline().parameters.top_p",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "cosmosaccount": {
-                                                                        "value": "@pipeline().parameters.cosmosaccount",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "cosmosdb": {
-                                                                        "value": "@pipeline().parameters.cosmosdb",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "cosmoscontainer": {
-                                                                        "value": "@pipeline().parameters.cosmoscontainer",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "documentIntelligenceAPI": {
-                                                                        "value": "@pipeline().parameters.documentIntelligenceAPI",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "modelId": {
-                                                                        "value": "@pipeline().parameters.modelId",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "searchServiceEndpoint": {
-                                                                        "value": "@pipeline().parameters.searchServiceEndpoint",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "embeddingDeploymentName": {
-                                                                        "value": "@pipeline().parameters.embeddingDeploymentName",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "storageAccountResourceId": {
-                                                                        "value": "@pipeline().parameters.storageAccountResourceId",
-                                                                        "type": "Expression"
-                                                                    },
-                                                                    "indexName": {
-                                                                        "value": "@pipeline().parameters.aiSearchIndexName",
-                                                                        "type": "Expression"
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    ]
-                                                }
+                                                "activity": "Get documents",
+                                                "dependencyConditions": [
+                                                    "Succeeded"
+                                                ]
                                             }
                                         ],
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "items": {
+                                                "value": "@activity('Get documents').output.childItems",
+                                                "type": "Expression"
+                                            },
+                                            "isSequential": false,
+                                            "activities": [
+                                                {
+                                                    "name": "Analyze Documents",
+                                                    "type": "ExecutePipeline",
+                                                    "dependsOn": [],
+                                                    "policy": {
+                                                        "secureInput": false
+                                                    },
+                                                    "userProperties": [],
+                                                    "typeProperties": {
+                                                        "pipeline": {
+                                                            "referenceName": "singleAnalyzeDocument",
+                                                            "type": "PipelineReference"
+                                                        },
+                                                        "waitOnCompletion": true,
+                                                        "parameters": {
+                                                            "fileName": {
+                                                                "value": "@item().name",
+                                                                "type": "Expression"
+                                                            },
+                                                            "gpt4_deployment_name": {
+                                                                "value": "@pipeline().parameters.gpt4_deployment_name",
+                                                                "type": "Expression"
+                                                            },
+                                                            "openai_api_base": {
+                                                                "value": "@pipeline().parameters.openAIAPI",
+                                                                "type": "Expression"
+                                                            },
+                                                            "sys_message": {
+                                                                "value": "@pipeline().parameters.sys_message",
+                                                                "type": "Expression"
+                                                            },
+                                                            "user_prompt": {
+                                                                "value": "@pipeline().parameters.user_prompt",
+                                                                "type": "Expression"
+                                                            },
+                                                            "storageaccounturl": {
+                                                                "value": "@pipeline().parameters.storageaccounturl",
+                                                                "type": "Expression"
+                                                            },
+                                                            "storageAccountContainer": {
+                                                                "value": "@pipeline().parameters.storageaccountcontainer",
+                                                                "type": "Expression"
+                                                            },
+                                                            "temperature": {
+                                                                "value": "@pipeline().parameters.temperature",
+                                                                "type": "Expression"
+                                                            },
+                                                            "top_p": {
+                                                                "value": "@pipeline().parameters.top_p",
+                                                                "type": "Expression"
+                                                            },
+                                                            "cosmosaccount": {
+                                                                "value": "@pipeline().parameters.cosmosaccount",
+                                                                "type": "Expression"
+                                                            },
+                                                            "cosmosdb": {
+                                                                "value": "@pipeline().parameters.cosmosdb",
+                                                                "type": "Expression"
+                                                            },
+                                                            "cosmoscontainer": {
+                                                                "value": "@pipeline().parameters.cosmoscontainer",
+                                                                "type": "Expression"
+                                                            },
+                                                            "documentIntelligenceAPI": {
+                                                                "value": "@pipeline().parameters.documentIntelligenceAPI",
+                                                                "type": "Expression"
+                                                            },
+                                                            "modelId": {
+                                                                "value": "@pipeline().parameters.modelId",
+                                                                "type": "Expression"
+                                                            },
+                                                            "searchServiceEndpoint": {
+                                                                "value": "@pipeline().parameters.searchServiceEndpoint",
+                                                                "type": "Expression"
+                                                            },
+                                                            "embeddingDeploymentName": {
+                                                                "value": "@pipeline().parameters.embeddingDeploymentName",
+                                                                "type": "Expression"
+                                                            },
+                                                            "storageAccountResourceId": {
+                                                                "value": "@pipeline().parameters.storageAccountResourceId",
+                                                                "type": "Expression"
+                                                            },
+                                                            "indexName": {
+                                                                "value": "@pipeline().parameters.aiSearchIndexName",
+                                                                "type": "Expression"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ],
                                 "policy": {
                                     "elapsedTimeMetric": {}
                                 },
@@ -2752,7 +2752,7 @@
             }
         }
     ],
-    "outputs": { 
+    "outputs": {
         "cosmosDbNoSqlPrivateEndpointRequest": {
             "type": "string",
             "value": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), last(split(reference(parameters('cosmosDbNoSqlResourceId'), '2023-11-15', 'Full').properties.privateEndpointConnections[0].id, '/')), 'na')]"
