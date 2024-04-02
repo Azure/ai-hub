@@ -138,7 +138,7 @@
         },
         "azureOpenAISystemMessage": {
             "type": "String",
-            "defaultValue": "You are an AI assistant that helps people find information.",
+            "defaultValue": "You are an helpful AI assistant. You are here to help me with my questions.",
             "metadata": {
                 "description": "System message parameter for Azure OpenAI API"
             }

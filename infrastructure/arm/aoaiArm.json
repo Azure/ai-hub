@@ -717,6 +717,12 @@
             "gptDeploymentName": "hub-gpt4",
             "gptModelName": "gpt-4"
         },
+        "visionAzureOpenAISystemMessage": "WW91ciB0YXNrIGlzIHRvIGV4dHJhY3QgdGhlIHNjZW5lcyB0aGF0IGlzIHN1aXRhYmxlIGZvciBtYWtpbmcgc2hvcnQgdmlkZW9zIHRoYXQgY2FuIGdvIHZpcmFsIG9uIHNvY2lhbCBtZWRpYS4KWW91IGhhdmUgdG8gcmF0ZSB0aGVtIGluIHByb2JhYmlsaXR5IG9mIGdvaW5nIHZpcmFsIDEgdG8gMTAsIDEwIGJlaW5nIHRoZSBtb3N0IGxpa2VseS4KUGxlYXNlIHJhdGUgZWFjaCBjbGlwIGluZGVwZW5kZW50bHkgYnV0IG11c3QgaW4gdGhlIGNvbnRleHQgb2YgdGhlIGZ1bGwgdmlkZW8uCgpIZXJlIGFyZSB0aGUgc3RlcHMgeW91IHNob3VsZCBmb2xsb3c6Ci0tLS0tLS0KMS4gUHJvY2VzcyBhbGwgdGhlIHNjZW5lcyBpbiB0aGUgdmlkZW8gdG8gdW5kZXJzdGFuZCB0aGUgY29udGV4dC4KMi4gUHJvY2VzcyBlYWNoIHNjZW5lIHRvIGZpbmQgdGhlIHJlbGV2YW5jZSBhbmQgcHJvYmFiaWxpdHkgb2YgZ29pbmcgdmlyYWwgYmFzZWQgb24gY3JpdGVyaWEvaGludHMgbWVudGlvbmVkIGJlbG93IGFuZCByYXRlIHRoZW0uCjMuIFJhdGUgdGhlbSBpbiAxIHRvIDEwLCAxMCBiZWluZyB0aGUgbW9zdCBsaWtlbHkgYnV0IHVzZSB0aGUgcmF0aW5nIG9ubHkgb25jZS4gVGhlcmUgc2hvdWxkIG5vdCBiZSBhbnkgZHVwbGljYXRlIHJhdGluZ3MuCgppbnB1dDoKWW91ciBpbnB1dCB3aWxsIGJlIGEgc3RydWN0dXJlZCBhcnJheSBjb250YWluaW5nIG9uZSBvciBtb3JlIHNjZW5lcy4gRWFjaCBzY2VuZSB3aWxsIGhhdmUgdGhlIGZvbGxvd2luZyBzdHJ1Y3R1cmU6CiAgICAtaWQgOiBzY2VuZSBpZAogICAgLXN0YXJ0OiBzdGFydCB0aW1lIG9mIHRoZSBzY2VuZQogICAgLWVuZDogZW5kIHRpbWUgb2YgdGhlIHNjZW5lCiAgICAtY29udGVudDogY29udGVudCBvZiB0aGUgc2VjdGlvbi4gWW91IGhhdmUgdG8gZGVlcCBpbnNwZWN0IHRoZSB0ZXh0IGhlcmUgdG8gZmluZCB0aGUgc3VpdGFibGUgY2xpcHMuCiAgICAgICAgICAgIFRoaXMgaXMgYSBzaW5nbGUgc3RyaW5nIGhvd2V2ZXIgaXQgd2lsbCBoYXZlIG11bHRpcGxlIHRhZ3MgaW4gc3F1YXJlIGJyYWNrZXRzLgogICAgICAgICAgICBZb3UgaGF2ZSB0byBmaW5kIHRoZSBzdWl0YWJsZSBjbGlwIGJhc2VkIG9uIHRoZSBjb250ZW50IGFuZCB0YWdzLgogICAgICAgICAgICBbVmlkZW8gdGl0bGVdIHdpbGwgYmUgdGhlIHRpdGxlIG9mIHRoZSB2aWRlbwogICAgICAgICAgICBbVGFnc10gIHdpbGwgYmUgdGhlIHRhZ3Mgb2YgdGhlIHZpZGVvCiAgICAgICAgICAgIFtEZXRlY3RlZCBPYmplY3RzXSAgd2lsbCBiZSB0aGUgb2JqZWN0cyBkZXRlY3RlZCBpbiB0aGUgdmlkZW8KICAgICAgICAgICAgW09DUl0gd2lsbCBiZSB0aGUgdGV4dCBkZXRlY3RlZCBpbiB0aGUgdmlkZW8KICAgICAgICAgICAgW0tub3duIHBlb3BsZV0gIHdpbGwgYmUgdGhlIGtub3duIHBlb3BsZSBpbiB0aGUgdmlkZW8KICAgICAgICAgICAgW1RyYW5zY3JpcHRdIHdpbGwgYmUgdGhlIHRyYW5zY3JpcHQgb2YgdGhlIHNjZW5lCgpZb3UgaGF2ZSB0byBjb21iaW5lIGFsbCB0aGUgaW5mb3JtYXRpb24gcHJlc2VudCBpbiB0aGUgY29udGVudCB1c2luZyBhbGwgdGhlIGRpZmZlcmVudCB0YWdzIGFuZCB0aGVuIGZpbmQgdGhlIHN1aXRhYmxlIGNsaXBzIGJhc2VkIG9uIHRoYXQuCgp7CiAgICAic3VtbWFyeSI6ICJUaGlzIGlzIHRoZSBzdW1tYXJ5IG9mIHRoZSB3aG9sZSB2aWRlbyIsCiAgICAic2NlbmVzIjogWwogICAgICAgIHsKICAgICAgICAgICAgImlkIjogInNjZW5lIGlkIiwKICAgICAgICAgICAgInRpdGxlIjogInNob3J0IHRpdGxlIG9mIHRoZSBzY2VuZSBiYXNlZCBvbiBzdW1tYXJ5IiwKICAgICAgICAgICAgInJhdGluZyI6IDEwLAogICAgICAgICAgICAicmVhc29uaW5nIjogIlRoaXMgc2NlbmUgaXMgc3VpdGFibGUgZm9yIG1ha2luZyBzaG9ydCB2aWRlb3MgdGhhdCBjYW4gZ28gdmlyYWwgb24gc29jaWFsIG1lZGlhIGJlY2F1c2UuLi4iLAogICAgICAgICAgICAiZGVzY3JpcHRpb24iOiAiYnJpZWYgZGVzY3JpcHRpb24gb2Ygd2hhdCB0aGlzIHNjZW5lIGlzIGFib3V0IiwKICAgICAgICAgICAgInN0YXJ0X3RpbWUiOiAic3RhcnQgdGltZSBvZiB0aGUgc2NlbmUiLAogICAgICAgICAgICAiZW5kX3RpbWUiOiAiZW5kIHRpbWUgb2YgdGhlIHNjZW5lIiwKICAgICAgICAgICAgInRyYW5zY3JpcHQiOiAiVGhpcyBpcyB0aGUgdHJhbnNjcmlwdCBvZiB0aGUgc2NlbmUiLAogICAgICAgICAgICAidHJhbnNsYXRpb24iOiAiVHJhbnNsYXRpb24gb2YgdGhlIHRyYW5zY3JpcHQgdG8gRW5nbGlzaCIKICAgICAgICB9CiAgICBdCn0KCi0gWW91ciBvdXRwdXQgbXVzdCBiZSBpbiBzdHJpY3QgSlNPTiBmb3JtYXQuIERvbid0IGluY2x1ZGUgYW55IGNvbW1lbnRzIG9yIG90aGVyIGNoYXJhY3RlcnMgdGhhdCBhcmUgbm90IHBhcnQgb2YgdGhlIEpTT04gZm9ybWF0LgotIFRyYW5zbGF0ZSB0aGUgdGhlIG91dHB1dCB0byBFbmdsaXNoIGlmIHRoZSBzb3VyY2UgdHJhbnNjcmlwdCBpcyBub3QgaW4gRW5nbGlzaC4KLSBZb3UgaWRlbnRpZnkgdG9wIHNjZW5lcyBiYXNlZCBvbiB0aGUgcmF0aW5nIHRoYXQgYXJlIHN1aXRhYmxlIGZvciBtYWtpbmcgc2hvcnQgdmlkZW9zIHRoYXQgY2FuIGdvIHZpcmFsIGFuZCBzb3J0IGl0IGJ5IHJhdGluZy4KLSBZb3UgYXJlIG5vdCBhbGxvd2VkIHRvIGFkZCBuZXcgbGluZSBjaGFyYWN0ZXJzIGluIHRoZSB0cmFuc2NyaXB0LgotIERvIG5vdCBpbmNsdWRlIGluZm9ybWF0aW9uIHRoYXQgaXMgbm90IHBhcnQgb2YgdGhlIGlucHV0IHByb3ZpZGVkLgotIE5vdCBhbGwgdGhlIGNvbnRlbnQgd2lsbCBoYXZlIHRoZSBzdWl0YWJsZSBjbGlwcy4gSWYgeW91IGNhbm5vdCBmaW5kIGl0IG9yIGRldGVybWluZSB0aGUgYXBwbGljYWJpbGl0eSBvZiB0aGUgc2NlbmUsIGNvbnRpbnVlIHdpdGggcHJvY2Vzc2luZyB0aGUgbmV4dCBzY2VuZS4KLSBZb3UgaGF2ZSB0byBwYXJzZSBlbnRpcmUgY29udGVudCB0byBmaW5kIHRoZSBzdWl0YWJsZSBjbGlwcyBhbmQgcmFuayB0aGVtIGJhc2VkIG9uIHByb2JhYmlsaXR5IG9mIGdvaW5nIHZpcmFsLgotIFlvdSBoYXZlIHRvIHByb3ZpZGUgdGhlIHJhdGluZyBvZiB0aGUgcHJvYmFiaWxpdHkgb2YgdGhlIGNsaXAgZ29pbmcgdmlyYWwgMSB0byAxMCwgMTAgYmVpbmcgdGhlIG1vc3QgbGlrZWx5LiBQbGVhc2UgcmF0ZSBlYWNoIGNsaXAgaW5kZXBlbmRlbnRseS4KLSB5b3UgaGF2ZSB0byBwcm92aWRlIHJlYXNvbmluZyBmb3IgdGhlIHJhdGluZy4KLSBvcmRlciB5b3VyIHJlc3BvbnNlIGJhc2VkIG9uIHJhdGluZ3Mu",
+        "useCasesMap": {
+        "onyourdata": "UGxlYXNlIGV4dHJhY3QgYW5kIHByb3ZpZGUgcHJlY2lzZSBpbmZvcm1hdGlvbiBmcm9tIHRoZSBwcm92aWRlZCBkb2N1bWVudHMgdGhhdCBkaXJlY3RseSBhZGRyZXNzZXMgdGhlIHNwZWNpZmljIGlucXVpcnkuIEF2b2lkIGluY2x1ZGluZyBhbnkgYWRkaXRpb25hbCBjb21tZW50YXJ5IG5vdCBmb3VuZCB3aXRoaW4gdGhlIGRvY3VtZW50cyBzdXBwbGllZC4=",
+        "vision": "UGxlYXNlIGV4dHJhY3QgYW5kIHByb3ZpZGUgcHJlY2lzZSBpbmZvcm1hdGlvbiBmcm9tIHRoZSBwcm92aWRlZCBkb2N1bWVudHMgdGhhdCBkaXJlY3RseSBhZGRyZXNzZXMgdGhlIHNwZWNpZmljIGlucXVpcnkuIEF2b2lkIGluY2x1ZGluZyBhbnkgYWRkaXRpb25hbCBjb21tZW50YXJ5IG5vdCBmb3VuZCB3aXRoaW4gdGhlIGRvY3VtZW50cyBzdXBwbGllZC4="
+        },
+        "azureOpenAISystemMessage": "[variables('useCasesMap')[parameters('aiUseCaseSelection')]]",
         "resourceNames": {
             "rgName": "[concat(parameters('prefix'), '-rg-', parameters('location'))]",
             "aoaiOrchestratorName": "[take(concat('orch', uniqueString(deployment().name)),7)]",
@@ -2473,6 +2479,9 @@
                     },
                     "azMonRgName": {
                         "value": "[variables('resourceNames').rgName]"
+                    },
+                    "azureOpenAISystemMessage": {
+                        "value": "[base64ToString(variables('azureOpenAISystemMessage'))]"
                     }
                 }
             }
@@ -2603,7 +2612,7 @@
                         "value": "[variables('aoaiEndpoint1')]"
                     },
                     "systemMessage": {
-                        "value": "You are an AI assistant that helps people find information."
+                        "value": "[base64ToString(variables('azureOpenAISystemMessage'))]"
                     },
                     "userPrompt": {
                         "value": "Summarize the data for me."
