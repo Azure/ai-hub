@@ -137,6 +137,7 @@
                                 "hostingMode": "default",
                                 "publicNetworkAccess": "[if(equals(parameters('aiSearchDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]",
                                 "disableLocalAuth": "[if(equals(parameters('aiSearchRbacAuthz'), 'Yes'), bool('true'), bool('false'))]",
+                                "networkAcls": "[if(equals(parameters('aiSearchDisableNetworkAccess'), 'Yes'), variables('denyFwAcl'), json('null'))]",
                                 "encryptionWithCmk": {
                                     "enforcement": "[if(equals(parameters('aiSearchEncryption'), 'Yes'), 'Enabled', 'Disabled')]"
                                 }
