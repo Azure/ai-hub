@@ -3,7 +3,7 @@
 ![Benefits](./ai-overview.png)
 
 This user guide explains the setup and deployment of secure and compliant Generative "AI hub on Azure".
-The reference implementation has been developed, validated, and proven with several of Microsoft's largest customers, and represent the best practices for the Azure serivces involved regardless of industry industry, and to accelerate a safe and secure by-default deployment of Generative Azure Open AI on Microsoft Azure. We will continue to enhance and develop the reference implementation alongside with the overall Azure roadmap, based on proven and validated design patterns with our customers.
+The reference implementation has been developed, validated, and proven with several of Microsoft's largest customers, and represent the best practices for the Azure serivces involved regardless of industry industry, and to accelerate a safe and secure by-default deployment of Generative Azure OpenAI on Microsoft Azure. We will continue to enhance and develop the reference implementation alongside with the overall Azure roadmap, based on proven and validated design patterns with our customers.
 
 ## Table of Contents
 
@@ -21,13 +21,13 @@ The reference implementation has been developed, validated, and proven with seve
 
 | Reference Implementation | Description | Deploy | Instructions  
 |:----------|:-------------------------|:------------|:-------|  
-| Enterprise Azure OpenAI Hub | Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure Open AI workload composition into your Azure regions and subscriptions | [![Deploy to Azure](./deploytomicrosoftcloud.svg)](https://aka.ms/DeploySecureGenAI)  | You are already here :star: :smiley: |  
+| Enterprise Azure OpenAI Hub | Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure OpenAI workload composition into your Azure regions and subscriptions | [![Deploy to Azure](./deploytomicrosoftcloud.svg)](https://aka.ms/DeploySecureGenAI)  | You are already here :star: :smiley: |  
 
 ## What is Enterprise Azure OpenAI Hub?
 
 Enterprise Azure OpenAI Hub provides powerful, generative AI capabilities that organizations can access securely over a private network, use their own customer-managed keys to encrypt the data, and enable sophisitcated monitoring and observability of their AI workloads, while managing authentication and authorization centrally. This reference implementation provides a secure and compliant deployment of Enterprise Azure OpenAI Hub, and the recommended configuration is aligned with Enterprise security and compliance requirements.
 
-Further, it allows organizations to deploy the Azure Open AI instance(s) to the regions of their choice, and where capacity exists for the respective model deployments, while honoring the connectivity and networking requirements of the organization.
+Further, it allows organizations to deploy the Azure OpenAI instance(s) to the regions of their choice, and where capacity exists for the respective model deployments, while honoring the connectivity and networking requirements of the organization.
 
 The Enterprise Azure OpenAI Hub includes the following Azure services:
 
@@ -68,14 +68,14 @@ By selecting "Production", you can currently deploy to only a single Azure regio
 
 For multi-region deployment, select "Proof of Concept" as the deployment intent, and follow the instructions in the next section.
 
->Note: In case you have your existing Express Route connectivity configured for a particular Azure region, where your Virtual Network is created, but Azure OpenAI model availabily may be in a different region, you can deploy the Private Endpoint for the Azure services to be located in a different Azure region than where you are deploying the Enterprise Azure OpenAI Hub. This is to ensure that the Azure Open AI instance is deployed in the region where the model is available, and the Private Endpoint is deployed in the region where your Virtual Network is located.
+>Note: In case you have your existing Express Route connectivity configured for a particular Azure region, where your Virtual Network is created, but Azure OpenAI model availabily may be in a different region, you can deploy the Private Endpoint for the Azure services to be located in a different Azure region than where you are deploying the Enterprise Azure OpenAI Hub. This is to ensure that the Azure OpenAI instance is deployed in the region where the model is available, and the Private Endpoint is deployed in the region where your Virtual Network is located.
 
 ## Deploy for PoC and testing purposes
 
 When deploying Enterprise Azure OpenAI Hub via Azure portal, the deployment intent can be set to "Proof of Concept", you can optionally explore additional features and capabilities, such as:
 
-* Deploy to multiple Azure regions, where Azure API Management is introduced to facilitate the load balancing, and also provides the retry logic and error handling in case of a failure or unavailability of the Azure Open AI instance in one of the regions. This option requires the Azure services to use Public Endpoints as the APIM service is not available over Private Endpoints in the V2 version currently.
-* Explore sample applications, such as [Sample Chat App with AOAI](https://github.com/microsoft/sample-app-aoai-chatGPT/tree/main) to quickly have a web application that can interact with the Azure Open AI instance, and start generating content based on the data that you have ingested in an Azure native RAG architecture.
+* Deploy to multiple Azure regions, where Azure API Management is introduced to facilitate the load balancing, and also provides the retry logic and error handling in case of a failure or unavailability of the Azure OpenAI instance in one of the regions. This option requires the Azure services to use Public Endpoints as the APIM service is not available over Private Endpoints in the V2 version currently.
+* Explore sample applications, such as [Sample Chat App with AOAI](https://github.com/microsoft/sample-app-aoai-chatGPT/tree/main) to quickly have a web application that can interact with the Azure OpenAI instance, and start generating content based on the data that you have ingested in an Azure native RAG architecture.
 * Any other features and capabilities that are not available in the "Production" deployment intent, such as Preview features and use-cases where not all Enterprise security requirements can be conformed to.
 
 ## Deployment instructions
@@ -111,7 +111,7 @@ When selecting "Production" as the intent, provide the prefix for the naming con
 
 <img src="./ArchSetupSingleParam.png" alt="Architecture setup" width="800" height="200">
 
-When selecting "Proof of Concept" as the intent for the deployment, you can optionally select to deploy to a single region, or to multiple regions. When deploying to multiple regions, Azure API Management will be used to facilitate the load balancing, and also provides the retry logic and error handling in case of a failure or unavailability of the Azure Open AI instance in one of the regions. This option requires the Azure services to use Public Endpoints as the APIM service is not available over Private Endpoints in the V2 version currently.
+When selecting "Proof of Concept" as the intent for the deployment, you can optionally select to deploy to a single region, or to multiple regions. When deploying to multiple regions, Azure API Management will be used to facilitate the load balancing, and also provides the retry logic and error handling in case of a failure or unavailability of the Azure OpenAI instance in one of the regions. This option requires the Azure services to use Public Endpoints as the APIM service is not available over Private Endpoints in the V2 version currently.
 
 <img src="./ArchSetupMulti.png" alt="Architecture multi" alt="Architecture setup" width="800" height="600">
 
@@ -122,18 +122,18 @@ When selecting this option, you must provide region input for the initial deploy
 
 ### Key Vault Configuration
 
-Configure the Key Vault that will be used to store the keys used by the storage account for encryption at rest, as well as the Azure Open AI service. It is recommended to leave with the default recommendations as it relates to the security and compliance recommendations. If needed, you can opt out of the recommendations, assuming you are aware of the implications.
+Configure the Key Vault that will be used to store the keys used by the storage account for encryption at rest, as well as the Azure OpenAI service. It is recommended to leave with the default recommendations as it relates to the security and compliance recommendations. If needed, you can opt out of the recommendations, assuming you are aware of the implications.
 
 <img src="./KVSetup1.png" alt="Key Vault" width="800" height="600">
 
 In the networking section when deploying using a Private Endpoint, you must provide the resourceId of an existing subnet in the same region where you are deploying into. 
-If you want to deploy the Azure Open AI workloads into a different region vs where you have your virtual network, select the region for the Private Endpoint (i.e., "Deploy the Private Endpoint for Key Vault into the same region as the Key Vault" option must be set to "No", and the regional parameter will appear in the portal)
+If you want to deploy the Azure OpenAI workloads into a different region vs where you have your virtual network, select the region for the Private Endpoint (i.e., "Deploy the Private Endpoint for Key Vault into the same region as the Key Vault" option must be set to "No", and the regional parameter will appear in the portal)
 
 <img src="./KVSetup2.png>" alt="Key Vault" width="800" height="600"
 
 ### Storage Configuration
 
-This page will create and configure the storage account that will be used in conjunction with the Key Vault and the Azure Open AI service. This enables you to bring your own data that you can use to fine-tune and train the Azure Open AI service for enterprise-specific contexts, fully encrypted at rest using a customer-managed key.
+This page will create and configure the storage account that will be used in conjunction with the Key Vault and the Azure OpenAI service. This enables you to bring your own data that you can use to fine-tune and train the Azure OpenAI service for enterprise-specific contexts, fully encrypted at rest using a customer-managed key.
 
 Provide a key name, and the resourceId for an existing subnet when deploying with Private Endpoint. Same as with the Key Vault configuration, if you are deploying to a different region vs where the virtual network is created, select a different region for the private endpoint.
 
@@ -143,7 +143,7 @@ Provide a key name, and the resourceId for an existing subnet when deploying wit
 
 Configure the Azure OpenAI instance that will be created, by providing a name for the customer-managed key, and the resourceId to the subnet where the Private Endpoint will be deployed. Same as with the Key Vault and Storage Account configuration, if you are deploying to a different region vs where the virtual network is created, select a different region for the private endpoint.
 
-<img src="./AOAISetup1.png" alt="Azure Open AI" width="800" height="600">
+<img src="./AOAISetup1.png" alt="Azure OpenAI" width="800" height="600">
 
 ### Model Deployment and Content Filtering
 
