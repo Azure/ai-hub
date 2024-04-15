@@ -249,7 +249,7 @@ resource "azurerm_data_factory_pipeline" "Document" {
                         },
                         {
                             "condition": "[equals(parameters('dfDisableNetworkAccess'), 'Yes')]",
-                            "name": "[concat(variables('name-compliant-df'), '/esp1')]",
+                            "name": "[concat(variables('name-compliant-df'), '/default')]",
                             "type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
                             "apiVersion": "2018-06-01",
                             "properties": {},
@@ -348,7 +348,7 @@ resource "azurerm_data_factory_pipeline" "Document" {
                                 },
                                 "managedVirtualNetwork": {
                                     "type": "ManagedVirtualNetworkReference",
-                                    "referenceName": "Mvnet"
+                                    "referenceName": "default"
                                 }
                             },
                             "dependsOn": [
