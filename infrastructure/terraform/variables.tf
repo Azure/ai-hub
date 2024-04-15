@@ -130,3 +130,14 @@ variable "search_service_name" {
   }
   
 }
+
+variable "adf_service_name" {
+  description = "Specifies the name of the data factory."
+  type        = string
+  sensitive   = false
+  default     = "esp1azdf-eastus-adf"
+  validation {
+    condition     = length(var.adf_service_name) >= 2
+    error_message = "Please specify a valid name."
+  }
+}

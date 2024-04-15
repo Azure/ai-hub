@@ -1,9 +1,20 @@
+
 variable "sku" {
   description = "Specifies the SKU for the search service"
   type        = string
   sensitive   = false
   default     = "standard"
   
+}
+
+variable "adf_service_name" {
+  description = "Specifies the name of the data factory."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.adf_service_name) >= 2
+    error_message = "Please specify a valid name."
+  }
 }
 
 variable "resource_group_name" {

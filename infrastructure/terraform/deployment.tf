@@ -68,3 +68,13 @@ module "azure_search_service" {
   subnet_id = var.subnet_id
   cmk_key_name = module.azure_key_vault.key_vault_cmk_name
 }
+
+module "data_factory" {
+  source = "./modules/datafactory"
+  location = var.location
+  resource_group_name = azurerm_resource_group.azureOpenAiWorkload_rg.name
+  adf_service_name = var.adf_service_name
+  sku = "Standard"
+  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
+  subnet_id = var.subnet_id
+}
