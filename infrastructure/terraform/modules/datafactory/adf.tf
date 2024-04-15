@@ -11,9 +11,31 @@ identity {
 resource "azurerm_data_factory_pipeline" "singleAnalyzeDocument" {
   name            = "singleAnalyzeDocument"
   data_factory_id = azurerm_data_factory.data_factory.id
-  variables = {
-    "fileName" = "layout.png"
-  }
+  parameters = {
+        "fileName" = "layout.png",
+        "gpt4_deployment_name" = "gpt-4",
+        "openai_api_base" = "https://esp1-swedencentral-azopenai.openai.azure.com/" 
+        "cosmosaccount" = "https://esp1-swedencentral-cosmosdb.documents.azure.com:443/",
+        "cosmoscontainer"= "docs",
+        "cosmosdb" = "responses",
+        "storageaccounturl" = "https://useme.blob.core.windows.net/",
+        "storageAccountContainer" = "docsin",
+        "temperature" = "1",
+        "top_p" = "1",
+        "searchServiceEndpoint" = "https://esp1-swedencentral-azaisearch.search.windows.net",
+        "indexName" = "esp1test",
+        "embeddingDeploymentName"  = "embedding",
+        "sys_message" = "You are an AI assistant that helps people find information.",
+        "user_prompt" = "Summarize the data for me.",
+        "storageaccountcontainer" = "docsin",
+        "storageAccountResourceId" = "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/esp1-rg-swedencentral/providers/Microsoft.Storage/storageAccounts/useme",
+        "documentIntelligenceAPI" = "https://esp1-westeurope-docintel.cognitiveservices.azure.com/",
+        "modelId" = "prebuilt-layout",
+        "aiSearchIndexName" = "esp1test",
+        "openAIAPI" = "https://esp1-swedencentral-azopenai.openai.azure.com/"  
+
+    }
+
   activities_json = <<JSON
 [
 {
