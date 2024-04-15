@@ -27,7 +27,6 @@ resource "azurerm_data_factory_pipeline" "singleAnalyzeDocument" {
         "embeddingDeploymentName"  = "embedding",
         "sys_message" = "You are an AI assistant that helps people find information.",
         "user_prompt" = "Summarize the data for me.",
-        "storageaccountcontainer" = "docsin",
         "storageAccountResourceId" = "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/esp1-rg-swedencentral/providers/Microsoft.Storage/storageAccounts/useme",
         "documentIntelligenceAPI" = "https://esp1-westeurope-docintel.cognitiveservices.azure.com/",
         "modelId" = "prebuilt-layout",
