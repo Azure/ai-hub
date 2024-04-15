@@ -20,7 +20,7 @@ resource "azurerm_search_service" "search_service" {
   customer_managed_key_enforcement_enabled = false
   
 }
-
+/*
 resource "azurerm_private_endpoint" "search_service_endpoint" {
   name                = "${azurerm_search_service.search_service.name}-pe"
   location            = var.location
@@ -35,7 +35,7 @@ resource "azurerm_private_endpoint" "search_service_endpoint" {
   }
   subnet_id = var.subnet_id
 }
-
+*/
 data "azurerm_monitor_diagnostic_categories" "diagnostic_categories_search_service" {
   resource_id = azurerm_search_service.search_service.id
 }

@@ -23,7 +23,7 @@ resource "azurerm_key_vault" "key_vault" {
     ip_rules                   = []
    virtual_network_subnet_ids = []
   }
-  public_network_access_enabled = false
+  public_network_access_enabled = true
   purge_protection_enabled      = true
   sku_name                      = var.key_vault_sku_name
   soft_delete_retention_days    = 7
@@ -147,7 +147,7 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_key_vault" {
     }
   }
 }
-
+/*
 resource "azurerm_private_endpoint" "key_vault_private_endpoint" {
   name = "${azurerm_key_vault.key_vault.name}-pe"
   location = var.location
@@ -161,3 +161,4 @@ resource "azurerm_private_endpoint" "key_vault_private_endpoint" {
   }
   subnet_id = var.subnet_id
 }
+*/

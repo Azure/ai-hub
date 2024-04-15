@@ -9,7 +9,7 @@ variable "azureOpenAiWorkload_rg" {
   description = "Specifies the name of the resource group."
   type        = string
   sensitive   = false
-  default     = "kk-azoai-eastus-rg"
+  default     = "esp1-azoai-eastus-rg"
   validation {
     condition     = length(var.azureOpenAiWorkload_rg) >= 2
     error_message = "Please specify a valid name."
@@ -20,7 +20,7 @@ variable "observability_rg" {
   description = "Specifies the name of the resource group."
   type        = string
   sensitive   = false
-  default     = "kk-logw-eastus-rg"
+  default     = "esp1-logw-eastus-rg"
   validation {
     condition     = length(var.observability_rg) >= 2
     error_message = "Please specify a valid name."
@@ -52,7 +52,7 @@ variable "key_vault_name" {
   description = "Specifies the name of the key vault."
   type        = string
   sensitive   = false
-  default     = "kk-azsecret-eastus-kv"
+  default     = "esp1-azsecret-eastus-kv"
   validation {
     condition     = length(var.key_vault_name) >= 2
     error_message = "Please specify a valid name."
@@ -63,7 +63,7 @@ variable "log_analytics_name" {
   description = "Specifies the name of the log analytics workspace"
   type        = string
   sensitive   = false
-  default     = "kkazlogs-eastus-law"
+  default     = "esp1azlogs-eastus-law"
     validation {
     condition     = length(var.log_analytics_name) >= 2
     error_message = "Please specify a valid name."
@@ -74,7 +74,7 @@ variable "cognitive_service_name" {
   description = "Specifies the name of the cognitive service."
   type        = string
   sensitive   = false
-  default     = "kkazoai-eastus-ai"
+  default     = "esp1azoai-eastus-ai"
   validation {
     condition     = length(var.cognitive_service_name) >= 2
     error_message = "Please specify a valid name."
@@ -85,7 +85,7 @@ variable "user_assigned_identity_name" {
   description = "Specifies the name of the user assigned identity."
   type        = string
   sensitive   = false
-  default     = "kk-id-eastus-uai"
+  default     = "esp1-id-eastus-uai"
   validation {
     condition     = length(var.user_assigned_identity_name) >= 2
     error_message = "Please specify a valid name."
@@ -95,7 +95,7 @@ variable "user_assigned_identity_name" {
 variable "storage_account_name" {
   description = "Specifies the name of the storage account."
   type        = string
-  default     = "kkknstai122311"
+  default     = "esp1instai122311"
   sensitive   = false
   validation {
     condition     = length(var.storage_account_name) >= 2
@@ -123,7 +123,7 @@ variable "search_service_name" {
   description = "Specifies the name of the search service."
   type        = string
   sensitive   = false
-  default     = "kkazsearcheastusss" #does not support '-' in name
+  default     = "esp1azsearcheastusss" #does not support '-' in name
   validation {
     condition     = length(var.search_service_name) >= 2
     error_message = "Please specify a valid name."
