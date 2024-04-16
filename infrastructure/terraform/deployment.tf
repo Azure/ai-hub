@@ -78,3 +78,10 @@ module "data_factory" {
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
   subnet_id = var.subnet_id
 }
+
+module "document_intelligence" {
+  source = "./modules/documentintel"
+  location = var.location
+  resource_group_name = azurerm_resource_group.azureOpenAiWorkload_rg.name
+  docintel_service_name = var.docintel_service_name
+}

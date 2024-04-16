@@ -3,7 +3,7 @@ variable "docintel_service_name" {
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.adf_service_name) >= 2
+    condition     = length(var.docintel_service_name) >= 2
     error_message = "Please specify a valid name."
   }
 }

@@ -5,6 +5,13 @@ variable "location" {
   default     = "eastus"
 }
 
+variable "prefix" {
+  description = "Specifies the location for all Azure resources."
+  type        = string
+  sensitive   = false
+  default     = "esp1"
+}
+
 variable "azureOpenAiWorkload_rg" {
   description = "Specifies the name of the resource group."
   type        = string
@@ -63,7 +70,7 @@ variable "log_analytics_name" {
   description = "Specifies the name of the log analytics workspace"
   type        = string
   sensitive   = false
-  default     = "esp1azlogs-eastus-law"
+  default     = "esp1azlogs-law"
     validation {
     condition     = length(var.log_analytics_name) >= 2
     error_message = "Please specify a valid name."
@@ -74,7 +81,7 @@ variable "cognitive_service_name" {
   description = "Specifies the name of the cognitive service."
   type        = string
   sensitive   = false
-  default     = "esp1azoai-eastus-ai"
+  default     = "esp1azoai-ai"
   validation {
     condition     = length(var.cognitive_service_name) >= 2
     error_message = "Please specify a valid name."
@@ -135,9 +142,21 @@ variable "adf_service_name" {
   description = "Specifies the name of the data factory."
   type        = string
   sensitive   = false
-  default     = "esp1azdf-eastus-adf"
+  default     = "esp1-adf"
   validation {
     condition     = length(var.adf_service_name) >= 2
     error_message = "Please specify a valid name."
   }
+}
+
+variable "docintel_service_name" {
+  description = "Specifies the name of the document intelligence service."
+  type        = string
+  sensitive   = false
+  default     = "esp1azdocintel-docintel"
+  validation {
+    condition     = length(var.docintel_service_name) >= 2
+    error_message = "Please specify a valid name."
+  }
+  
 }
