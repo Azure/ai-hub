@@ -31,7 +31,7 @@ variable "subnet_id" {
   description = "Specifies the resourceId of an existing subnet, in the same region as the rest of the workloads that will be created."
   type        = string
   sensitive   = false
-  default = "/subscriptions/8acd66a0-739e-4c34-88d3-acb78559fdf8/resourceGroups/vnet-eastus/providers/Microsoft.Network/virtualNetworks/vnet-eastus/subnets/default"
+  default = "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/swedencentral-vnet/providers/Microsoft.Network/virtualNetworks/swedencentral-vnet/subnets/default"
 }
 
 variable "log_analytics_sku" {
