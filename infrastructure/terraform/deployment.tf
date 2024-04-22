@@ -95,3 +95,14 @@ module "video_indexer" {
   videoSystemIdentity = var.videoSystemIdentity
   videoMonCreation = var.videoMonCreation
 }
+
+module "functions" {
+  source = "./modules/functions"
+  location = var.location
+  resource_group_name = azurerm_resource_group.azureVideoWorkload_rg.name
+  function_service_plan_name = var.function_service_plan_name
+  storage_account_name = var.storage_account_name
+  prefix = var.prefix
+  function_sku = var.function_sku
+  assistant_function_service_name = var.assistant_function_service_name
+}

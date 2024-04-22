@@ -192,5 +192,34 @@ variable "videoMonCreation" {
     condition     = length(var.videoMonCreation) >= 2
     error_message = "Please specify a valid name."
   }
+}
+
+variable "assistant_function_service_name" {
+  description = "Specifies the name of the function."
+  type        = string
+  sensitive   = false
+  default = "func"
+  validation {
+    condition     = length(var.assistant_function_service_name) >= 2
+    error_message = "Please specify a valid name."
+  } 
+}
+
+variable "function_service_plan_name" {
+  description = "Specifies the name of the function app service plan."
+  type        = string
+  sensitive   = false
+  default = "funcplan"
+  validation {
+    condition     = length(var.function_service_plan_name) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "function_sku" {
+  description = "Specifies the SKU for the function app."
+  type        = string
+  sensitive   = false
+  default     = "EP1"
   
 }
