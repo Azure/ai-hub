@@ -629,6 +629,22 @@
                 "Yes",
                 "No"
             ]
+        },
+        "videoMonCreation": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "videoSystemIdentity": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
         }
     },
     "variables": {
@@ -652,6 +668,7 @@
             "azureApimTemplateUri": "[uri(deployment().properties.templateLink.uri, 'apimPublic.json')]",
             "aiSampleAppTemplateUri": "[uri(deployment().properties.templateLink.uri, 'aiSampleApp.json')]",
             "cosmosDbTemplateUri": "[uri(deployment().properties.templateLink.uri, 'cosmosDb.json')]",
+            "videoIndexerTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureVideoIndexer.json')]",
             "adfOnYourDataTemplateUri": "[uri(deployment().properties.templateLink.uri, 'adfOnYourData.json')]",
             "rgCosmosRbacTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgCosmosRbac.json')]"
         },
@@ -669,6 +686,7 @@
             "rgAzureAiObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "rgAzureAiEmbeddingObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "rgAzureOpenAiObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-aoai-orch-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "rgAzureVideoIndexerObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-videoIndexer-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "rgAzureAiSearchObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-search-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "rgAzureDocumentIntelligenceObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-doc-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "rgAzureApimObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-apim-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
@@ -708,7 +726,9 @@
             "aiSampleAppDeploymentName": "[take(concat(parameters('prefix'), '-aiSampleApp-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "cosmosDbDeploymentName": "[take(concat(parameters('prefix'), '-cosmos-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "adfOnYourDataDeploymentName": "[take(concat(parameters('prefix'), '-adfOnYourData-', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "rgCosmosRbacDeploymentName": "[take(concat(parameters('prefix'), '-cosmos-rbac-', parameters('location'), variables('deploymentSuffix')), 64)]"
+            "azVideoIndexerDeploymentName": "[take(concat(parameters('prefix'), '-videoIndexer-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "rgCosmosRbacDeploymentName": "[take(concat(parameters('prefix'), '-cosmos-rbac-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azVideoIndexerRbacForBlobOwnerDeploymentName": "[take(concat(parameters('prefix'), '-videoIndexer-rbac-for-blobOwner-', parameters('location'), variables('deploymentSuffix')), 64)]"
         },
         "sampleAppRepoUrl": "https://github.com/microsoft/sample-app-aoai-chatGPT.git",
         "onYourDataSampleVariables": {
@@ -737,7 +757,8 @@
             "storageAccountName": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(variables('deploymentNames').storageDeploymentName)), 23))]",
             "adfOnYourDataName": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf')]",
             "apimName": "[concat(parameters('prefix'), '-', parameters('apimLocation'), '-apim')]",
-            "appName": "[concat(parameters('prefix'), '-', parameters('location'), '-wa')]"
+            "appName": "[concat(parameters('prefix'), '-', parameters('location'), '-wa')]",
+            "videoIndexerName": "[concat(parameters('prefix'), '-', parameters('location'), '-aivideo')]"
         },
         "resourceIds": {
             "storageAccountResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.Storage/storageAccounts/', variables('resourceNames').storageAccountName)]",
@@ -748,7 +769,8 @@
             "adfOnYourDataResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.DataFactory/factories/', variables('resourceNames').adfOnYourDataName)]",
             "aoaiOrchestratorResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.CognitiveServices/accounts/', variables('resourceNames').aoaiOrchestratorName)]",
             "apimResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.ApiManagement/service/', variables('resourceNames').apimName)]",
-            "appResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').appRgName, '/providers/Microsoft.Web/sites/', variables('resourceNames').appName)]"
+            "appResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').appRgName, '/providers/Microsoft.Web/sites/', variables('resourceNames').appName)]",
+            "videoIndexerResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.VideoIndexer/accounts/', variables('resourceNames').videoIndexerName)]"
         },
         "apiVersions": {
             "dataFactory": "2018-06-01",
@@ -758,7 +780,8 @@
             "apim": "2023-03-01-preview",
             "azAiDocumentIntelligence": "2022-03-01",
             "azureAiSearch": "2022-09-01",
-            "webSites": "2021-02-01"
+            "webSites": "2021-02-01",
+            "videoIndexer": "2024-01-01"
         },
         // Endpoint references
         "aoaiEndpoint1": "[toLower(concat('https://', parameters('prefix'), '-', parameters('location'), '-azopenai', '.openai.azure.com/'))]",
@@ -1512,6 +1535,70 @@
                 }
             }
         },
+        // Deploying Azure AI Video Indexer into primary region
+        {
+            "condition": "[equals(parameters('aiUseCaseSelection'), 'video')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azVideoIndexerDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').videoIndexerTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "videoSystemIdentity": {
+                        "value": "[parameters('videoSystemIdentity')]"
+                    },
+                    "videoMonCreation": {
+                        "value": "[parameters('videoMonCreation')]"
+                    }
+                }
+            }
+        },
+        // Retrieving objectId of the Azure AI Video Indexer System Identity
+        {
+            "condition": "[equals(parameters('videoSystemIdentity'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgAzureVideoIndexerObjectIdDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azVideoIndexerDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgAzureObjectId]"
+                },
+                "parameters": {
+                    "resourceId": {
+                        "value": "[variables('resourceIds').videoIndexerResourceId]"
+                    },
+                    "apiVersion": {
+                        "value": "[variables('apiVersions').videoIndexer]"
+                    }
+                }
+            }
+        },
         // Deploying Azure AI Document Intelligence into primary region
         {
             "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
@@ -1983,6 +2070,35 @@
                     },
                     "principalId": {
                         "value": "[if(and(equals(parameters('stRbacAuthz'), 'Yes'), equals(parameters('aiSystemIdentity'), 'Yes')), reference(variables('deploymentNames').rgAzureAiObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },
+        // Creating Role Assignment for Video Indexer on Storage Account using Storage Blob Data Owner role
+        {
+            "condition": "[and(equals(parameters('videoSystemIdentity'), 'Yes'), equals(parameters('stRbacAuthz'), 'Yes'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azVideoIndexerRbacForBlobOwnerDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureVideoIndexerObjectIdDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "b7e6dc6d-f1e8-4753-8033-0f276bb0955b"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(equals(parameters('videoSystemIdentity'), 'Yes'), reference(variables('deploymentNames').rgAzureVideoIndexerObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
                     }
                 }
             }
