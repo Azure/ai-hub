@@ -45,7 +45,7 @@ resource "azurerm_resource_group" "observability" {
   location = local.location
 }
 
-resource "azurerm_resource_group" "observability" {
+resource "azurerm_resource_group" "processing" {
   name     = local.processing_rg
   location = local.location
 }

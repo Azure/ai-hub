@@ -29,7 +29,7 @@ module "azure_storage_account" {
 module "azure_log_analytics" {
   source                            = "./modules/loganalytics"
   location                          = local.location
-  log_analytics_name                = var.log_analytics_name
+  log_analytics_name                = local.log_analytics_name
   log_analytics_sku                 = var.log_analytics_sku
   log_analytics_retention_in_days   = 30
   log_analytics_resource_group_name = azurerm_resource_group.observability.name
@@ -64,8 +64,8 @@ module "videoindexer" {
 module "azure_search_service" {
   source = "./modules/aisearch"
   location = var.location
-  resource_group_name = azurerm_resource_group.azureVideoWorkload_rg.name
-  search_service_name = var.search_service_name
+  resource_group_name = azurerm_resource_group.ingestion.name
+  search_service_name = local.azure_search_service_name
   sku = "standard"
   partition_count = var.partition_count
   replica_count = var.replica_count
@@ -79,8 +79,8 @@ module "azure_search_service" {
 module "data_factory" {
   source = "./modules/datafactory"
   location = var.location
-  resource_group_name = azurerm_resource_group.azureVideoWorkload_rg.name
-  adf_service_name = var.adf_service_name
+  resource_group_name = azurerm_resource_group.ingestion.name
+  adf_service_name = local.adf_service_name
   sku = "Standard"
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
   subnet_id = var.subnet_id
@@ -89,18 +89,30 @@ module "data_factory" {
 module "document_intelligence" {
   source = "./modules/documentintel"
   location = var.location
-  resource_group_name = azurerm_resource_group.azureVideoWorkload_rg.name
-  docintel_service_name = var.docintel_service_name
+  resource_group_name = azurerm_resource_group.ingestion.name
+  docintel_service_name = local.docintel_service_name
+}
+
+module "azure_storage_account_functions" {
+  source                     = "./modules/storageaccount"
+  location                   = local.location
+  storage_account_name       = local.function_storage_account_name
+  resource_group_name        = azurerm_resource_group.processing.name
+  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
+  cmk_uai_id                 = module.azure_managed_identity.user_assigned_identity_id
+  subnet_id                  = var.subnet_id
+  cmk_key_vault_id           = module.azure_key_vault.key_vault_id
+  cmk_key_name               = module.azure_key_vault.key_vault_key_storage_name
+  depends_on                 = [module.azure_key_vault]
 }
 
 module "functions" {
   source = "./modules/functions"
-  location = var.location
-  resource_group_name = azurerm_resource_group.azureVideoWorkload_rg.name
-  function_service_plan_name = var.function_service_plan_name
-  storage_account_name = var.storage_account_name
-  prefix = var.prefix
+  location = local.location
+  resource_group_name = azurerm_resource_group.processing.name
+  function_service_plan_name = local.function_service_plan_name
+  storage_account_name = module.azure_storage_account_functions.storage_account_name
   function_sku = var.function_sku
-  assistant_function_service_name = var.assistant_function_service_name
-  shortclip_function_service_name = var.shortclip_function_service_name
+  assistant_function_service_name = local.azure_function_name_assistant
+  shortclip_function_service_name = local.azure_function_name_shortclip
 }

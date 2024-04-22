@@ -26,14 +26,12 @@ variable "resource_group_name" {
     condition     = length(var.resource_group_name) >= 2
     error_message = "Please specify a valid name."
   }
-  
 }
 
 variable "location" {
   description = "Specifies the location of the resource group."
   type        = string
   sensitive   = false
-  
 }
 
 variable "storage_account_name" {
@@ -44,17 +42,6 @@ variable "storage_account_name" {
         condition     = length(var.storage_account_name) >= 2
         error_message = "Please specify a valid name."
     }
-  
-}
-
-variable "prefix" {
-  description = "Specifies the prefix for all resources created in this deployment."
-  type        = string
-  sensitive   = false
-  validation {
-    condition     = length(var.prefix) >= 2 && length(var.prefix) <= 10
-    error_message = "Please specify a prefix with more than two and less than 10 characters."
-  }
 }
 
 variable "function_sku" {
@@ -77,5 +64,4 @@ variable "shortclip_function_service_name" {
     condition     = length(var.shortclip_function_service_name) >= 2
     error_message = "Please specify a valid name."
   }
-  
 }
