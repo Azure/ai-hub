@@ -2299,7 +2299,7 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Azure Monitor Settings",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'video')]"
+                            "visible": false
                         },
                         {
                             "name": "aiVideoIndexerMonCreation",
@@ -2320,7 +2320,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'video')]"
+                            "visible": false
                         },
                         {
                             "name": "aiAddServicesSectionOnYourData",
