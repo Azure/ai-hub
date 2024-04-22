@@ -40,3 +40,9 @@ variable "videoSystemIdentity" {
   default = "No"  
   
 }
+variable "prefix" {
+  description = "Specifies the location for all Azure resources."
+  type        = string
+  sensitive   = false
+  default     = "esp1"
+}
