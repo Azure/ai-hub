@@ -416,4 +416,48 @@ function Remove-AzOpenAIAssistants {
     }
 }
 
-Export-ModuleMember -Function Get-AzOpenAIToken, Start-AzOpenAIAssistantThreadWithMessages, Get-AzOpenAIAssistantThread, Invoke-AzOpenAIUploadFile, New-AzOpenAIAssistant, Get-AzOpenAIAssistant, New-AzOpenAIAssistantFunction, New-AzOpenAIAssistantThread, Post-AzOpenAIAssistantMessage, Start-AzOpenAIAssistantThreadRun, Get-AzOpenAIAssistantThreadStatus, Get-AzOpenAIAssistantMessages, Remove-AzOpenAIAssistants
+
+function Get-AzOpenAIAssistantOutputFiles {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Endpoint,
+
+        [string]$AssistantApiFileOutputName,
+
+        [string]$LocalFilePath
+    )
+
+    $authHeader = @{
+        Authorization = "Bearer $(Get-AzOpenAIToken)"
+    }
+    
+    # Define the URI for getting the list of files
+    $uri = "$Endpoint/openai/files?api-version=2024-02-15-preview"
+    
+    # Retrieve the list of files
+    $getContent = Invoke-RestMethod -uri $uri -Headers $authHeader -Method Get
+    
+    # Check if a specific file name is provided
+    if (![string]::IsNullOrWhiteSpace($AssistantApiFileOutputName)) {
+        # Find the specific file based on filename
+        $findMyFile = $getContent.data | Where-Object {$_.filename -eq "/mnt/data/$AssistantApiFileOutputName"}
+        
+        # If file is found, proceed to download
+        if ($findMyFile -ne $null -and ![string]::IsNullOrWhiteSpace($LocalFilePath)) {
+            $downloadUri = "$Endpoint/openai/files/$($findMyFile.id)/content?api-version=2024-02-15-preview"
+            $getFileContent = Invoke-RestMethod -uri $downloadUri -Headers $authHeader -Method Get
+
+            # Write the file content to a JSON file at the local machine path provided
+            $getFileContent | ConvertTo-Json -Depth 100 | Out-File -FilePath $LocalFilePath -Force -Verbose
+        } elseif ($findMyFile -eq $null) {
+            Write-Error "File not found: $AssistantApiFileOutputName"
+        } else {
+            Write-Error "Local file path must be provided to download the file."
+        }
+    } else {
+        # Return the list of all files if no specific filename is provided
+        return $getContent.data
+    }
+}
+
+Export-ModuleMember -Function Get-AzOpenAIToken, Get-AzOpenAIAssistantOutputFiles, Start-AzOpenAIAssistantThreadWithMessages, Get-AzOpenAIAssistantThread, Invoke-AzOpenAIUploadFile, New-AzOpenAIAssistant, Get-AzOpenAIAssistant, New-AzOpenAIAssistantFunction, New-AzOpenAIAssistantThread, Post-AzOpenAIAssistantMessage, Start-AzOpenAIAssistantThreadRun, Get-AzOpenAIAssistantThreadStatus, Get-AzOpenAIAssistantMessages, Remove-AzOpenAIAssistants

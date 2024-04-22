@@ -45,13 +45,8 @@ resource "azurerm_resource_group" "observability" {
   location = local.location
 }
 
+resource "azurerm_resource_group" "observability" {
+  name     = local.processing_rg
+  location = local.location
+}
 
-# resource "azurerm_resource_group" "azureOpenAiWorkload_rg" {
-#   name     = var.azureOpenAiWorkload_rg
-#   location = var.location
-# }
-
-# resource "azurerm_resource_group" "observability_rg" {
-#   name     = var.observability_rg
-#   location = var.location
-# }
