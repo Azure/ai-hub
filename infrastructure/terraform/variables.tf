@@ -198,7 +198,7 @@ variable "assistant_function_service_name" {
   description = "Specifies the name of the function."
   type        = string
   sensitive   = false
-  default = "func"
+  default = "esp2-function-assistant"
   validation {
     condition     = length(var.assistant_function_service_name) >= 2
     error_message = "Please specify a valid name."
@@ -209,7 +209,7 @@ variable "function_service_plan_name" {
   description = "Specifies the name of the function app service plan."
   type        = string
   sensitive   = false
-  default = "funcplan"
+  default = "esp2-function-plan"
   validation {
     condition     = length(var.function_service_plan_name) >= 2
     error_message = "Please specify a valid name."
