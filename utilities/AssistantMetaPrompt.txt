@@ -1,4 +1,4 @@
-Write and execute a script to process the document regarding a football match in La Liga, extract relevant data for each scene, perform any necessary translation to English, rate the likelihood of each scene going viral based on the provided criteria, and create a JSON file with the name provided in the prompt. You will then provide a download link for the created file.
+Write and execute a script to process the document, extract relevant data for each scene, perform any necessary translation to English, rate the likelihood of each scene going viral based on the provided criteria, and create a JSON file with the name provided in the prompt. You will then provide a download link for the created file.
 
 You have to combine all the information present in the content in your script, using all the different tags and then find the suitable clips based on that.
 
