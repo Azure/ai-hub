@@ -27,7 +27,7 @@ variable "observability_rg" {
   description = "Specifies the name of the resource group."
   type        = string
   sensitive   = false
-  default     = "esp1-logw-eastus-rg"
+  default     = "esp2-logw-eastus-rg"
   validation {
     condition     = length(var.observability_rg) >= 2
     error_message = "Please specify a valid name."
@@ -59,7 +59,7 @@ variable "key_vault_name" {
   description = "Specifies the name of the key vault."
   type        = string
   sensitive   = false
-  default     = "esp1-azsecret-eastus-kv"
+  default     = "esp2-azsecret-eastus-kv"
   validation {
     condition     = length(var.key_vault_name) >= 2
     error_message = "Please specify a valid name."
@@ -70,7 +70,7 @@ variable "log_analytics_name" {
   description = "Specifies the name of the log analytics workspace"
   type        = string
   sensitive   = false
-  default     = "esp1azlogs-law"
+  default     = "esp2azlogs-law"
     validation {
     condition     = length(var.log_analytics_name) >= 2
     error_message = "Please specify a valid name."
@@ -81,7 +81,7 @@ variable "cognitive_service_name" {
   description = "Specifies the name of the cognitive service."
   type        = string
   sensitive   = false
-  default     = "esp1azoai-ai"
+  default     = "esp2azoai-ai"
   validation {
     condition     = length(var.cognitive_service_name) >= 2
     error_message = "Please specify a valid name."
@@ -92,7 +92,7 @@ variable "user_assigned_identity_name" {
   description = "Specifies the name of the user assigned identity."
   type        = string
   sensitive   = false
-  default     = "esp1-id-eastus-uai"
+  default     = "esp2-id-eastus-uai"
   validation {
     condition     = length(var.user_assigned_identity_name) >= 2
     error_message = "Please specify a valid name."
@@ -102,7 +102,7 @@ variable "user_assigned_identity_name" {
 variable "storage_account_name" {
   description = "Specifies the name of the storage account."
   type        = string
-  default     = "esp1instai122311"
+  default     = "esp2instai122311"
   sensitive   = false
   validation {
     condition     = length(var.storage_account_name) >= 2
@@ -130,7 +130,7 @@ variable "search_service_name" {
   description = "Specifies the name of the search service."
   type        = string
   sensitive   = false
-  default     = "esp1azsearcheastusss" #does not support '-' in name
+  default     = "esp2azsearcheastusss" #does not support '-' in name
   validation {
     condition     = length(var.search_service_name) >= 2
     error_message = "Please specify a valid name."
@@ -142,7 +142,7 @@ variable "adf_service_name" {
   description = "Specifies the name of the data factory."
   type        = string
   sensitive   = false
-  default     = "esp1-adf"
+  default     = "esp2-adf-pipelines"
   validation {
     condition     = length(var.adf_service_name) >= 2
     error_message = "Please specify a valid name."
@@ -153,7 +153,7 @@ variable "docintel_service_name" {
   description = "Specifies the name of the document intelligence service."
   type        = string
   sensitive   = false
-  default     = "esp1azdocintel-docintel"
+  default     = "esp2azdocintel-docintel"
   validation {
     condition     = length(var.docintel_service_name) >= 2
     error_message = "Please specify a valid name."
@@ -165,7 +165,7 @@ variable "vi_service_name" {
   description = "Specifies the name of the video indexer service."
   type        = string
   sensitive   = false
-  default     = "esp1azvi-vi2"
+  default     = "esp2azvi-vi2"
   validation {
     condition     = length(var.vi_service_name) >= 2
     error_message = "Please specify a valid name."
