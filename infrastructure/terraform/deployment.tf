@@ -39,53 +39,27 @@ module "azure_storage_account" {
 }
 
 module "videoindexer" {
-  source = "./modules/videoindexer"  # Update with the actual path to the module
+  source = "./modules/videoindexer"
   videoindexer_name   = local.videoindexer_name
   resource_group_id   = azurerm_resource_group.ingestion.id
   location            = local.location
   storage_account_id  = module.azure_storage_account.storage_account_id
 }
 
-# resource "azapi_resource" "videoindexer" {
-#   schema_validation_enabled = false
-#   type      = "Microsoft.VideoIndexer/accounts@2024-01-01"
-#   name      = local.videoindexer_name
-#   parent_id = azurerm_resource_group.ingestion.id
-#   location  = local.location
-#   identity {
-#     type = "SystemAssigned"
-#   }
-#   body = jsonencode({
-#     # identity = {
-#     #   type = "UserAssigned",
-#     #   userAssignedIdentities = {
-#     #     ([module.azure_managed_identity.user_assigned_identity_id]) = {}
-#     #   }
-#     # }
-#     properties = {
-#       "storageServices": {
-#         "resourceId": module.azure_storage_account.storage_account_id
-#     }
-#     }
-#   })
-# }
-
-
-# module "azure_open_ai" {
-#   source                     = "./modules/aoai"
-#   location                   = var.location
-#   resource_group_name        = azurerm_resource_group.ingestion.name
-#   cognitive_service_name     = var.cognitive_service_name
-#   cognitive_service_kind     = "OpenAI"
-#   cognitive_service_sku      = "S0"
-#   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
-#   cmk_uai_id                 = module.azure_managed_identity.user_assigned_identity_id
-#   cmk_key_vault_id           = module.azure_key_vault.key_vault_id
-#   cmk_key_name               = module.azure_key_vault.key_vault_cmk_name
-#   key_vault_uri              = module.azure_key_vault.key_vault_uri
-#   subnet_id                  = var.subnet_id
-# }
-
+module "azure_open_ai" {
+  source                     = "./modules/aoai"
+  location                   = local.location
+  resource_group_name        = azurerm_resource_group.ingestion.name
+  cognitive_service_name     = local.azure_open_ai_name
+  cognitive_service_kind     = "OpenAI"
+  cognitive_service_sku      = "S0"
+  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
+  cmk_uai_id                 = module.azure_managed_identity.user_assigned_identity_id
+  cmk_key_vault_id           = module.azure_key_vault.key_vault_id
+  cmk_key_name               = module.azure_key_vault.key_vault_cmk_name
+  key_vault_uri              = module.azure_key_vault.key_vault_uri
+  subnet_id                  = var.subnet_id
+}
 
 
 # Commented out module "azure_search_service" block

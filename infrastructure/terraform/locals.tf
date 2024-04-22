@@ -12,6 +12,7 @@ locals {
   azure_managed_identity_name = "${local.prefix}-uai"
   azure_key_vault_name = "${local.prefix}-kv"
   videoindexer_name = "${local.prefix}-videoindexer"
+  azure_open_ai_name = "${local.prefix}-aoai"
 
   subnet = var.subnet_id == "" ? {} : {
     resource_group_name  = split("/", var.subnet_id)[4]
