@@ -11,7 +11,6 @@ resource "azurerm_service_plan" "service_plan" {
   zone_balancing_enabled   = false # Update to 'true' for production
 }
 
-
 resource "azurerm_linux_function_app" "assistant_function" {
   name                          = var.assistant_function_service_name
   resource_group_name           = var.resource_group_name
@@ -19,6 +18,14 @@ resource "azurerm_linux_function_app" "assistant_function" {
   storage_account_name          = var.storage_account_name
   service_plan_id               = azurerm_service_plan.service_plan.id
   storage_uses_managed_identity = true
+  identity {
+    type = "UserAssigned"
+    identity_ids = [var.user_assigned_identity_id]
+  }
+  app_settings = {
+    ENABLE_ORYX_BUILD              = true
+    SCM_DO_BUILD_DURING_DEPLOYMENT = true
+  }
   site_config {}
 }
 
@@ -29,5 +36,13 @@ resource "azurerm_linux_function_app" "shortclip_function" {
   storage_account_name          = var.storage_account_name
   service_plan_id               = azurerm_service_plan.service_plan.id
   storage_uses_managed_identity = true
+  identity {
+    type = "UserAssigned"
+    identity_ids = [var.user_assigned_identity_id]
+  }
+  app_settings = {
+    ENABLE_ORYX_BUILD              = true
+    SCM_DO_BUILD_DURING_DEPLOYMENT = true
+  }
   site_config {}
 }

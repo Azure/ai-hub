@@ -115,4 +115,5 @@ module "functions" {
   function_sku = var.function_sku
   assistant_function_service_name = local.azure_function_name_assistant
   shortclip_function_service_name = local.azure_function_name_shortclip
+  user_assigned_identity_id = module.azure_managed_identity.user_assigned_identity_id
 }

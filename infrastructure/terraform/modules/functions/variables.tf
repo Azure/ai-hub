@@ -44,6 +44,16 @@ variable "storage_account_name" {
     }
 }
 
+variable "user_assigned_identity_id" {
+    description = "Specifies the user assigned  of the storage account."
+    type        = string
+    sensitive   = false
+    validation {
+        condition     = length(split("/", var.user_assigned_identity_id)) == 9
+        error_message = "Please specify a valid resource ID."
+    }
+}
+
 variable "function_sku" {
   description = "Specifies the sku name used in the function app service plan."
   type        = string

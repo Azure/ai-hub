@@ -8,6 +8,5 @@ resource "azurerm_data_factory" "data_factory" {
     git_url = "https://github.com/esbran/adforchestrator"
     repository_name = "adforchestrator"
     root_folder = "/"
-  
   }
 }
