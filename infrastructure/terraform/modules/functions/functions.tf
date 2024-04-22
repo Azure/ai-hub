@@ -19,14 +19,19 @@ resource "azurerm_linux_function_app" "assistant_function" {
   service_plan_id               = azurerm_service_plan.service_plan.id
   storage_uses_managed_identity = true
   identity {
-    type = "UserAssigned"
+    type         = "UserAssigned"
     identity_ids = [var.user_assigned_identity_id]
   }
   app_settings = {
     ENABLE_ORYX_BUILD              = true
     SCM_DO_BUILD_DURING_DEPLOYMENT = true
+    FUNCTIONS_WORKER_RUNTIME       = "python"
   }
-  site_config {}
+  site_config {
+    application_stack {
+      python_version = "3.11"
+    }
+  }
 }
 
 resource "azurerm_linux_function_app" "shortclip_function" {
@@ -37,12 +42,17 @@ resource "azurerm_linux_function_app" "shortclip_function" {
   service_plan_id               = azurerm_service_plan.service_plan.id
   storage_uses_managed_identity = true
   identity {
-    type = "UserAssigned"
+    type         = "UserAssigned"
     identity_ids = [var.user_assigned_identity_id]
   }
   app_settings = {
     ENABLE_ORYX_BUILD              = true
     SCM_DO_BUILD_DURING_DEPLOYMENT = true
+    FUNCTIONS_WORKER_RUNTIME       = "python"
   }
-  site_config {}
+  site_config {
+    application_stack {
+      python_version = "3.11"
+    }
+  }
 }
