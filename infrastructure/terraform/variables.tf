@@ -16,7 +16,7 @@ variable "azureVideoWorkload_rg" {
   description = "Specifies the name of the resource group."
   type        = string
   sensitive   = false
-  default     = "esp2-eastus-rg"
+  default     = "esp2-eastus-video-rg"
   validation {
     condition     = length(var.azureVideoWorkload_rg) >= 2
     error_message = "Please specify a valid name."
@@ -165,7 +165,7 @@ variable "vi_service_name" {
   description = "Specifies the name of the video indexer service."
   type        = string
   sensitive   = false
-  default     = "esp2azvi-vi2"
+  default     = "esp2azvi"
   validation {
     condition     = length(var.vi_service_name) >= 2
     error_message = "Please specify a valid name."
