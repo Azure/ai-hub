@@ -160,3 +160,15 @@ variable "docintel_service_name" {
   }
   
 }
+
+variable "vi_service_name" {
+  description = "Specifies the name of the video indexer service."
+  type        = string
+  sensitive   = false
+  default     = "esp1azvi-vi2"
+  validation {
+    condition     = length(var.vi_service_name) >= 2
+    error_message = "Please specify a valid name."
+  }
+  
+}

@@ -85,3 +85,11 @@ module "document_intelligence" {
   resource_group_name = azurerm_resource_group.azureOpenAiWorkload_rg.name
   docintel_service_name = var.docintel_service_name
 }
+
+module "video_indexer" {
+  source = "./modules/videoindexer"
+  vi_service_name = var.vi_service_name
+  location = var.location
+  resource_group_name = azurerm_resource_group.azureOpenAiWorkload_rg.name
+ 
+}
