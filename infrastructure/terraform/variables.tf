@@ -12,6 +12,29 @@ variable "prefix" {
   default     = "esp1"
 }
 
+variable "environment" {
+  description = "Specifies the environment of the deployment."
+  type        = string
+  sensitive   = false
+  default     = "dev"
+  validation {
+    condition     = contains(["dev", "tst", "qa", "prd"], var.environment)
+    error_message = "Please use an allowed value: \"dev\", \"tst\", \"qa\" or \"prd\"."
+  }
+}
+
+variable "ingestion_rg_suffix" {
+  description = "Specifies the name of the resource group."
+  type        = string
+  sensitive   = false
+  default     = "ingestion"
+  validation {
+    condition     = length(var.ingestion_rg_suffix) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+
 variable "azureOpenAiWorkload_rg" {
   description = "Specifies the name of the resource group."
   type        = string
@@ -35,7 +58,6 @@ variable "observability_rg" {
 }
 
 variable "subnet_id" { 
-  description = "Specifies the resourceId of an existing subnet, in the same region as the rest of the workloads that will be created."
   type        = string
   sensitive   = false
   default = "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/swedencentral-vnet/providers/Microsoft.Network/virtualNetworks/swedencentral-vnet/subnets/default"
@@ -59,7 +81,7 @@ variable "key_vault_name" {
   description = "Specifies the name of the key vault."
   type        = string
   sensitive   = false
-  default     = "esp1-azsecret-eastus-kv"
+  default     = "${var.} esp1-azsecret-eastus-kv"
   validation {
     condition     = length(var.key_vault_name) >= 2
     error_message = "Please specify a valid name."
