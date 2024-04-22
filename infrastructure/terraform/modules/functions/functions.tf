@@ -22,3 +22,14 @@ resource "azurerm_linux_function_app" "assistant_function" {
   storage_uses_managed_identity = true
   site_config {}
 }
+
+resource "azurerm_linux_function_app" "shortclip_function" {
+  name                = var.shortclip_function_service_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  storage_account_name       = var.storage_account_name
+  service_plan_id            = azurerm_service_plan.service_plan.id
+  storage_uses_managed_identity = true
+  site_config {}
+}

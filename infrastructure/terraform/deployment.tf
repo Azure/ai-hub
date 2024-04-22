@@ -86,16 +86,6 @@ module "document_intelligence" {
   docintel_service_name = var.docintel_service_name
 }
 
-module "video_indexer" {
-  source = "./modules/videoindexer"
-  vi_service_name = var.vi_service_name
-  location = var.location
-  resource_group_name = azurerm_resource_group.azureVideoWorkload_rg.name
-  prefix = var.prefix
-  videoSystemIdentity = var.videoSystemIdentity
-  videoMonCreation = var.videoMonCreation
-}
-
 module "functions" {
   source = "./modules/functions"
   location = var.location
@@ -105,4 +95,5 @@ module "functions" {
   prefix = var.prefix
   function_sku = var.function_sku
   assistant_function_service_name = var.assistant_function_service_name
+  shortclip_function_service_name = var.shortclip_function_service_name
 }

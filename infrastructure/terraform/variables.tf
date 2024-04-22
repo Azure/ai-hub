@@ -59,7 +59,7 @@ variable "key_vault_name" {
   description = "Specifies the name of the key vault."
   type        = string
   sensitive   = false
-  default     = "esp2-azsecret-eastus-kv"
+  default     = "esp2-azsecret-kv"
   validation {
     condition     = length(var.key_vault_name) >= 2
     error_message = "Please specify a valid name."
@@ -158,40 +158,6 @@ variable "docintel_service_name" {
     condition     = length(var.docintel_service_name) >= 2
     error_message = "Please specify a valid name."
   }
-  
-}
-
-variable "vi_service_name" {
-  description = "Specifies the name of the video indexer service."
-  type        = string
-  sensitive   = false
-  default     = "esp2azvi"
-  validation {
-    condition     = length(var.vi_service_name) >= 2
-    error_message = "Please specify a valid name."
-  }
-}
-
-variable "videoSystemIdentity" {
-  description = "Specifies the videoSystemIdentity."
-  type        = string
-  sensitive   = false
-  default     = "No"
-  validation {
-    condition     = length(var.videoSystemIdentity) >= 2
-    error_message = "Please specify a valid name."
-  }
-}
-
-variable "videoMonCreation" {
-  description = "Specifies the videoMonCreation."
-  type        = string
-  sensitive   = false
-  default     = "No"
-  validation {
-    condition     = length(var.videoMonCreation) >= 2
-    error_message = "Please specify a valid name."
-  }
 }
 
 variable "assistant_function_service_name" {
@@ -214,6 +180,18 @@ variable "function_service_plan_name" {
     condition     = length(var.function_service_plan_name) >= 2
     error_message = "Please specify a valid name."
   }
+}
+
+variable "shortclip_function_service_name" {
+  description = "Specifies the name of the function."
+  type        = string
+  sensitive   = false
+  default = "esp2-function-shortclip"
+  validation {
+    condition     = length(var.shortclip_function_service_name) >= 2
+    error_message = "Please specify a valid name."
+  } 
+  
 }
 
 variable "function_sku" {

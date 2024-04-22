@@ -68,3 +68,14 @@ variable "function_sku" {
     error_message = "Please specify a valid sku name."
   }
 }
+
+variable "shortclip_function_service_name" {
+  description = "Specifies the name of the data factory."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.shortclip_function_service_name) >= 2
+    error_message = "Please specify a valid name."
+  }
+  
+}
