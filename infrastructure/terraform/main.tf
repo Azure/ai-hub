@@ -1,6 +1,6 @@
 provider "azurerm" {
-  tenant_id       = ""
-  subscription_id = ""
+  tenant_id       = "572cf1ec-3f90-49a2-896f-ab2fa36ca0d3"
+  subscription_id = "be25820a-df86-4794-9e95-6a45cd5c0941"
   client_id       = ""
   client_secret   = ""
   environment     = "public"
@@ -34,8 +34,8 @@ terraform {
   }
 }
 
-resource "azurerm_resource_group" "azureOpenAiWorkload_rg" {
-  name     = var.azureOpenAiWorkload_rg
+resource "azurerm_resource_group" "azureVideoWorkload_rg" {
+  name     = var.azureVideoWorkload_rg
   location = var.location
 }
 
