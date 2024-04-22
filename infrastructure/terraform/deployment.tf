@@ -1,3 +1,76 @@
+module "azure_managed_identity" {
+  source                      = "./modules/managedidentity"
+  location                    = local.location
+  user_assigned_identity_name = local.azure_managed_identity_name
+  resource_group_name         = azurerm_resource_group.ingestion.name
+}
+
+module "azure_log_analytics" {
+  source                            = "./modules/loganalytics"
+  location                          = local.location
+  log_analytics_name                = var.log_analytics_name
+  log_analytics_sku                 = var.log_analytics_sku
+  log_analytics_retention_in_days   = 30
+  log_analytics_resource_group_name = azurerm_resource_group.observability.name
+}
+
+module "azure_key_vault" {
+  source                     = "./modules/keyvault"
+  key_vault_name             = local.azure_key_vault_name
+  location                   = local.location
+  resource_group_name        = azurerm_resource_group.ingestion.name
+  key_vault_sku_name         = var.key_vault_sku
+  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
+  cmk_uai_id                 = module.azure_managed_identity.user_assigned_identity_id
+  subnet_id                  = var.subnet_id
+}
+
+module "azure_storage_account" {
+  source                     = "./modules/storageaccount"
+  location                   = local.location
+  storage_account_name       = local.storage_account_name
+  resource_group_name        = azurerm_resource_group.ingestion.name
+  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
+  cmk_uai_id                 = module.azure_managed_identity.user_assigned_identity_id
+  subnet_id                  = var.subnet_id
+  cmk_key_vault_id           = module.azure_key_vault.key_vault_id
+  cmk_key_name               = module.azure_key_vault.key_vault_key_storage_name
+  depends_on                 = [module.azure_key_vault]
+}
+
+module "videoindexer" {
+  source = "./modules/videoindexer"  # Update with the actual path to the module
+  videoindexer_name   = local.videoindexer_name
+  resource_group_id   = azurerm_resource_group.ingestion.id
+  location            = local.location
+  storage_account_id  = module.azure_storage_account.storage_account_id
+}
+
+# resource "azapi_resource" "videoindexer" {
+#   schema_validation_enabled = false
+#   type      = "Microsoft.VideoIndexer/accounts@2024-01-01"
+#   name      = local.videoindexer_name
+#   parent_id = azurerm_resource_group.ingestion.id
+#   location  = local.location
+#   identity {
+#     type = "SystemAssigned"
+#   }
+#   body = jsonencode({
+#     # identity = {
+#     #   type = "UserAssigned",
+#     #   userAssignedIdentities = {
+#     #     ([module.azure_managed_identity.user_assigned_identity_id]) = {}
+#     #   }
+#     # }
+#     properties = {
+#       "storageServices": {
+#         "resourceId": module.azure_storage_account.storage_account_id
+#     }
+#     }
+#   })
+# }
+
+
 # module "azure_open_ai" {
 #   source                     = "./modules/aoai"
 #   location                   = var.location
@@ -13,45 +86,7 @@
 #   subnet_id                  = var.subnet_id
 # }
 
-# module "azure_storage_account" {
-#   source                     = "./modules/storageaccount"
-#   location                   = var.location
-#   resource_group_name        = azurerm_resource_group.ingestion.name
-#   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
-#   cmk_uai_id                 = module.azure_managed_identity.user_assigned_identity_id
-#   subnet_id                  = var.subnet_id
-#   storage_account_name       = var.storage_account_name
-#   cmk_key_vault_id           = module.azure_key_vault.key_vault_id
-#   cmk_key_name               = module.azure_key_vault.key_vault_key_storage_name
-#   depends_on                 = [module.azure_key_vault]
-# }
 
-# module "azure_log_analytics" {
-#   source                            = "./modules/loganalytics"
-#   location                          = var.location
-#   log_analytics_name                = var.log_analytics_name
-#   log_analytics_sku                 = var.log_analytics_sku
-#   log_analytics_retention_in_days   = 30
-#   log_analytics_resource_group_name = azurerm_resource_group.observability_rg.name
-# }
-
-# module "azure_key_vault" {
-#   source                     = "./modules/keyvault"
-#   key_vault_name             = "${local.prefix}-kv"
-#   location                   = var.location
-#   resource_group_name        = azurerm_resource_group.azureOpenAiWorkload_rg.name
-#   key_vault_sku_name         = var.key_vault_sku
-#   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
-#   cmk_uai_id                 = module.azure_managed_identity.user_assigned_identity_id
-#   subnet_id                  = var.subnet_id
-# }
-
-module "azure_managed_identity" {
-  source                      = "./modules/managedidentity"
-  location                    = local.location
-  user_assigned_identity_name = local.azure_managed_identity_name
-  resource_group_name         = azurerm_resource_group.ingestion.name
-}
 
 # Commented out module "azure_search_service" block
 # module "azure_search_service" {
