@@ -9,16 +9,16 @@ variable "prefix" {
   description = "Specifies the location for all Azure resources."
   type        = string
   sensitive   = false
-  default     = "esp1"
+  default     = "esp2"
 }
 
-variable "azureOpenAiWorkload_rg" {
+variable "azureVideoWorkload_rg" {
   description = "Specifies the name of the resource group."
   type        = string
   sensitive   = false
-  default     = "esp1-azoai-eastus-rg"
+  default     = "esp2-eastus-rg"
   validation {
-    condition     = length(var.azureOpenAiWorkload_rg) >= 2
+    condition     = length(var.azureVideoWorkload_rg) >= 2
     error_message = "Please specify a valid name."
   }
 }
@@ -168,6 +168,28 @@ variable "vi_service_name" {
   default     = "esp1azvi-vi2"
   validation {
     condition     = length(var.vi_service_name) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "videoSystemIdentity" {
+  description = "Specifies the videoSystemIdentity."
+  type        = string
+  sensitive   = false
+  default     = "No"
+  validation {
+    condition     = length(var.videoSystemIdentity) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "videoMonCreation" {
+  description = "Specifies the videoMonCreation."
+  type        = string
+  sensitive   = false
+  default     = "No"
+  validation {
+    condition     = length(var.videoMonCreation) >= 2
     error_message = "Please specify a valid name."
   }
   

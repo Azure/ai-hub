@@ -10,8 +10,4 @@ resource "azurerm_data_factory" "data_factory" {
     root_folder = "/"
   
   }
-identity {
-    type = "SystemAssigned"
-  }
-
 }

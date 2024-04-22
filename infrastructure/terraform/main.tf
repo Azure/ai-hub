@@ -34,8 +34,8 @@ terraform {
   }
 }
 
-resource "azurerm_resource_group" "azureOpenAiWorkload_rg" {
-  name     = var.azureOpenAiWorkload_rg
+resource "azurerm_resource_group" "azureVideoWorkload_rg" {
+  name     = var.azureVideoWorkload_rg
   location = var.location
 }
 
