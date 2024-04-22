@@ -1587,6 +1587,11 @@
                                         "label": "'On Your Data'",
                                         "description": "Empowers your organization to leverage the power of OpenAI models, such as GPT-4, and incorporates the advanced capabilities of RAG (Retrieval Augmented Generation) model, directly on your data with enterprise-grade security on Azure.",
                                         "value": "onyourdata"
+                                    },
+                                    {
+                                        "label": "AI Assistant for videos (Preview)",
+                                        "description": "Extract key insights and identify scenes suited for short video clip generation for social media, using Azure Video Indexer and Azure OpenAI Assistant (Preview) APIs",
+                                        "value": "video"
                                     }
                                 ],
                                 "required": true
@@ -1609,6 +1614,15 @@
                             "options": {
                                 "icon": "None",
                                 "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-rag-architecture.svg'>"
+                            }
+                        },
+                        {
+                            "name": "assistantVideoArchitecture",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'video')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-assistant-architecture.svg'>"
                             }
                         },
                         {
@@ -2223,6 +2237,90 @@
                                 "required": true
                             },
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
+                        },
+                        {
+                            "name": "aiAddServicesSectionVideoIndexer",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Required services for the selected use case",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'video')]"
+                        },
+                        {
+                            "name": "aiVideoIndexerSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure AI Video Indexer",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'video')]"
+                        },
+                        {
+                            "name": "aiVideoIndexerInfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'video')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "Azure AI Video Indexer is a cloud application, part of Azure AI services, built on Azure AI services (such as the Face, Translator, Azure AI Vision, and Speech). It enables you to extract the insights from your videos using Azure AI Video Indexer video and audio models.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://azure.microsoft.com/products/ai-video-indexer"
+                                }
+                            }
+                        },
+                        
+                        {
+                            "name": "aiVideoIndexerAuthzSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Authorization Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'video')]"
+                        },
+                        {
+                            "name": "aiVideoIndexerSystemIdentity",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Managed Identity (System-assigned) for Azure AI Video Indexer",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "When enabling Managed Identity and usage of Customer-Managed keys, this identity will have RBAC permission access the Azure OpenAI instance.",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'video')]"
+                        },
+                        {
+                            "name": "aiVideoIndexerMonSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure Monitor Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'video')]"
+                        },
+                        {
+                            "name": "aiVideoIndexerMonCreation",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Diagnostic Settings for logging and threat detection",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'video')]"
                         },
                         {
                             "name": "aiAddServicesSectionOnYourData",
@@ -2883,8 +2981,9 @@
                 "dfNwLocation": "[steps('aiAuxiliarySettings').dfSelectedVnetDetails.location]",
                 "dfSubnetId": "[steps('aiAuxiliarySettings').dfSubnetList]",
                 "dfSystemIdentity": "[steps('aiAuxiliarySettings').dfSystemIdentity]",
-                "dfMonCreation": "[steps('aiAuxiliarySettings').dfMonCreation]"
-                
+                "dfMonCreation": "[steps('aiAuxiliarySettings').dfMonCreation]",
+                "videoSystemIdentity": "[steps('aiAuxiliarySettings').aiVideoIndexerSystemIdentity]",
+                "videoMonCreation": "[steps('aiAuxiliarySettings').aiVideoIndexerMonCreation]"
             },
             "kind": "Subscription",
             "location": "[steps('basics').resourceScope.location.name]",
