@@ -1,0 +1,3 @@
+location = "eastus"
+prefix = "tef22"
+environment = "dev"
