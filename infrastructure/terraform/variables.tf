@@ -35,27 +35,40 @@ variable "ingestion_rg_suffix" {
 }
 
 
-variable "azureOpenAiWorkload_rg" {
+variable "observability_rg_suffix" {
   description = "Specifies the name of the resource group."
   type        = string
   sensitive   = false
-  default     = "esp1-azoai-eastus-rg"
+  default     = "ingestion"
   validation {
-    condition     = length(var.azureOpenAiWorkload_rg) >= 2
+    condition     = length(var.observability_rg_suffix) >= 2
     error_message = "Please specify a valid name."
   }
 }
 
-variable "observability_rg" {
-  description = "Specifies the name of the resource group."
-  type        = string
-  sensitive   = false
-  default     = "esp1-logw-eastus-rg"
-  validation {
-    condition     = length(var.observability_rg) >= 2
-    error_message = "Please specify a valid name."
-  }
-}
+
+
+# variable "azureOpenAiWorkload_rg" {
+#   description = "Specifies the name of the resource group."
+#   type        = string
+#   sensitive   = false
+#   default     = "esp1-azoai-eastus-rg"
+#   validation {
+#     condition     = length(var.azureOpenAiWorkload_rg) >= 2
+#     error_message = "Please specify a valid name."
+#   }
+# }
+
+# variable "observability_rg" {
+#   description = "Specifies the name of the resource group."
+#   type        = string
+#   sensitive   = false
+#   default     = "esp1-logw-eastus-rg"
+#   validation {
+#     condition     = length(var.observability_rg) >= 2
+#     error_message = "Please specify a valid name."
+#   }
+# }
 
 variable "subnet_id" { 
   type        = string
@@ -81,7 +94,7 @@ variable "key_vault_name" {
   description = "Specifies the name of the key vault."
   type        = string
   sensitive   = false
-  default     = "${var.} esp1-azsecret-eastus-kv"
+  default     = "esp1-azsecret-eastus-kv"
   validation {
     condition     = length(var.key_vault_name) >= 2
     error_message = "Please specify a valid name."
@@ -137,7 +150,6 @@ variable "partition_count" {
   type        = number
   sensitive   = false
   default     = 1
-  
 }
 
 variable "replica_count" {
@@ -145,7 +157,6 @@ variable "replica_count" {
   type        = number
   sensitive   = false
   default     = 1
-  
 }
 
 variable "search_service_name" {
@@ -180,5 +191,4 @@ variable "docintel_service_name" {
     condition     = length(var.docintel_service_name) >= 2
     error_message = "Please specify a valid name."
   }
-  
 }

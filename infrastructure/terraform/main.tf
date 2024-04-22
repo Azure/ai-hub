@@ -36,16 +36,22 @@ terraform {
 }
 
 resource "azurerm_resource_group" "ingestion" {
-  name     = local.ingestion_rg_suffix
-  location = var.location
+  name     = local.ingestion_rg
+  location = local.location
 }
 
-resource "azurerm_resource_group" "azureOpenAiWorkload_rg" {
-  name     = var.azureOpenAiWorkload_rg
-  location = var.location
+resource "azurerm_resource_group" "observability" {
+  name     = local.observability_rg
+  location = local.location
 }
 
-resource "azurerm_resource_group" "observability_rg" {
-  name     = var.observability_rg
-  location = var.location
-}
+
+# resource "azurerm_resource_group" "azureOpenAiWorkload_rg" {
+#   name     = var.azureOpenAiWorkload_rg
+#   location = var.location
+# }
+
+# resource "azurerm_resource_group" "observability_rg" {
+#   name     = var.observability_rg
+#   location = var.location
+# }
