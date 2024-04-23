@@ -70,9 +70,22 @@ resource "azurerm_role_assignment" "storage_account_owner_assistant" {
   role_definition_name = "Storage Blob Data Owner"
   principal_id         = azurerm_linux_function_app.assistant_function.identity[0].principal_id
 }
-resource "azurerm_role_assignment" "storage_account_owner_shortclip" {
+
+resource "azurerm_role_assignment" "storage_account_blob_owner_shortclip" {
   scope                = data.azurerm_storage_account.functions_storage.id
   role_definition_name = "Storage Blob Data Owner"
+  principal_id         = azurerm_linux_function_app.shortclip_function.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "storage_account_queue_contributor_shortclip" {
+  scope                = data.azurerm_storage_account.functions_storage.id
+  role_definition_name = "Storage Queue Data Contributor"
+  principal_id         = azurerm_linux_function_app.shortclip_function.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "storage_account_table_contributor_shortclip" {
+  scope                = data.azurerm_storage_account.functions_storage.id
+  role_definition_name = "Storage Table Data Contributor"
   principal_id         = azurerm_linux_function_app.shortclip_function.identity[0].principal_id
 }
 
