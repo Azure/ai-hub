@@ -11,6 +11,22 @@ resource "azurerm_service_plan" "service_plan" {
   zone_balancing_enabled   = false # Update to 'true' for production
 }
 
+resource "azurerm_storage_container" "videos_in" {
+  name                  = "videosin"
+  storage_account_name  =  data.azurerm_storage_account.video_storage.name
+  container_access_type = "private"
+}
+resource "azurerm_storage_container" "assistant" {
+  name                  = "videossassistant"
+  storage_account_name  =  data.azurerm_storage_account.video_storage.name
+  container_access_type = "private"
+}
+resource "azurerm_storage_container" "videos_out" {
+  name                  = "videosout"
+  storage_account_name  =  data.azurerm_storage_account.video_storage.name
+  container_access_type = "private"
+}
+
 resource "azurerm_linux_function_app" "assistant_function" {
   name                          = var.assistant_function_service_name
   resource_group_name           = var.resource_group_name
@@ -89,7 +105,7 @@ resource "azurerm_linux_function_app" "shortclip_function" {
     FUNCTIONS_WORKER_RUNTIME       = "python"
     AzureWebJobsFeatureFlags       = "EnableWorkerIndexing"
     STORAGE_DOMAIN_NAME            = replace(trimprefix(data.azurerm_storage_account.video_storage.primary_blob_endpoint, "https://"), "/", "")
-    STORAGE_CONTAINER_NAME         = "video"
+    STORAGE_CONTAINER_NAME         = azurerm_storage_container.videos_out.name
     AZURE_OPEN_AI_API_VERSION      = "2024-02-15-preview"
     AZURE_OPEN_AI_DEPLOYMENT_NAME  = "gpt-4"
     TaskHubName                    = "shortclip"
