@@ -8,6 +8,15 @@ resource "azurerm_data_factory" "data_factory" {
     git_url = "https://github.com/esbran/adforchestrator"
     repository_name = "adforchestrator"
     root_folder = "/"
-  
+  }
+  dynamic "global_parameter" {
+    for_each = var.global_parameters
+
+    content {
+      name  = global_parameter.value.name
+      value = global_parameter.value.value
+      type  = global_parameter.value.type
+    }
+    
   }
 }

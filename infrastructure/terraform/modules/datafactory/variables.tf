@@ -50,3 +50,17 @@ variable "subnet_id" {
   type        = string
   sensitive   = false
 }
+
+variable "global_parameters" {
+  description = "Global parameters for data factory."
+  type        = list(map(string))
+  default     = [{
+    name  = "openai_api_base"
+    value = var.openai_api_base
+    type  = "string"},
+    {
+    name  = "storageaccounturl"
+    value = var.storage_account_url
+    type  = "string"
+    }]
+}
