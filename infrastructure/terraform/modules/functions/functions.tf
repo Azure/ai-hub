@@ -17,7 +17,7 @@ resource "azurerm_storage_container" "videos_in" {
   container_access_type = "private"
 }
 resource "azurerm_storage_container" "assistant" {
-  name                  = "assistant"
+  name                  = "videossassistant"
   storage_account_name  =  data.azurerm_storage_account.video_storage.name
   container_access_type = "private"
 }
