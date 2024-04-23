@@ -97,8 +97,8 @@ resource "azurerm_role_assignment" "aoai_cognitive_service_owner_assistant" {
   principal_id         = azurerm_linux_function_app.assistant_function.identity[0].principal_id
 }
 
-resource "azurerm_role_assignment" "aoai_cognitive_service_owner_shortclip" {
+resource "azurerm_role_assignment" "aoai_cognitive_service_openai_user_shortclip" {
   scope                = data.azurerm_cognitive_account.cognitive_service.id
-  role_definition_name = "Cognitive Services Contributor"
+  role_definition_name = "Cognitive Services OpenAI User"
   principal_id         = azurerm_linux_function_app.shortclip_function.identity[0].principal_id
 }
