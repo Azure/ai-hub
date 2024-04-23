@@ -12,8 +12,8 @@ resource "azurerm_service_plan" "service_plan" {
 }
 
 resource "azurerm_storage_container" "videos_in" {
-  name                  = "videos_in"
-  storage_account_name  =  module.azure_storage_account.storage_account_name
+  name                  = "videosin"
+  storage_account_name  =  data.azurerm_storage_account.video_storage.name
   container_access_type = "private"
 }
 resource "azurerm_storage_container" "assistant" {
@@ -22,7 +22,7 @@ resource "azurerm_storage_container" "assistant" {
   container_access_type = "private"
 }
 resource "azurerm_storage_container" "videos_out" {
-  name                  = "videos_out"
+  name                  = "videosout"
   storage_account_name  =  data.azurerm_storage_account.video_storage.name
   container_access_type = "private"
 }
