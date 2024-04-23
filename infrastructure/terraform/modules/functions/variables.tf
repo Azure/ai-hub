@@ -54,6 +54,10 @@ variable "user_assigned_identity_id" {
     }
 }
 
+# variable "zip_deploy_file" {
+#   type = string
+# }
+
 variable "function_sku" {
   description = "Specifies the sku name used in the function app service plan."
   type        = string

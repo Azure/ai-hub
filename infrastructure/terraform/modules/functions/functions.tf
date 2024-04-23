@@ -32,6 +32,7 @@ resource "azurerm_linux_function_app" "assistant_function" {
       python_version = "3.11"
     }
   }
+  zip_deploy_file = data.archive_file.function.output_path
 }
 
 resource "azurerm_linux_function_app" "shortclip_function" {
@@ -55,4 +56,5 @@ resource "azurerm_linux_function_app" "shortclip_function" {
       python_version = "3.11"
     }
   }
+  zip_deploy_file = data.archive_file.rag_video_tagging.output_path
 }
