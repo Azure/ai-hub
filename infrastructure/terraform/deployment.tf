@@ -118,4 +118,7 @@ module "functions" {
   shortclip_function_service_name = local.azure_function_name_shortclip
   user_assigned_identity_id = module.azure_managed_identity.user_assigned_identity_id
   cognitive_service_id = module.azure_open_ai.azurerm_cognitive_account_service_id
+  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
+  instrumentation_key = module.azure_log_analytics.instrumentation_key
+  app_id = module.azure_log_analytics.app_id
 }
