@@ -1,3 +1,13 @@
+variable "log_analytics_workspace_id" {
+  description = "Specifies the resource ID of the log analytics workspace used for the stamp"
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(split("/", var.log_analytics_workspace_id)) == 9
+    error_message = "Please specify a valid resource ID."
+  }
+}
+
 variable "assistant_function_service_name" {
   description = "Specifies the name of the data factory."
   type        = string
@@ -92,6 +102,26 @@ variable "cognitive_service_id" {
   sensitive   = false
   validation {
     condition     = length(var.cognitive_service_id) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "instrumentation_key" {
+  description = "Specifies the instrumentation key of the log analytics workspace."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.instrumentation_key) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "app_id" {
+  description = "Specifies the app id of the log analytics workspace"
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.app_id) >= 2
     error_message = "Please specify a valid name."
   }
 }
