@@ -12,6 +12,13 @@ data "archive_file" "rag_video_tagging" {
   output_path = "${path.module}/rag.zip"
 }
 
+data "archive_file" "assistant" {
+  type        = "zip"
+  excludes    = split("\n", file("${path.module}/functionassistant/.funcignore"))
+  source_dir  = "${path.module}/functionassistant"
+  output_path = "${path.module}/functionassistant.zip"
+}
+
 data "azurerm_storage_account" "functions_storage" {
   name = lower(element(split("/", var.functions_storage_account_id), 8))
   resource_group_name = lower(element(split("/", var.functions_storage_account_id), 4))

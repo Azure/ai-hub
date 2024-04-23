@@ -46,7 +46,7 @@ identity {
   min_tls_version                   = "TLS1_2"
   network_rules {
     bypass                     = ["AzureServices"]
-    default_action             = "Deny"
+    default_action             = "Allow"
     ip_rules                   = []
     virtual_network_subnet_ids = []
   }
