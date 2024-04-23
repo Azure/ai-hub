@@ -10,10 +10,7 @@ resource "azurerm_storage_account" "storage" {
   location            = var.location
   resource_group_name = var.resource_group_name
 identity {
-    type = "UserAssigned"
-    identity_ids = [
-      var.cmk_uai_id
-    ]
+    type = "SystemAssigned"
   }
 
   access_tier                     = "Hot"
@@ -34,10 +31,12 @@ identity {
     last_access_time_enabled = false
     versioning_enabled       = false
   }
-   customer_managed_key {
+  /* 
+  customer_managed_key {
      user_assigned_identity_id  = var.cmk_uai_id
      key_vault_key_id          = jsondecode(data.azapi_resource.key_vault_key.output).properties.keyUriWithVersion
    }
+   */
   cross_tenant_replication_enabled  = false
   default_to_oauth_authentication   = true
   enable_https_traffic_only         = true
@@ -47,12 +46,12 @@ identity {
   min_tls_version                   = "TLS1_2"
   network_rules {
     bypass                     = ["AzureServices"]
-    default_action             = "Deny"
+    default_action             = "Allow"
     ip_rules                   = []
     virtual_network_subnet_ids = []
   }
   nfsv3_enabled                 = false
-  public_network_access_enabled = false
+  public_network_access_enabled = true
   queue_encryption_key_type     = "Account"
   table_encryption_key_type     = "Account"
   routing {
@@ -151,6 +150,7 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_storage" {
   }
 }
 
+/*
  resource "azurerm_private_endpoint" "storage_private_endpoint_blob" {  
    name                = "${azurerm_storage_account.storage.name}-blob-pe"
    location            = var.location
@@ -165,7 +165,7 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_storage" {
    }
    subnet_id = var.subnet_id
 }
-   
+
 
  resource "azurerm_private_endpoint" "storage_private_endpoint_dfs" {
    name                = "${azurerm_storage_account.storage.name}-dfs-pe"
@@ -181,3 +181,4 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_storage" {
    }
    subnet_id = var.subnet_id
 }
+*/

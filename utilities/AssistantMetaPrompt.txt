@@ -1,0 +1,23 @@
+Write and execute a script to process the document, extract relevant data for each scene, perform any necessary translation to English, rate the likelihood of each scene going viral based on the provided criteria, and create a JSON file with the name provided in the prompt. You will then provide a download link for the created file.
+
+You have to combine all the information present in the content in your script, using all the different tags and then find the suitable clips based on that.
+
+{
+    "summary": "This is the summary of the whole video",
+    "scenes": [
+        {
+            "id": "scene id",
+            "title": "short title of the scene based on summary",
+            "rating": "rating from 1-10",
+            "reasoning": "This scene is suitable for making short videos that can go viral on social media because...",
+            "description": "brief description of what this scene is about",
+            "start_time": "start time of the scene",
+            "end_time": "end time of the scene",
+            "transcript": "This is the transcript of the scene",
+            "translation": "Translation of the transcript to English"
+        }
+    ]
+}
+
+- Your output must be in strict JSON format. Don't include any comments or other characters that are not part of the JSON format.
+- Translate the the output to English if the source transcript is not in English.

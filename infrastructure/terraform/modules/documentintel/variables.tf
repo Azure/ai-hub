@@ -1,7 +1,11 @@
-variable "location" {
-  description = "Specifies the location for all Azure resources."
+variable "docintel_service_name" {
+  description = "Specifies the name of the data factory."
   type        = string
   sensitive   = false
+  validation {
+    condition     = length(var.docintel_service_name) >= 2
+    error_message = "Please specify a valid name."
+  }
 }
 
 variable "resource_group_name" {
@@ -12,14 +16,12 @@ variable "resource_group_name" {
     condition     = length(var.resource_group_name) >= 2
     error_message = "Please specify a valid name."
   }
+  
 }
 
-variable "user_assigned_identity_name" {
-  description = "Specifies the name of the user assigned identity."
+variable "location" {
+  description = "Specifies the location of the resource group."
   type        = string
   sensitive   = false
-  validation {
-    condition     = length(var.user_assigned_identity_name) >= 2
-    error_message = "Please specify a valid name."
-  }
+  
 }
