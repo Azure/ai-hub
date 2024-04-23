@@ -46,5 +46,4 @@ terraform.rc
 *.code-workspace
 .vscode/settings.json
 infrastructure/terraform/.terraform.lock.hcl
-.gitignore
-infrastructure/terraform/.terraform.lock.hcl
+infrastructure/terraform/modules/functions/*.zip
