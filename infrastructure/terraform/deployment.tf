@@ -77,6 +77,7 @@ module "data_factory" {
   sku = "Standard"
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
   subnet_id = var.subnet_id
+  global_parameters = var.global_parameters
 }
 
 module "document_intelligence" {
