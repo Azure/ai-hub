@@ -111,9 +111,11 @@ module "functions" {
   location = local.location
   resource_group_name = azurerm_resource_group.processing.name
   function_service_plan_name = local.function_service_plan_name
-  storage_account_name = module.azure_storage_account_functions.storage_account_name
+  functions_storage_account_id = module.azure_storage_account_functions.storage_account_id
+  video_storage_account_id = module.azure_storage_account.storage_account_id
   function_sku = var.function_sku
   assistant_function_service_name = local.azure_function_name_assistant
   shortclip_function_service_name = local.azure_function_name_shortclip
   user_assigned_identity_id = module.azure_managed_identity.user_assigned_identity_id
+  cognitive_service_id = module.azure_open_ai.azurerm_cognitive_account_service_id
 }

@@ -12,3 +12,17 @@ data "archive_file" "rag_video_tagging" {
   output_path = "${path.module}/rag.zip"
 }
 
+data "azurerm_storage_account" "functions_storage" {
+  name = lower(element(split("/", var.functions_storage_account_id), 8))
+  resource_group_name = lower(element(split("/", var.functions_storage_account_id), 4))
+}
+
+data "azurerm_storage_account" "video_storage" {
+  name = lower(element(split("/", var.video_storage_account_id), 8))
+  resource_group_name = lower(element(split("/", var.video_storage_account_id), 4))
+}
+
+data "azurerm_cognitive_account" "cognitive_service" {
+  name = lower(element(split("/", var.cognitive_service_id), 8))
+  resource_group_name = lower(element(split("/", var.cognitive_service_id), 4))
+}

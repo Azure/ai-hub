@@ -9,13 +9,13 @@ variable "assistant_function_service_name" {
 }
 
 variable "function_service_plan_name" {
-    description = "Specifies the name of the function app service plan."
-    type        = string
-    sensitive   = false
-    validation {
-        condition     = length(var.function_service_plan_name) >= 2
-        error_message = "Please specify a valid name."
-    }
+  description = "Specifies the name of the function app service plan."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.function_service_plan_name) >= 2
+    error_message = "Please specify a valid name."
+  }
 }
 
 variable "resource_group_name" {
@@ -34,29 +34,35 @@ variable "location" {
   sensitive   = false
 }
 
-variable "storage_account_name" {
-    description = "Specifies the name of the storage account."
-    type        = string
-    sensitive   = false
-    validation {
-        condition     = length(var.storage_account_name) >= 2
-        error_message = "Please specify a valid name."
-    }
+variable "functions_storage_account_id" {
+  description = "Specifies the name of the storage account Id."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.functions_storage_account_id) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "video_storage_account_id" {
+  description = "Specifies the name of the storage account Id."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.video_storage_account_id) >= 2
+    error_message = "Please specify a valid name."
+  }
 }
 
 variable "user_assigned_identity_id" {
-    description = "Specifies the user assigned  of the storage account."
-    type        = string
-    sensitive   = false
-    validation {
-        condition     = length(split("/", var.user_assigned_identity_id)) == 9
-        error_message = "Please specify a valid resource ID."
-    }
+  description = "Specifies the user assigned  of the storage account."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(split("/", var.user_assigned_identity_id)) == 9
+    error_message = "Please specify a valid resource ID."
+  }
 }
-
-# variable "zip_deploy_file" {
-#   type = string
-# }
 
 variable "function_sku" {
   description = "Specifies the sku name used in the function app service plan."
@@ -76,6 +82,16 @@ variable "shortclip_function_service_name" {
   sensitive   = false
   validation {
     condition     = length(var.shortclip_function_service_name) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "cognitive_service_id" {
+  description = "cognitive service resouceID."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.cognitive_service_id) >= 2
     error_message = "Please specify a valid name."
   }
 }
