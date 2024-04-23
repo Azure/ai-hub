@@ -45,3 +45,5 @@ terraform.rc
 !.vscode/extensions.json
 *.code-workspace
 .vscode/settings.json
+infrastructure/terraform/.terraform.lock.hcl
+infrastructure/terraform/modules/functions/*.zip
