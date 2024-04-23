@@ -2,7 +2,6 @@ variable "location" {
   description = "Specifies the location for all Azure resources."
   type        = string
   sensitive   = false
-  
 }
 
 variable "resource_group_name" {
@@ -12,7 +11,7 @@ variable "resource_group_name" {
   validation {
     condition     = length(var.resource_group_name) >= 2
     error_message = "Please specify a valid name."
-  } 
+  }
 }
 
 variable "user_assigned_identity_name" {
@@ -22,5 +21,5 @@ variable "user_assigned_identity_name" {
   validation {
     condition     = length(var.user_assigned_identity_name) >= 2
     error_message = "Please specify a valid name."
-  } 
+  }
 }

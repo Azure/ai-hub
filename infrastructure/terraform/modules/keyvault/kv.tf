@@ -67,7 +67,7 @@ resource "azapi_resource" "key_vault_key" {
         lifetimeActions = [
           {
             action = {
-              type = "rotate"
+              type = "Rotate"
             }
             trigger = {
               timeAfterCreate = "P12M"
@@ -108,7 +108,7 @@ resource "azapi_resource" "key_vault_key_storage" {
         lifetimeActions = [
           {
             action = {
-              type = "rotate"
+              type = "Rotate"
             }
             trigger = {
               timeAfterCreate = "P12M"

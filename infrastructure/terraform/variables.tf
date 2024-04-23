@@ -12,30 +12,51 @@ variable "prefix" {
   default     = "esp2"
 }
 
-variable "azureVideoWorkload_rg" {
+variable "environment" {
+  description = "Specifies the environment of the deployment."
+  type        = string
+  sensitive   = false
+  default     = "dev"
+  validation {
+    condition     = contains(["dev", "tst", "qa", "prd"], var.environment)
+    error_message = "Please use an allowed value: \"dev\", \"tst\", \"qa\" or \"prd\"."
+  }
+}
+
+variable "ingestion_rg_suffix" {
   description = "Specifies the name of the resource group."
   type        = string
   sensitive   = false
-  default     = "esp2-eastus-video-rg"
+  default     = "ingestion"
   validation {
-    condition     = length(var.azureVideoWorkload_rg) >= 2
+    condition     = length(var.ingestion_rg_suffix) >= 2
     error_message = "Please specify a valid name."
   }
 }
 
-variable "observability_rg" {
+variable "observability_rg_suffix" {
   description = "Specifies the name of the resource group."
   type        = string
   sensitive   = false
-  default     = "esp2-logw-eastus-rg"
+  default     = "observability"
   validation {
-    condition     = length(var.observability_rg) >= 2
+    condition     = length(var.observability_rg_suffix) >= 2
     error_message = "Please specify a valid name."
   }
 }
 
-variable "subnet_id" { 
-  description = "Specifies the resourceId of an existing subnet, in the same region as the rest of the workloads that will be created."
+variable "processing_rg_suffix" {
+  description = "Specifies the name of the resource group."
+  type        = string
+  sensitive   = false
+  default     = "processing"
+  validation {
+    condition     = length(var.processing_rg_suffix) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "subnet_id" {
   type        = string
   sensitive   = false
   default = "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/swedencentral-vnet/providers/Microsoft.Network/virtualNetworks/swedencentral-vnet/subnets/default"
@@ -55,46 +76,35 @@ variable "key_vault_sku" {
   default     = "premium"
 }
 
-variable "key_vault_name" {
+variable "key_vault_name_suffix" {
   description = "Specifies the name of the key vault."
   type        = string
   sensitive   = false
-  default     = "esp2-azsecret-kv"
+  default     = "kv"
   validation {
-    condition     = length(var.key_vault_name) >= 2
+    condition     = length(var.key_vault_name_suffix) >= 2
     error_message = "Please specify a valid name."
   }
 }
 
-variable "log_analytics_name" {
+variable "log_analytics_name_suffix" {
   description = "Specifies the name of the log analytics workspace"
   type        = string
   sensitive   = false
-  default     = "esp2azlogs-law"
+  default     = "law"
     validation {
-    condition     = length(var.log_analytics_name) >= 2
+    condition     = length(var.log_analytics_name_suffix) >= 2
     error_message = "Please specify a valid name."
   }
 }
 
-variable "cognitive_service_name" {
-  description = "Specifies the name of the cognitive service."
-  type        = string
-  sensitive   = false
-  default     = "esp2azoai-ai"
-  validation {
-    condition     = length(var.cognitive_service_name) >= 2
-    error_message = "Please specify a valid name."
-  }
-}
-
-variable "user_assigned_identity_name" {
+variable "user_assigned_identity_name_suffix" {
   description = "Specifies the name of the user assigned identity."
   type        = string
   sensitive   = false
-  default     = "esp2-id-eastus-uai"
+  default     = "uai"
   validation {
-    condition     = length(var.user_assigned_identity_name) >= 2
+    condition     = length(var.user_assigned_identity_name_suffix) >= 2
     error_message = "Please specify a valid name."
   }
 }
@@ -115,7 +125,6 @@ variable "partition_count" {
   type        = number
   sensitive   = false
   default     = 1
-  
 }
 
 variable "replica_count" {
@@ -123,75 +132,94 @@ variable "replica_count" {
   type        = number
   sensitive   = false
   default     = 1
-  
 }
 
-variable "search_service_name" {
+variable "cognitive_service_name_suffix" {
   description = "Specifies the name of the search service."
   type        = string
   sensitive   = false
-  default     = "esp2azsearcheastusss" #does not support '-' in name
+  default     = "aoai"
   validation {
-    condition     = length(var.search_service_name) >= 2
+    condition     = length(var.cognitive_service_name_suffix) >= 2
     error_message = "Please specify a valid name."
   }
-  
 }
 
-variable "adf_service_name" {
+variable "videoindexer_name_suffix" {
+  description = "Specifies the name of the search service."
+  type        = string
+  sensitive   = false
+  default     = "vi"
+  validation {
+    condition     = length(var.videoindexer_name_suffix) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "search_service_name_suffix" {
+  description = "Specifies the name of the search service."
+  type        = string
+  sensitive   = false
+  default     = "search" #does not support '-' in name
+  validation {
+    condition     = length(var.search_service_name_suffix) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "adf_service_name_suffix" {
   description = "Specifies the name of the data factory."
   type        = string
   sensitive   = false
   default     = "esp2-adf-pipelines"
   validation {
-    condition     = length(var.adf_service_name) >= 2
+    condition     = length(var.adf_service_name_suffix) >= 2
     error_message = "Please specify a valid name."
   }
 }
 
-variable "docintel_service_name" {
+variable "docintel_service_name_suffix" {
   description = "Specifies the name of the document intelligence service."
   type        = string
   sensitive   = false
-  default     = "esp2azdocintel-docintel"
+  default     = "docintel"
   validation {
-    condition     = length(var.docintel_service_name) >= 2
+    condition     = length(var.docintel_service_name_suffix) >= 2
     error_message = "Please specify a valid name."
   }
 }
 
-variable "assistant_function_service_name" {
+variable "function_name_suffix" {
   description = "Specifies the name of the function."
   type        = string
   sensitive   = false
-  default = "esp2-function-assistant"
+  default = "func"
   validation {
-    condition     = length(var.assistant_function_service_name) >= 2
-    error_message = "Please specify a valid name."
-  } 
-}
-
-variable "function_service_plan_name" {
-  description = "Specifies the name of the function app service plan."
-  type        = string
-  sensitive   = false
-  default = "esp2-function-plan"
-  validation {
-    condition     = length(var.function_service_plan_name) >= 2
+    condition     = length(var.function_name_suffix) >= 2
     error_message = "Please specify a valid name."
   }
 }
 
-variable "shortclip_function_service_name" {
+variable "azure_function_assistant_service_name_suffix" {
   description = "Specifies the name of the function."
   type        = string
   sensitive   = false
-  default = "esp2-function-shortclip"
+  default = "assistant"
   validation {
-    condition     = length(var.shortclip_function_service_name) >= 2
+    condition     = length(var.azure_function_assistant_service_name_suffix) >= 2
     error_message = "Please specify a valid name."
-  } 
-  
+  }
+}
+
+variable "azure_function_shortclip_service_name_suffix" {
+  description = "Specifies the name of the function."
+  type        = string
+  sensitive   = false
+  default = "shortclip"
+  validation {
+    condition     = length(var.azure_function_shortclip_service_name_suffix) >= 2
+    error_message = "Please specify a valid name."
+  }
 }
 
 variable "function_sku" {
@@ -199,5 +227,4 @@ variable "function_sku" {
   type        = string
   sensitive   = false
   default     = "EP1"
-  
 }

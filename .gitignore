@@ -45,3 +45,6 @@ terraform.rc
 !.vscode/extensions.json
 *.code-workspace
 .vscode/settings.json
+infrastructure/terraform/.terraform.lock.hcl
+.gitignore
+infrastructure/terraform/.terraform.lock.hcl

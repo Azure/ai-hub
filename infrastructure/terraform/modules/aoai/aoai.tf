@@ -48,7 +48,7 @@ resource "azurerm_private_endpoint" "cognitive_service_private_endpoint" {
     subresource_names              = ["account"]
   }
   subnet_id = var.subnet_id
-}
+}x
 */
 data "azurerm_monitor_diagnostic_categories" "diagnostic_categories_cognitive_service" {
   resource_id = azurerm_cognitive_account.cognitive_service.id
