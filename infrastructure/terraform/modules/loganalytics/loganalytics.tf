@@ -34,3 +34,11 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_log_analytics"
     }
   }
 }
+
+resource "azurerm_application_insights" "application_insights" {
+  name                = var.log_analytics_name
+  location            = var.location
+  resource_group_name = var.log_analytics_resource_group_name
+  workspace_id        = azurerm_log_analytics_workspace.log_analytics.id
+  application_type    = "web"
+}

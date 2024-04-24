@@ -46,6 +46,7 @@ terraform.rc
 *.code-workspace
 .vscode/settings.json
 
+
 #Function 
  Byte-compiled / optimized / DLL files
 __pycache__/
@@ -184,3 +185,7 @@ __azurite_db*__.json
 .python_packages
 
 infrastructure/apps/functionassistant/.vscode
+=======
+infrastructure/terraform/.terraform.lock.hcl
+infrastructure/terraform/modules/functions/*.zip
+

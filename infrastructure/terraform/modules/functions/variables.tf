@@ -1,3 +1,13 @@
+variable "log_analytics_workspace_id" {
+  description = "Specifies the resource ID of the log analytics workspace used for the stamp"
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(split("/", var.log_analytics_workspace_id)) == 9
+    error_message = "Please specify a valid resource ID."
+  }
+}
+
 variable "assistant_function_service_name" {
   description = "Specifies the name of the data factory."
   type        = string
@@ -9,13 +19,13 @@ variable "assistant_function_service_name" {
 }
 
 variable "function_service_plan_name" {
-    description = "Specifies the name of the function app service plan."
-    type        = string
-    sensitive   = false
-    validation {
-        condition     = length(var.function_service_plan_name) >= 2
-        error_message = "Please specify a valid name."
-    }
+  description = "Specifies the name of the function app service plan."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.function_service_plan_name) >= 2
+    error_message = "Please specify a valid name."
+  }
 }
 
 variable "resource_group_name" {
@@ -26,34 +36,41 @@ variable "resource_group_name" {
     condition     = length(var.resource_group_name) >= 2
     error_message = "Please specify a valid name."
   }
-  
 }
 
 variable "location" {
   description = "Specifies the location of the resource group."
   type        = string
   sensitive   = false
-  
 }
 
-variable "storage_account_name" {
-    description = "Specifies the name of the storage account."
-    type        = string
-    sensitive   = false
-    validation {
-        condition     = length(var.storage_account_name) >= 2
-        error_message = "Please specify a valid name."
-    }
-  
-}
-
-variable "prefix" {
-  description = "Specifies the prefix for all resources created in this deployment."
+variable "functions_storage_account_id" {
+  description = "Specifies the name of the storage account Id."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.prefix) >= 2 && length(var.prefix) <= 10
-    error_message = "Please specify a prefix with more than two and less than 10 characters."
+    condition     = length(var.functions_storage_account_id) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "video_storage_account_id" {
+  description = "Specifies the name of the storage account Id."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.video_storage_account_id) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "user_assigned_identity_id" {
+  description = "Specifies the user assigned  of the storage account."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(split("/", var.user_assigned_identity_id)) == 9
+    error_message = "Please specify a valid resource ID."
   }
 }
 
@@ -77,5 +94,34 @@ variable "shortclip_function_service_name" {
     condition     = length(var.shortclip_function_service_name) >= 2
     error_message = "Please specify a valid name."
   }
-  
+}
+
+variable "cognitive_service_id" {
+  description = "cognitive service resouceID."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.cognitive_service_id) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "instrumentation_key" {
+  description = "Specifies the instrumentation key of the log analytics workspace."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.instrumentation_key) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "app_id" {
+  description = "Specifies the app id of the log analytics workspace"
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.app_id) >= 2
+    error_message = "Please specify a valid name."
+  }
 }

@@ -17,6 +17,5 @@ resource "azurerm_data_factory" "data_factory" {
       value = global_parameter.value.value
       type  = global_parameter.value.type
     }
-    
   }
 }
