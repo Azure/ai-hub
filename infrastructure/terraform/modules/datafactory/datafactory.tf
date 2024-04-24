@@ -14,7 +14,7 @@ resource "azurerm_data_factory" "data_factory" {
       value = each.value.value
     }
   }
-  dynamic "github_repo" {
+  dynamic "github_configuration" {
     for_each = length(compact(values(var.data_factory_github_repo))) == 5 ? [var.data_factory_github_repo] : []
     content {
       account_name    = github_repo.value["account_name"]
