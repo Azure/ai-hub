@@ -16,7 +16,7 @@ data "archive_file" "assistant" {
   type        = "zip"
   excludes    = split("\n", file("${path.module}/functionassistant/.funcignore"))
   source_dir  = "${path.module}/functionassistant"
-  output_path = "${path.module}/functionassistant.zip"
+  output_path = "${path.module}/functionassistant1.zip"
 }
 
 data "azurerm_storage_account" "functions_storage" {
