@@ -229,57 +229,52 @@ variable "function_sku" {
   default     = "EP1" 
 }
 
-variable "global_parameters" {
-  description = "Global parameters for data factory."
-  type        = list(map(string))
-  default     = [{
-    name  = "openai_api_base"
-    value = var.openai_api_base
-    type  = "string"},
-    {
-    name  = "storageaccounturl"
-    value = var.storage_account_url
-    type  = "string"
+variable "data_factory_global_parameters" {
+  description = "Specifies the Azure Data Factory global parameters."
+  type = map(object({
+    type  = optional(string, "String")
+    value = optional(any, "")
+  }))
+  sensitive = false
+  nullable  = false
+  default   = {
+    temperature = {
+      type = "String",
+      value = "1"
     },
-    {
-    name  = "temperature"
-    value = "1"
-    type  = "string"
+    top_p = {
+      type = "String",
+      value = "1"
     },
-    {
-    name  = "top_p"
-    value = "1"
-    type  = "string"
+    category = {
+      type = "String",
+      value = "metaprompt"
     },
-    {
-    name  = "category"
-    value = "metaprompt"
-    type  = "string"
+    language = {
+      type = "String",
+      value = "es-ES"
     },
-    {
-    name  = "language"
-    value = "es-ES"
-    type  = "string"
+    indexName = {
+      type = "String",
+      value = "esp1Videos"
     },
-    {
-    name  = "indexName"
-    value = "esp1Videos"
-    type  = "string"
+    viRegion = {
+      type = "String",
+      value = "eastus"
     },
-    {
-    name  = "viRegion"
-    value = "eastus"
-    type  = "string"
+    viAccountName = {
+      type = "String",
+      value = "metaprompt"
     },
-    {
-    name  = "viAccountName"
-    value = "metaprompt"
-    type  = "string"
+    viAccountId = {
+      type = "String",
+      value = "metaprompt"
     },
-    {
-    name  = "viAccountId"
-    value = "metaprompt"
-    type  = "string"
-    }
-    ]
+  }
+  validation {
+    condition = alltrue([
+      length([for type in values(var.data_factory_global_parameters)[*].type : type if !contains(["Array", "Bool", "Float", "Int", "Object", "String"], type)]) <= 0,
+    ])
+    error_message = "Please specify a valid global parameter configuration."
+  }
 }

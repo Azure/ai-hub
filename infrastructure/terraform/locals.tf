@@ -31,4 +31,17 @@ locals {
     virtual_network_name = split("/", var.subnet_id)[8]
     name                 = split("/", var.subnet_id)[10]
   }
+
+  data_factory_global_parameters_default = {
+    openai_api_base = {
+      type = "String"
+      value = module.azure_open_ai.azurerm_cognitive_account_endpoint
+    },
+    storageaccounturl = {
+      type = "String"
+      value = module.azure_storage_account.storage_account_primary_blob_endpoint
+    }
+  }
+  data_factory_github_repo = {}
+  data_factory_azure_devops_repo = {}
 }
