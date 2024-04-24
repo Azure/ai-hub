@@ -217,7 +217,6 @@
                                 }
                             }
                         },
-                        // Consider having this as a separate deployment with the subsequent assignment
                         {
                             "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions",
                             "apiVersion": "2023-11-15",

@@ -754,6 +754,7 @@
             "aoaiOrchestratorModelName": "text-embedding-ada-002",
             "appRgName": "[concat(parameters('prefix'), '-aiapp-rg-', parameters('location'))]",
             "azureAiSearchName": "[toLower(concat(parameters('prefix'), '-', parameters('location'), '-azaisearch'))]",
+            "keyVault": "[take(concat(parameters('prefix'), '-', parameters('location'), '-kv'), 23)]",
             "azureAiSearchIndexName": "eaoaiindex",
             "azureOpenAiName": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai')]",
             "azMonWorkspaceName": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",

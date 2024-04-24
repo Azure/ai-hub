@@ -78,7 +78,7 @@
     },
     "variables": {
         "name-compliant-storage": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(deployment().name)), 23))]",
-        "name-compliant-keyvault": "[concat(parameters('prefix'), '-', parameters('location'), '-kv')]",
+        "name-compliant-keyvault": "[take(concat(parameters('prefix'), '-', parameters('location'), '-kv'), 23)]",
         "name-compliant-storage-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-storage-asg')]",
         "name-compliant-storage-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-storage-pe')]",
         "name-compliant-storage-nic": "[concat(variables('name-compliant-storage'), '-nic')]",
