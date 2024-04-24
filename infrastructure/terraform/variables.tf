@@ -213,5 +213,47 @@ variable "global_parameters" {
     name  = "storageaccounturl"
     value = var.storage_account_url
     type  = "string"
+    },
+    {
+    name  = "temperature"
+    value = "1"
+    type  = "string"
+    },
+    {
+    name  = "top_p"
+    value = "1"
+    type  = "string"
+    },
+    {
+    name  = "category"
+    value = "metaprompt"
+    type  = "string"
+    },
+    {
+    name  = "language"
+    value = "es-ES"
+    type  = "string"
+    },
+    {
+    name  = "indexName"
+    value = "esp1Videos"
+    type  = "string"
+    },
+    {
+    name  = "viRegion"
+    value = "eastus"
+    type  = "string"
+    },
+    {
+    name  = "viAccountName"
+    value = "metaprompt"
+    type  = "string"
+    },
+    {
+    name  = "viAccountId"
+    value = "metaprompt"
+    type  = "string"
+    },
+    { 
     }]
 }
