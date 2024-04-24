@@ -2350,6 +2350,40 @@
                             }
                         },
                         {
+                            "name": "aiDocLocation",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Select the Azure region for the Document Intelligence with the required API version",
+                            "placeholder": "",
+                            "defaultValue": "",
+                            "toolTip": "Select the supported Azure region for the Document Intelligence with the required API version.",
+                            "multiselect": false,
+                            "multiLine": true,
+                            "selectAll": false,
+                            "filter": false,
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "East US",
+                                        "value": "eastus"
+                                    },
+                                    {
+                                        "label": "West Europe",
+                                        "value": "westeurope"
+                                    },
+                                    {
+                                        "label": "Australia Southeast",
+                                        "value": "australiasoutheast"
+                                    },
+                                    {
+                                        "label": "East Asia",
+                                        "value": "eastasia"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiDocDisableNetworkAccess, 'No'))]"
+                        },
+                        {
                             "name": "aiDocNetworkSection",
                             "type": "Microsoft.Common.Section",
                             "label": "Network Settings",
@@ -2963,6 +2997,7 @@
                 "docDisableNetworkAccess": "[steps('aiAuxiliarySettings').aiDocDisableNetworkAccess]",
                 "docRbacAuthz": "[steps('aiAuxiliarySettings').aiDocRbacAuthz]",
                 "docNwLocation": "[steps('aiAuxiliarySettings').aiDocSelectedVnetDetails.location]",
+                "docLocation": "[if(not(empty(steps('aiAuxiliarySettings').aiDocLocation)), steps('aiAuxiliarySettings').aiDocLocation, steps('basics').resourceScope.location.name)]",
                 "docSubnetId": "[steps('aiAuxiliarySettings').aiDocSubnetList]",
                 "docSystemIdentity": "[steps('aiAuxiliarySettings').aiDocSystemIdentity]",
                 "docMonCreation": "[steps('aiAuxiliarySettings').aiDocMonCreation]",
