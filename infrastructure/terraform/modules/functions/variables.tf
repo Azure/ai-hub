@@ -125,3 +125,13 @@ variable "app_id" {
     error_message = "Please specify a valid name."
   }
 }
+
+variable "azapi_resource_videoindexer_id" {
+  description = "Specifies the videoindexer id"
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.azapi_resource_videoindexer_id) >= 2
+    error_message = "Please specify a valid name."
+  }
+}

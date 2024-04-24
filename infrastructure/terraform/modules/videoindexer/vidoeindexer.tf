@@ -14,6 +14,7 @@ resource "azapi_resource" "videoindexer" {
       }
     }
   })
+  response_export_values = ["properties.accountId"]
 }
 
 resource "azurerm_role_assignment" "videoindexer" {

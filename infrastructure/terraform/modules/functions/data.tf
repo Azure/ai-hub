@@ -20,16 +20,22 @@ data "archive_file" "assistant" {
 }
 
 data "azurerm_storage_account" "functions_storage" {
-  name = lower(element(split("/", var.functions_storage_account_id), 8))
+  name                = lower(element(split("/", var.functions_storage_account_id), 8))
   resource_group_name = lower(element(split("/", var.functions_storage_account_id), 4))
 }
 
 data "azurerm_storage_account" "video_storage" {
-  name = lower(element(split("/", var.video_storage_account_id), 8))
+  name                = lower(element(split("/", var.video_storage_account_id), 8))
   resource_group_name = lower(element(split("/", var.video_storage_account_id), 4))
 }
 
 data "azurerm_cognitive_account" "cognitive_service" {
-  name = lower(element(split("/", var.cognitive_service_id), 8))
+  name                = lower(element(split("/", var.cognitive_service_id), 8))
   resource_group_name = lower(element(split("/", var.cognitive_service_id), 4))
 }
+
+# data "azapi_resource" "video_indexer" {
+#   type                = "Microsoft.VideoIndexer/accounts@2024-01-01"
+#   id = var.azapi_resource_videoindexer_id
+#   # name                = lower(element(split("/", var.azapi_resource_videoindexer_id), 8))
+# }
