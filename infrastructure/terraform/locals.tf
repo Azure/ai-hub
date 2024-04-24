@@ -42,6 +42,12 @@ locals {
       value = module.azure_storage_account.storage_account_primary_blob_endpoint
     }
   }
-  data_factory_github_repo = {}
+  data_factory_github_repo = {
+    account_name    = "esbran"
+    branch_name     = "main"
+    git_url         = "https://github.com"
+    repository_name = "openaidatafactory"
+    root_folder     = "/"
+  }
   data_factory_azure_devops_repo = {}
 }
