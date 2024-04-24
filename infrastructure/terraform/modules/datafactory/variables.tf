@@ -25,6 +25,13 @@ variable "location" {
   sensitive   = false
 }
 
+variable "tags" {
+  description = "Specifies the tags that you want to apply to all resources."
+  type        = map(string)
+  sensitive   = false
+  default     = {}
+}
+
 # Service variables
 variable "data_factory_global_parameters" {
   description = "Specifies the Azure Data Factory global parameters."
@@ -69,6 +76,19 @@ variable "data_factory_azure_devops_repo" {
       repository_name = optional(string, "")
       root_folder     = optional(string, "")
       tenant_id       = optional(string, "")
+    }
+  )
+  sensitive = false
+  nullable  = false
+  default   = {}
+}
+
+variable "data_factory_published_content" {
+  description = "Specifies the Azure Devops repository configuration."
+  type = object(
+    {
+      parameters_file = string
+      template_file   = string
     }
   )
   sensitive = false
