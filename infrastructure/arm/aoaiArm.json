@@ -763,7 +763,8 @@
             "adfOnYourDataName": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf')]",
             "apimName": "[concat(parameters('prefix'), '-', parameters('apimLocation'), '-apim')]",
             "appName": "[concat(parameters('prefix'), '-', parameters('location'), '-wa')]",
-            "videoIndexerName": "[concat(parameters('prefix'), '-', parameters('location'), '-aivideo')]"
+            "videoIndexerName": "[concat(parameters('prefix'), '-', parameters('location'), '-aivideo')]",
+            "keyVaultName": "[take(concat(parameters('prefix'), '-', parameters('location'), '-kv'), 23)]"
         },
         "resourceIds": {
             "storageAccountResourceId": "[concat(subscription().id, '/resourceGroups/', variables('resourceNames').rgName, '/providers/Microsoft.Storage/storageAccounts/', variables('resourceNames').storageAccountName)]",
