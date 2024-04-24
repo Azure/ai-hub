@@ -645,6 +645,10 @@
                 "Yes",
                 "No"
             ]
+        },
+        "docLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]"
         }
     },
     "variables": {
@@ -1623,6 +1627,9 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
+                    },
+                    "docLocation": {
+                        "value": "[parameters('docLocation')]"
                     },
                     "docRbacAuthz": {
                         "value": "[parameters('docRbacAuthz')]"
@@ -2736,6 +2743,12 @@
                     },
                     "storageAccountContainer": {
                         "value": "docs"
+                    },
+                    "storageAccountBatchContainer": {
+                        "value": "docsbatch"
+                    },
+                    "storageAccountIntelContainer": {
+                        "value": "docsintel"
                     },
                     "temperature": {
                         "value": "1"
