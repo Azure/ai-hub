@@ -9,30 +9,30 @@ resource "azurerm_data_factory" "data_factory" {
   dynamic "global_parameter" {
     for_each = var.data_factory_global_parameters
     content {
-      name  = each.key
-      type  = each.value.type
-      value = each.value.value
+      name  = global_parameter.key
+      type  = global_parameter.value.type
+      value = global_parameter.value.value
     }
   }
   dynamic "github_configuration" {
     for_each = length(compact(values(var.data_factory_github_repo))) == 5 ? [var.data_factory_github_repo] : []
     content {
-      account_name    = github_repo.value["account_name"]
-      branch_name     = github_repo.value["branch_name"]
-      git_url         = github_repo.value["git_url"]
-      repository_name = github_repo.value["repository_name"]
-      root_folder     = github_repo.value["root_folder"]
+      account_name    = github_configuration.value["account_name"]
+      branch_name     = github_configuration.value["branch_name"]
+      git_url         = github_configuration.value["git_url"]
+      repository_name = github_configuration.value["repository_name"]
+      root_folder     = github_configuration.value["root_folder"]
     }
   }
   dynamic "vsts_configuration" {
     for_each = length(compact(values(var.data_factory_azure_devops_repo))) == 6 ? [var.data_factory_azure_devops_repo] : []
     content {
-      account_name    = azure_devops_repo.value["account_name"]
-      branch_name     = azure_devops_repo.value["branch_name"]
-      project_name    = azure_devops_repo.value["project_name"]
-      repository_name = azure_devops_repo.value["repository_name"]
-      root_folder     = azure_devops_repo.value["root_folder"]
-      tenant_id       = azure_devops_repo.value["tenant_id"]
+      account_name    = vsts_configuration.value["account_name"]
+      branch_name     = vsts_configuration.value["branch_name"]
+      project_name    = vsts_configuration.value["project_name"]
+      repository_name = vsts_configuration.value["repository_name"]
+      root_folder     = vsts_configuration.value["root_folder"]
+      tenant_id       = vsts_configuration.value["tenant_id"]
     }
   }
 }
