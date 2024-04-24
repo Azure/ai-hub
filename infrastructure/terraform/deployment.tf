@@ -78,12 +78,15 @@ module "azure_search_service" {
 
 module "data_factory" {
   source = "./modules/datafactory"
-  location = var.location
-  resource_group_name = azurerm_resource_group.ingestion.name
-  adf_service_name = local.adf_service_name
-  sku = "Standard"
-  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
-  subnet_id = var.subnet_id
+
+  adf_service_name               = local.adf_service_name
+  resource_group_name            = azurerm_resource_group.ingestion.name
+  location                       = var.location
+  data_factory_global_parameters = merge(local.data_factory_global_parameters_default, var.data_factory_global_parameters)
+  data_factory_github_repo       = local.data_factory_github_repo
+  data_factory_azure_devops_repo = local.data_factory_azure_devops_repo
+  log_analytics_workspace_id     = module.azure_log_analytics.log_analytics_id
+  subnet_id                      = var.subnet_id
 }
 
 module "document_intelligence" {

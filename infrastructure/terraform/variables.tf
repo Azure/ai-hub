@@ -226,5 +226,55 @@ variable "function_sku" {
   description = "Specifies the SKU for the function app."
   type        = string
   sensitive   = false
-  default     = "EP1"
+  default     = "EP1" 
+}
+
+variable "data_factory_global_parameters" {
+  description = "Specifies the Azure Data Factory global parameters."
+  type = map(object({
+    type  = optional(string, "String")
+    value = optional(any, "")
+  }))
+  sensitive = false
+  nullable  = false
+  default   = {
+    temperature = {
+      type = "String",
+      value = "1"
+    },
+    top_p = {
+      type = "String",
+      value = "1"
+    },
+    category = {
+      type = "String",
+      value = "metaprompt"
+    },
+    language = {
+      type = "String",
+      value = "es-ES"
+    },
+    indexName = {
+      type = "String",
+      value = "esp1Videos"
+    },
+    viRegion = {
+      type = "String",
+      value = "eastus"
+    },
+    viAccountName = {
+      type = "String",
+      value = "metaprompt"
+    },
+    viAccountId = {
+      type = "String",
+      value = "metaprompt"
+    },
+  }
+  validation {
+    condition = alltrue([
+      length([for type in values(var.data_factory_global_parameters)[*].type : type if !contains(["Array", "Bool", "Float", "Int", "Object", "String"], type)]) <= 0,
+    ])
+    error_message = "Please specify a valid global parameter configuration."
+  }
 }

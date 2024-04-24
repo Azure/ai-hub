@@ -9,3 +9,9 @@ output "storage_account_name" {
   description = "Specifies the name of the storage account"
   sensitive   = false
 }
+
+output "storage_account_primary_blob_endpoint" {
+  value       = azurerm_storage_account.storage.primary_blob_endpoint
+  description = "Specifies the primary blob endpoint of the storage account"
+  sensitive   = false
+}

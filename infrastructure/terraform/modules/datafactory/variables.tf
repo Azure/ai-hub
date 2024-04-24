@@ -1,12 +1,4 @@
-
-variable "sku" {
-  description = "Specifies the SKU for the search service"
-  type        = string
-  sensitive   = false
-  default     = "standard"
-  
-}
-
+# General variables
 variable "adf_service_name" {
   description = "Specifies the name of the data factory."
   type        = string
@@ -25,16 +17,66 @@ variable "resource_group_name" {
     condition     = length(var.resource_group_name) >= 2
     error_message = "Please specify a valid name."
   }
-  
 }
 
 variable "location" {
   description = "Specifies the location of the resource group."
   type        = string
   sensitive   = false
-  
 }
 
+# Service variables
+variable "data_factory_global_parameters" {
+  description = "Specifies the Azure Data Factory global parameters."
+  type = map(object({
+    type  = optional(string, "String")
+    value = optional(any, "")
+  }))
+  sensitive = false
+  nullable  = false
+  default   = {}
+  validation {
+    condition = alltrue([
+      length([for type in values(var.data_factory_global_parameters)[*].type : type if !contains(["Array", "Bool", "Float", "Int", "Object", "String"], type)]) <= 0,
+    ])
+    error_message = "Please specify a valid global parameter configuration."
+  }
+}
+
+variable "data_factory_github_repo" {
+  description = "Specifies the Github repository configuration."
+  type = object(
+    {
+      account_name    = optional(string, "")
+      branch_name     = optional(string, "")
+      git_url         = optional(string, "")
+      repository_name = optional(string, "")
+      root_folder     = optional(string, "")
+    }
+  )
+  sensitive = false
+  nullable  = false
+  default   = {}
+}
+
+variable "data_factory_azure_devops_repo" {
+  description = "Specifies the Azure Devops repository configuration."
+  type = object(
+    {
+      account_name    = optional(string, "")
+      branch_name     = optional(string, "")
+      project_name    = optional(string, "")
+      repository_name = optional(string, "")
+      root_folder     = optional(string, "")
+      tenant_id       = optional(string, "")
+    }
+  )
+  sensitive = false
+  nullable  = false
+  default   = {}
+}
+
+# Monitoring variables
 variable "log_analytics_workspace_id" {
   description = "Specifies the resource ID of the log analytics workspace used for the stamp"
   type        = string
@@ -45,7 +87,8 @@ variable "log_analytics_workspace_id" {
   }
 }
 
-variable "subnet_id" { 
+# Network variables
+variable "subnet_id" {
   description = "Specifies the subnet ID."
   type        = string
   sensitive   = false
