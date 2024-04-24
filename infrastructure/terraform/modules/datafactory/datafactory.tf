@@ -17,11 +17,11 @@ resource "azurerm_data_factory" "data_factory" {
   dynamic "github_configuration" {
     for_each = length(compact(values(var.data_factory_github_repo))) == 5 ? [var.data_factory_github_repo] : []
     content {
-      account_name    = github_repo.value["account_name"]
-      branch_name     = github_repo.value["branch_name"]
-      git_url         = github_repo.value["git_url"]
-      repository_name = github_repo.value["repository_name"]
-      root_folder     = github_repo.value["root_folder"]
+      account_name    = github_configuration.value["account_name"]
+      branch_name     = github_configuration.value["branch_name"]
+      git_url         = github_configuration.value["git_url"]
+      repository_name = github_configuration.value["repository_name"]
+      root_folder     = github_configuration.value["root_folder"]
     }
   }
   dynamic "vsts_configuration" {
