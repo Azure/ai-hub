@@ -15,7 +15,7 @@
         }
     },
     "variables": {
-        "name-compliant-keyvault": "[concat(parameters('prefix'), '-', parameters('location'), '-kv')]"
+        "name-compliant-keyvault": "[take(concat(parameters('prefix'), '-', parameters('location'), '-kv'), 23)]"
     },
     "resources": [],
     "outputs": {
