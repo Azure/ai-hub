@@ -2371,12 +2371,8 @@
                                         "value": "westeurope"
                                     },
                                     {
-                                        "label": "Australia Southeast",
-                                        "value": "australiasoutheast"
-                                    },
-                                    {
-                                        "label": "East Asia",
-                                        "value": "eastasia"
+                                        "label": "West US2",
+                                        "value": "westus2"
                                     }
                                 ],
                                 "required": true
