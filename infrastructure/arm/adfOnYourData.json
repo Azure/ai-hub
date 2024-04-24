@@ -103,6 +103,14 @@
             "type": "string",
             "defaultValue": "docs"
         },
+        "storageAccountIntelContainer": {
+            "type": "string",
+            "defaultValue": "docsintel"
+        },
+        "storageAccountBatchContainer": {
+            "type": "string",
+            "defaultValue": "docsbatch"
+        },
         "temperature": {
             "type": "string",
             "defaultValue": "1"
@@ -729,7 +737,7 @@
                                             "sys_message": "[parameters('systemMessage')]",
                                             "user_prompt": "[parameters('userPrompt')]",
                                             "storageaccounturl": "[parameters('storageAccountBlobEndpoint')]",
-                                            "storageAccountContainer": "[parameters('storageAccountContainer')]",
+                                            "storageAccountContainer": "[parameters('storageAccountIntelContainer')]",
                                             "temperature": "[parameters('temperature')]",
                                             "top_p": "[parameters('topP')]",
                                             "cosmosaccount": "[parameters('cosmosDbNoSqlEndpoint')]",
@@ -2159,7 +2167,7 @@
                                     },
                                     "storageAccountContainer": {
                                         "type": "string",
-                                        "defaultValue": "[parameters('storageAccountContainer')]"
+                                        "defaultValue": "[parameters('storageAccountIntelContainer')]"
                                     },
                                     "temperature": {
                                         "type": "string",
@@ -2403,7 +2411,7 @@
                                     },
                                     "storageaccountcontainer": {
                                         "type": "string",
-                                        "defaultValue": "[parameters('storageAccountContainer')]"
+                                        "defaultValue": "[parameters('storageAccountBatchContainer')]"
                                     },
                                     "temperature": {
                                         "type": "string",
@@ -2661,7 +2669,7 @@
                                     },
                                     "storageaccountcontainer": {
                                         "type": "string",
-                                        "defaultValue": "[parameters('storageAccountContainer')]"
+                                        "defaultValue": "[parameters('storageAccountBatchContainer')]"
                                     },
                                     "temperature": {
                                         "type": "string",
