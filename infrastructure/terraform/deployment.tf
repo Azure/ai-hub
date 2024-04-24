@@ -121,4 +121,5 @@ module "functions" {
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
   instrumentation_key = module.azure_log_analytics.instrumentation_key
   app_id = module.azure_log_analytics.app_id
+  azapi_resource_videoindexer_id =  module.videoindexer.azapi_resource_videoindexer_id
 }
