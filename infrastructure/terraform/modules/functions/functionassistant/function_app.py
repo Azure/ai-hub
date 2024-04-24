@@ -16,8 +16,6 @@ myApp = df.DFApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 # An HTTP-Triggered Function with a Durable Functions Client binding
 @myApp.route(route="orchestrators/{functionName}")
-# @myApp.function_name("http_start")
-# @myApp.route(route="http_start")
 @myApp.durable_client_input(client_name="client")
 async def http_start(req: func.HttpRequest, client):
     function_name = req.route_params.get('functionName')
@@ -67,17 +65,17 @@ def downloadfile(httpbody: str):
     )
 
     # Create client
-    #logging.info("Creating BlobServiceClient: " + {storage_domain_name}  )
+    logging.info("Creating BlobServiceClient: " + {storage_domain_name}  )
     blob_service_client = BlobServiceClient(
         storage_domain_name, credential=credential
     )
-    #logging.info("Success Creating BlobServiceClient: " + {storage_domain_name}  )
+    logging.info("Success Creating BlobServiceClient: " + {storage_domain_name}  )
 
-    #logging.info("Creating storage_container_name: " + {storage_container_name}  )
+    logging.info("Creating storage_container_name: " + {storage_container_name}  )
     blob_client = blob_service_client.get_blob_client(
         container=storage_container_name, blob=storage_blob_name
     )
-    #logging.info("Success Creating storage_container_name: " + {storage_domain_name}  )
+    logging.info("Success Creating storage_container_name: " + {storage_domain_name}  )
 
     try:
     # Download blob
@@ -85,7 +83,7 @@ def downloadfile(httpbody: str):
             download_stream = blob_client.download_blob()
             data = download_stream.readall()
             transcript.write(data)
-        #logging.info("File downloaded successfully. Blob name" + {storage_blob_name}  )
+        logging.info("File downloaded successfully. Blob name" + {storage_blob_name}  )
 
     except Exception as e:
         message = (f"An error occurred downloading the file: {e}, {e.args}")
