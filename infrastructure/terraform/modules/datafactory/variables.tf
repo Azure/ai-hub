@@ -87,13 +87,20 @@ variable "data_factory_published_content" {
   description = "Specifies the Azure Devops repository configuration."
   type = object(
     {
-      parameters_file = string
-      template_file   = string
+      parameters_file = optional(string, "")
+      template_file   = optional(string, "")
     }
   )
   sensitive = false
   nullable  = false
   default   = {}
+}
+
+variable "custom_template_variables" {
+  description = "Specifies custom template variables to use for the deployment when loading the Azure resources from the library path."
+  type        = map(string)
+  sensitive   = false
+  default     = {}
 }
 
 # Monitoring variables
