@@ -11,10 +11,10 @@ resource "azurerm_cognitive_account" "cognitive_service" {
   name                = var.cognitive_service_name
   location            = var.location
   resource_group_name = var.resource_group_name
-identity {
+  identity {
     type = "SystemAssigned"
   }
-  
+
   custom_subdomain_name = var.cognitive_service_name
   /* customer_managed_key {  
      key_vault_key_id   = jsondecode(data.azapi_resource.key_vault_key.output).properties.keyUriWithVersion 
@@ -24,10 +24,10 @@ identity {
   fqdns = [
     trimsuffix(replace(var.key_vault_uri, "https://", ""), "/")
   ]
-  kind                       = var.cognitive_service_kind
-  local_auth_enabled         = false
+  kind               = var.cognitive_service_kind
+  local_auth_enabled = false
   network_acls {
-    default_action = "Deny"
+    default_action = "Allow"
     ip_rules       = []
   }
   outbound_network_access_restricted = false
@@ -74,5 +74,43 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_cognitive_serv
       category = entry.value
       enabled  = true
     }
+  }
+}
+
+# Requires subscription to be onboarded
+# resource "azapi_resource" "no_moderation_policy" {
+#   type                      = "Microsoft.CognitiveServices/accounts/raiPolicies@2023-06-01-preview"
+#   name                      = "NoModerationPolicy"
+#   parent_id                 = azurerm_cognitive_account.cognitive_service.id
+#   schema_validation_enabled = false
+#   body = jsonencode({
+#     displayName = ""
+#     properties = {
+#       basePolicyName = "Microsoft.Default"
+#       type           = "UserManaged"
+#       contentFilters = [
+#         { name = "hate", blocking = false, enabled = true, allowedContentLevel = "High", source = "Prompt" },
+#         { name = "sexual", blocking = false, enabled = true, allowedContentLevel = "High", source = "Prompt" },
+#         { name = "selfharm", blocking = false, enabled = true, allowedContentLevel = "High", source = "Prompt" },
+#         { name = "violence", blocking = false, enabled = true, allowedContentLevel = "High", source = "Prompt" },
+#         { name = "hate", blocking = false, enabled = true, allowedContentLevel = "High", source = "Completion" },
+#         { name = "sexual", blocking = false, enabled = true, allowedContentLevel = "High", source = "Completion" },
+#         { name = "selfharm", blocking = false, enabled = true, allowedContentLevel = "High", source = "Completion" },
+#         { name = "violence", blocking = false, enabled = true, allowedContentLevel = "High", source = "Completion" },
+#       ]
+#     }
+#   })
+# }
+
+resource "azurerm_cognitive_deployment" "gpt-4" {
+  name                 = "gpt-4"
+  cognitive_account_id = azurerm_cognitive_account.cognitive_service.id
+  model {
+    format  = "OpenAI"
+    name    = "gpt-4"
+    version = "1106-Preview"
+  }
+  scale {
+    type = "Standard"
   }
 }
