@@ -19,6 +19,8 @@ myApp = df.DFApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 @myApp.durable_client_input(client_name="client")
 async def http_start(req: func.HttpRequest, client):
     function_name = req.route_params.get('functionName')
+    logging.info(f"Starting function_name {function_name}")
+
     payload = json.loads(req.get_body().decode())
     instance_id = await client.start_new(function_name, client_input=payload)
 
@@ -38,6 +40,7 @@ def downloadfile(httpbody: str):
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
     credential = DefaultAzureCredential()
     try:
+        logging.info("Reading the body")
         azure_endpoint = httpbody.get("openai_api_base")
         storage_domain_name = httpbody.get("storage_domain_name")
         storage_container_name = httpbody.get("storage_container_name")
@@ -54,20 +57,25 @@ def downloadfile(httpbody: str):
         message = f"An error occurred reading the body: {e}"
         logging.info(message)
         return message
-    
+
     openai_client = AzureOpenAI(
-        azure_ad_token_provider=token_provider,  
+        azure_ad_token_provider=token_provider,
         api_version="2024-02-15-preview",
         azure_endpoint = f"{azure_endpoint}"
     )
 
-        # Create client
+    # Create client
+    logging.info(f"Creating BlobServiceClient: {storage_domain_name}")
     blob_service_client = BlobServiceClient(
         storage_domain_name, credential=credential
     )
+    logging.info(f"Success Creating BlobServiceClient: {storage_domain_name}")
+
+    logging.info(f"Creating storage_container_name: {storage_container_name}")
     blob_client = blob_service_client.get_blob_client(
         container=storage_container_name, blob=storage_blob_name
     )
+    logging.info(f"Success Creating storage_container_name: {storage_domain_name}")
 
     try:
     # Download blob
@@ -75,7 +83,7 @@ def downloadfile(httpbody: str):
             download_stream = blob_client.download_blob()
             data = download_stream.readall()
             transcript.write(data)
-        logging.info("File downloaded successfully.")
+        logging.info(f"File downloaded successfully. Blob name {storage_blob_name}")
 
     except Exception as e:
         message = (f"An error occurred downloading the file: {e}, {e.args}")
