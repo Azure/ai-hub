@@ -138,7 +138,7 @@
         }
     },
     "variables": {
-        "name-compliant-keyvault": "[concat(parameters('prefix'), '-', parameters('location'), '-kv')]",
+        "name-compliant-keyvault": "[take(concat(parameters('prefix'), '-', parameters('location'), '-kv'), 23)]",
         "name-compliant-keyvault-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-keyvault-pe')]",
         "name-compliant-keyvault-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-keyvault-asg')]",
         "name-compliant-keyvault-nic": "[concat(variables('name-compliant-keyvault'), '-nic')]",
