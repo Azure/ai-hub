@@ -107,6 +107,10 @@
             "type": "string",
             "defaultValue": "docsintel"
         },
+        "storageAccountBatchContainer": {
+            "type": "string",
+            "defaultValue": "docsbatch"
+        },
         "temperature": {
             "type": "string",
             "defaultValue": "1"
@@ -2407,7 +2411,7 @@
                                     },
                                     "storageaccountcontainer": {
                                         "type": "string",
-                                        "defaultValue": "[parameters('storageAccountContainer')]"
+                                        "defaultValue": "[parameters('storageAccountBatchContainer')]"
                                     },
                                     "temperature": {
                                         "type": "string",
@@ -2665,7 +2669,7 @@
                                     },
                                     "storageaccountcontainer": {
                                         "type": "string",
-                                        "defaultValue": "[parameters('storageAccountIntelContainer')]"
+                                        "defaultValue": "[parameters('storageAccountBatchContainer')]"
                                     },
                                     "temperature": {
                                         "type": "string",
