@@ -13,17 +13,17 @@ resource "azurerm_service_plan" "service_plan" {
 
 resource "azurerm_storage_container" "videos_in" {
   name                  = "videosin"
-  storage_account_name  =  data.azurerm_storage_account.video_storage.name
+  storage_account_name  = data.azurerm_storage_account.video_storage.name
   container_access_type = "private"
 }
 resource "azurerm_storage_container" "assistant" {
   name                  = "videossassistant"
-  storage_account_name  =  data.azurerm_storage_account.video_storage.name
+  storage_account_name  = data.azurerm_storage_account.video_storage.name
   container_access_type = "private"
 }
 resource "azurerm_storage_container" "videos_out" {
   name                  = "videosout"
-  storage_account_name  =  data.azurerm_storage_account.video_storage.name
+  storage_account_name  = data.azurerm_storage_account.video_storage.name
   container_access_type = "private"
 }
 
@@ -143,8 +143,6 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_function_short
   }
 }
 
-
-
 # Assiging RBAC to underlying Storage Account for the function apps - Assistant
 resource "azurerm_role_assignment" "storage_account_blob_owner_assistant" {
   scope                = data.azurerm_storage_account.functions_storage.id
@@ -200,7 +198,7 @@ resource "azurerm_role_assignment" "video_storage_account_owner_shortclip" {
 # Assiging RBAC to OpenAI Account for functions to call the Assistnat APIs
 resource "azurerm_role_assignment" "aoai_cognitive_service_owner_assistant" {
   scope                = data.azurerm_cognitive_account.cognitive_service.id
-  role_definition_name = "Cognitive Services Contributor"
+  role_definition_name = "Cognitive Services OpenAI Contributor"
   principal_id         = azurerm_linux_function_app.assistant_function.identity[0].principal_id
 }
 
