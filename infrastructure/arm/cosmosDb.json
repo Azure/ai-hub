@@ -77,7 +77,7 @@
         }
     },
     "variables": {
-        "name-compliant-cosmosDb": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb')]",
+        "name-compliant-cosmosDb": "[toLower(concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb'))]",
         "name-compliant-cosmosDb-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb-pe')]",
         "name-compliant-cosmosDb-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb-asg')]",
         "name-compliant-cosmosDb-nic": "[concat(variables('name-compliant-cosmosDb'), '-nic')]",

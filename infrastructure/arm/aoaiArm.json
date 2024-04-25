@@ -757,7 +757,7 @@
             "azureAiSearchIndexName": "eaoaiindex",
             "azureOpenAiName": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai')]",
             "azMonWorkspaceName": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
-            "cosmosDbName": "[concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb')]",
+            "cosmosDbName": "[toLower(concat(parameters('prefix'), '-', parameters('location'), '-cosmosdb'))]",
             "azAiDocumentIntelligenceName": "[concat(parameters('prefix'), '-', parameters('location'), '-azdocintel')]",
             "storageAccountName": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(variables('deploymentNames').storageDeploymentName)), 23))]",
             "adfOnYourDataName": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf')]",
