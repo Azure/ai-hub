@@ -732,23 +732,36 @@
                                             "type": "PipelineReference"
                                         },
                                         "parameters": {
-                                            "fileName": "[parameters('triggerDocBlob_properties_singleAnalyzeDocument_parameters_fileName')]",
-                                            "openai_api_base": "[parameters('azureOpenAiEndpoint')]",
-                                            "sys_message": "[parameters('systemMessage')]",
-                                            "user_prompt": "[parameters('userPrompt')]",
-                                            "storageaccounturl": "[parameters('storageAccountBlobEndpoint')]",
-                                            "storageAccountContainer": "[parameters('storageAccountIntelContainer')]",
-                                            "temperature": "[parameters('temperature')]",
-                                            "top_p": "[parameters('topP')]",
-                                            "cosmosaccount": "[parameters('cosmosDbNoSqlEndpoint')]",
-                                            "cosmosdb": "[parameters('cosmosDbNoSqlDatabase')]",
-                                            "cosmoscontainer": "[parameters('cosmosDbNoSqlContainer')]",
-                                            "documentIntelligenceAPI": "[parameters('documentIntelligenceEndpoint')]",
-                                            "modelId": "[parameters('documentIntelligenceModelId')]",
-                                            "searchServiceEndpoint": "[parameters('aiSearchServiceEndpoint')]",
-                                            "embeddingDeploymentName": "[parameters('embeddingsDeploymentName')]",
-                                            "storageAccountResourceId": "[parameters('storageAccountResourceId')]",
-                                            "indexName": "[parameters('indexName')]"
+                                            "fileName": "@trigger().outputs.body.fileName"
+                                        }
+                                    }
+                                ],
+                                "type": "BlobEventsTrigger",
+                                "typeProperties": {
+                                    "blobPathBeginsWith": "/docsintel/blobs/",
+                                    "ignoreEmptyBlobs": true,
+                                    "scope": "[parameters('storageAccountResourceId')]",
+                                    "events": [
+                                        "Microsoft.Storage.BlobCreated"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "[concat(variables('name-compliant-df'), '/triggerDocBlobWithoutIntel')]",
+                            "type": "Microsoft.DataFactory/factories/triggers",
+                            "apiVersion": "2018-06-01",
+                            "properties": {
+                                "annotations": [],
+                                "runtimeState": "Started",
+                                "pipelines": [
+                                    {
+                                        "pipelineReference": {
+                                            "referenceName": "singleAnalyzeDocument_withoutIntel",
+                                            "type": "PipelineReference"
+                                        },
+                                        "parameters": {
+                                            "fileName": "@trigger().outputs.body.fileName"
                                         }
                                     }
                                 ],
@@ -761,7 +774,10 @@
                                         "Microsoft.Storage.BlobCreated"
                                     ]
                                 }
-                            }
+                            },
+                            "dependsOn": [
+                                "[concat(variables('factoryId'), '/pipelines/singleAnalyzeDocument_withoutIntel')]"
+                            ]
                         },
                         {
                             "name": "[concat(variables('name-compliant-df'), '/singleAnalyzeDocument_withoutIntel')]",
@@ -778,7 +794,7 @@
                                         "type": "IfCondition",
                                         "dependsOn": [
                                             {
-                                                "activity": "Check and wait until ingestion complete_copy1_copy1",
+                                                "activity": "Check and wait until ingestion complete",
                                                 "dependencyConditions": [
                                                     "Succeeded"
                                                 ]
@@ -1074,7 +1090,8 @@
                                                                 "filename": {
                                                                     "value": "@pipeline().parameters.fileName",
                                                                     "type": "Expression"
-                                                                }
+                                                                },
+                                                                "folder": "na"
                                                             }
                                                         }
                                                     ]
@@ -1083,7 +1100,7 @@
                                         }
                                     },
                                     {
-                                        "name": "Check and wait until ingestion complete_copy1_copy1",
+                                        "name": "Check and wait until ingestion complete",
                                         "type": "Until",
                                         "dependsOn": [
                                             {
@@ -1174,7 +1191,7 @@
                                                         },
                                                         "authentication": {
                                                             "type": "MSI",
-                                                            "resource": "[variables('msiAuthEndpoint')]"
+                                                            "resource": "https://cognitiveservices.azure.com"
                                                         }
                                                     }
                                                 }
@@ -1185,7 +1202,14 @@
                                     {
                                         "name": "Ingest to AI Search",
                                         "type": "WebActivity",
-                                        "dependsOn": [],
+                                        "dependsOn": [
+                                            {
+                                                "activity": "Copy to temp",
+                                                "dependencyConditions": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        ],
                                         "policy": {
                                             "timeout": "0.12:00:00",
                                             "retry": 0,
@@ -1206,10 +1230,7 @@
                                                     "value": "ResourceId=@{pipeline().parameters.storageAccountResourceId}",
                                                     "type": "Expression"
                                                 },
-                                                "storageContainer": {
-                                                    "value": "@pipeline().parameters.storageAccountContainer",
-                                                    "type": "Expression"
-                                                },
+                                                "storageContainer": "temp",
                                                 "searchServiceEndpoint": {
                                                     "value": "@pipeline().parameters.searchServiceEndpoint",
                                                     "type": "Expression"
@@ -1230,9 +1251,75 @@
                                             },
                                             "authentication": {
                                                 "type": "MSI",
-                                                "resource": "[variables('msiAuthEndpoint')]"
+                                                "resource": "https://cognitiveservices.azure.com"
                                             }
                                         }
+                                    },
+                                    {
+                                        "name": "Copy to temp",
+                                        "type": "Copy",
+                                        "dependsOn": [],
+                                        "policy": {
+                                            "timeout": "0.12:00:00",
+                                            "retry": 0,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "source": {
+                                                "type": "BinarySource",
+                                                "storeSettings": {
+                                                    "type": "AzureBlobStorageReadSettings",
+                                                    "recursive": true
+                                                },
+                                                "formatSettings": {
+                                                    "type": "BinaryReadSettings"
+                                                }
+                                            },
+                                            "sink": {
+                                                "type": "BinarySink",
+                                                "storeSettings": {
+                                                    "type": "AzureBlobStorageWriteSettings"
+                                                }
+                                            },
+                                            "enableStaging": false
+                                        },
+                                        "inputs": [
+                                            {
+                                                "referenceName": "blobfile",
+                                                "type": "DatasetReference",
+                                                "parameters": {
+                                                    "container": {
+                                                        "value": "@pipeline().parameters.storageAccountContainer",
+                                                        "type": "Expression"
+                                                    },
+                                                    "filename": {
+                                                        "value": "@pipeline().parameters.fileName",
+                                                        "type": "Expression"
+                                                    },
+                                                    "folder": " "
+                                                }
+                                            }
+                                        ],
+                                        "outputs": [
+                                            {
+                                                "referenceName": "blobfile",
+                                                "type": "DatasetReference",
+                                                "parameters": {
+                                                    "container": "temp",
+                                                    "filename": {
+                                                        "value": "@pipeline().parameters.fileName",
+                                                        "type": "Expression"
+                                                    },
+                                                    "folder": {
+                                                        "value": "@pipeline().parameters.storageaccounturl",
+                                                        "type": "Expression"
+                                                    }
+                                                }
+                                            }
+                                        ]
                                     }
                                 ],
                                 "policy": {
@@ -1508,13 +1595,14 @@
                                                     "userProperties": [],
                                                     "typeProperties": {
                                                         "method": "GET",
+                                                        "headers": {},
                                                         "url": {
                                                             "value": "@{pipeline().parameters.documentIntelligenceAPI}documentintelligence/documentModels/@{pipeline().parameters.modelId}/analyzeResults/@{variables('resultID')}?api-version=2023-10-31-preview\n",
                                                             "type": "Expression"
                                                         },
                                                         "authentication": {
                                                             "type": "MSI",
-                                                            "resource": "[variables('msiAuthEndpoint')]"
+                                                            "resource": "https://cognitiveservices.azure.com"
                                                         }
                                                     }
                                                 }
@@ -1823,7 +1911,8 @@
                                                                 "filename": {
                                                                     "value": "@pipeline().parameters.fileName",
                                                                     "type": "Expression"
-                                                                }
+                                                                },
+                                                                "folder": "na"
                                                             }
                                                         }
                                                     ]
@@ -1831,6 +1920,8 @@
                                                 {
                                                     "name": "Move temp file to processed container",
                                                     "type": "Copy",
+                                                    "state": "Inactive",
+                                                    "onInactiveMarkAs": "Succeeded",
                                                     "dependsOn": [
                                                         {
                                                             "activity": "Copy GPT4 Response to Cosmos",
@@ -1950,7 +2041,7 @@
                                             },
                                             "authentication": {
                                                 "type": "MSI",
-                                                "resource": "[variables('msiAuthEndpoint')]"
+                                                "resource": "https://cognitiveservices.azure.com"
                                             }
                                         }
                                     },
@@ -2029,7 +2120,7 @@
                                                         },
                                                         "authentication": {
                                                             "type": "MSI",
-                                                            "resource": "[variables('msiAuthEndpoint')]"
+                                                            "resource": "https://cognitiveservices.azure.com"
                                                         }
                                                     }
                                                 }
@@ -2122,13 +2213,14 @@
                                                     "userProperties": [],
                                                     "typeProperties": {
                                                         "method": "GET",
+                                                        "headers": {},
                                                         "url": {
                                                             "value": "@{pipeline().parameters.openai_api_base}openai/extensions/on-your-data/ingestion-jobs/@{pipeline().parameters.indexName}?api-version=2023-10-01-preview",
                                                             "type": "Expression"
                                                         },
                                                         "authentication": {
                                                             "type": "MSI",
-                                                            "resource": "[variables('msiAuthEndpoint')]"
+                                                            "resource": "https://cognitiveservices.azure.com"
                                                         }
                                                     }
                                                 }
