@@ -37,6 +37,7 @@ resource "azurerm_linux_function_app" "assistant_function" {
   identity {
     type = "SystemAssigned"
   }
+
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY = var.instrumentation_key
     ENABLE_ORYX_BUILD              = true
@@ -58,8 +59,11 @@ resource "azurerm_linux_function_app" "assistant_function" {
     application_stack {
       python_version = "3.11"
     }
+    ftps_state = "AllAllowed"
   }
-  zip_deploy_file = data.archive_file.assistant.output_path
+  ftp_publish_basic_authentication_enabled       = true
+  webdeploy_publish_basic_authentication_enabled = false
+  zip_deploy_file                                = data.archive_file.assistant.output_path
 }
 
 data "azurerm_monitor_diagnostic_categories" "diagnostic_categories_function" {
@@ -116,8 +120,11 @@ resource "azurerm_linux_function_app" "shortclip_function" {
     application_stack {
       python_version = "3.11"
     }
+    ftps_state = "AllAllowed"
   }
-  zip_deploy_file = data.archive_file.rag_video_tagging.output_path
+  ftp_publish_basic_authentication_enabled       = true
+  webdeploy_publish_basic_authentication_enabled = false
+  zip_deploy_file                                = data.archive_file.rag_video_tagging.output_path
 }
 
 resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_function_shortclip" {
