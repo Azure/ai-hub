@@ -23,6 +23,7 @@ locals {
   function_service_plan_name = "${local.prefix}-${var.function_name_suffix}"
   cleaned_function_storage_account_name= replace("${local.function_name}}", "/[^a-z0-9]/", "")
   function_storage_account_name = lower(substr(local.cleaned_function_storage_account_name, 0, min(length(local.cleaned_function_storage_account_name), 22)))
+  azure_function_name_helloworld = "${local.function_name}-${var.azure_function_helloworld_service_name_suffix}"
   azure_function_name_shortclip = "${local.function_name}-${var.azure_function_shortclip_service_name_suffix}"
   azure_function_name_assistant = "${local.function_name}-${var.azure_function_assistant_service_name_suffix}"
 
