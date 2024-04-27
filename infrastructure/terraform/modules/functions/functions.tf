@@ -21,9 +21,9 @@ resource "azurerm_linux_function_app" "helloworld_function" {
   ftp_publish_basic_authentication_enabled       = true
   service_plan_id                                = azurerm_service_plan.service_plan.id
   identity {
-    # type = "SystemAssigned"
-    type         = "UserAssigned"
-    identity_ids = [var.user_assigned_identity_id]
+    type = "SystemAssigned"
+    # type         = "UserAssigned"
+    # identity_ids = [var.user_assigned_identity_id]
   }
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY = var.instrumentation_key
@@ -56,9 +56,9 @@ resource "azurerm_linux_function_app" "assistant_function" {
   ftp_publish_basic_authentication_enabled       = true
   service_plan_id                                = azurerm_service_plan.service_plan.id
   identity {
-    # type = "SystemAssigned"
-    type         = "UserAssigned"
-    identity_ids = [var.user_assigned_identity_id]
+    type = "SystemAssigned"
+    # type         = "UserAssigned"
+    # identity_ids = [var.user_assigned_identity_id]
   }
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY = var.instrumentation_key
@@ -100,9 +100,9 @@ resource "azurerm_linux_function_app" "shortclip_function" {
   ftp_publish_basic_authentication_enabled       = true
   service_plan_id                                = azurerm_service_plan.service_plan.id
   identity {
-    # type = "SystemAssigned"
-    type         = "UserAssigned"
-    identity_ids = [var.user_assigned_identity_id]
+    type = "SystemAssigned"
+    # type         = "UserAssigned"
+    # identity_ids = [var.user_assigned_identity_id]
   }
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY = var.instrumentation_key
