@@ -1,3 +1,4 @@
+# General variables
 variable "location" {
   description = "Specifies the location for all Azure resources."
   type        = string
@@ -24,12 +25,21 @@ variable "key_vault_name" {
   }
 }
 
+variable "tags" {
+  description = "Specifies the tags that you want to apply to all resources."
+  type        = map(string)
+  sensitive   = false
+  default     = {}
+}
+
+# Service variables
 variable "key_vault_sku_name" {
   description = "Select the SKU for the Key Vault"
   type        = string
   sensitive   = false
 }
 
+# Monitoring variables
 variable "log_analytics_workspace_id" {
   description = "Specifies the resource ID of the log analytics workspace used for the stamp"
   type        = string
@@ -40,6 +50,14 @@ variable "log_analytics_workspace_id" {
   }
 }
 
+# Network variables
+variable "subnet_id" {
+  description = "Specifies the subnet ID."
+  type        = string
+  sensitive   = false
+}
+
+# CMK variables
 variable "cmk_uai_id" {
   description = "Specifies the resource ID of the user assigned identity used for customer managed keys."
   type        = string
@@ -48,10 +66,4 @@ variable "cmk_uai_id" {
     condition     = length(split("/", var.cmk_uai_id)) == 9
     error_message = "Please specify a valid resource ID."
   }
-}
-
-variable "subnet_id" {
-  description = "Specifies the subnet ID."
-  type        = string
-  sensitive   = false
 }

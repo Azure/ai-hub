@@ -2,6 +2,7 @@ resource "azurerm_data_factory" "data_factory" {
   name                = var.adf_service_name
   location            = var.location
   resource_group_name = var.resource_group_name
+  tags                = var.tags
 
   managed_virtual_network_enabled = false # Change in prod
   public_network_enabled          = true  # Change in prod

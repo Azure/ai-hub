@@ -1,0 +1,51 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "${data_factory_name}"
+		},
+		"AzureFunctionShortClip_functionKey": {
+			"value": "${function_shortclip_key}"
+		},
+		"AzureFunctionVideoAssistant_functionKey": {
+			"value": "${function_assisstant_key}"
+		},
+		"AzureFunctionShortClip_properties_typeProperties_functionAppUrl": {
+			"value": "${function_shortclip_endpoint}"
+		},
+		"AzureFunctionVideoAssistant_properties_typeProperties_functionAppUrl": {
+			"value": "${function_assisstant_endpoint}"
+		},
+		"GPT4VDeployment_properties_typeProperties_url": {
+			"value": "@{linkedService().open_ai_base}"
+		},
+		"GPT4VDeployment_properties_typeProperties_aadResourceId": {
+			"value": "https://cognitiveservices.azure.com"
+		},
+		"KeyVault_properties_typeProperties_url": {
+			"value": "${keyvault_endpoint}"
+		},
+		"KeyVault_properties_typeProperties_aadResourceId": {
+			"value": "https://vault.azure.net"
+		},
+		"blobStoreDoc_properties_typeProperties_serviceEndpoint": {
+			"value": "${storage_blob_endpoint}"
+		},
+		"lsBlobStorageVideos_properties_typeProperties_serviceEndpoint": {
+			"value": "${storage_blob_endpoint}"
+		},
+		"onYourData_properties_typeProperties_url": {
+			"value": "@{linkedService().documentIntelligenceAPI}documentintelligence/documentModels/@{linkedService().modelId}/analyzeResults/@{linkedService().resultID}?api-version=2023-10-31-preview"
+		},
+		"onYourData_properties_typeProperties_aadResourceId": {
+			"value": "https://cognitiveservices.azure.com"
+		},
+		"videoIndexerAPI_properties_typeProperties_url": {
+			"value": "https://api.videoindexer.ai/@{linkedService().location}/Accounts/@{linkedService().accountId}/Videos/@{linkedService().videoId}/@{linkedService().dataSource}?accessToken=@{linkedService().accessToken}"
+		},
+		"triggerVideoBlob_properties_typeProperties_scope": {
+			"value": "${storage_account_id}"
+		}
+	}
+}
