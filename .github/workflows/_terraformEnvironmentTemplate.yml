@@ -39,11 +39,6 @@ on:
         required: true
         description: "Specifies the client secret."
 
-permissions:
-  id-token: write
-  contents: read
-  pull-requests: write
-
 jobs:
   lint:
     name: Terraform Lint
@@ -70,26 +65,6 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         run: |
           terraform fmt -check -recursive
-
-      # Add Pull Request Comment
-      - name: Add Pull Request Comment
-        uses: actions/github-script@v7
-        id: pr_comment
-        if: github.event_name == 'pull_request'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Lint Results
-            * Terraform Version 📎\`${{ inputs.terraform_version }}\`
-            * Working Directory 📂\`${{ inputs.working_directory }}\`
-            * Terraform Format and Style 🖌\`${{ steps.terraform_format.outcome }}\``;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
 
   plan:
     name: Terraform Plan
@@ -153,39 +128,6 @@ jobs:
           terraform plan -var-file="../config/${CONFIG}/vars.tfvars" -input=false
         env:
           CONFIG: ${{ inputs.config }}
-
-      # Add Pull Request Comment
-      - name: Add Pull Request Comment
-        id: pr_comment
-        uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
-        continue-on-error: true
-        env:
-          PLAN: "terraform\n${{ steps.terraform_plan.outputs.stdout }}"
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Validation & Plan Results
-            * Terraform Version 📎\`${{ inputs.terraform_version }}\`
-            * Working Directory 📂\`${{ inputs.working_directory }}\`
-            * Terraform Initialization ⚙️\`${{ steps.terraform_init.outcome }}\`
-            * Terraform Validation 🤖\`${{ steps.terraform_validate.outcome }}\`
-            * Terraform Plan 📖\`${{ steps.terraform_plan.outcome }}\`
-
-            <details><summary>Show Plan</summary>
-
-            \`\`\`\n
-            ${process.env.PLAN}
-            \`\`\`
-
-            </details>`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
 
   apply:
     name: Terraform Apply

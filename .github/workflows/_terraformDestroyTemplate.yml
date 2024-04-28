@@ -40,10 +40,6 @@ on:
         required: true
         description: "Specifies the client secret."
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   deployment:
     name: Terraform Destroy
