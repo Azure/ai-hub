@@ -58,6 +58,8 @@ jobs:
       - name: Check Out Repository
         id: checkout_repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       # Terraform Format
       - name: Terraform Format
@@ -103,6 +105,8 @@ jobs:
       - name: Check Out Repository
         id: checkout_repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       # Terraform Init
       - name: Terraform Init
@@ -167,6 +171,8 @@ jobs:
       - name: Check Out Repository
         id: checkout_repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       # Terraform Init
       - name: Terraform Init
