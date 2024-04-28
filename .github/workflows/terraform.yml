@@ -1,0 +1,51 @@
+name: Infrastructure Deployment
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**.tf"
+      - "infrastructure/terraform/**"
+      - "infrastructure/config/**"
+      - ".github/workflows/terraform.yml"
+      - ".github/workflows/_terraformEnvironmentTemplate.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "**.tf"
+      - "infrastructure/terraform/**"
+      - "infrastructure/config/**"
+      - ".github/workflows/terraform.yml"
+      - ".github/workflows/_terraformEnvironmentTemplate.yml"
+
+jobs:
+  terraform_dev:
+    uses: ./.github/workflows/_terraformEnvironmentTemplate.yml
+    name: "Dev"
+    with:
+      environment: "dev"
+      terraform_version: "1.8.2"
+      node_version: 18
+      working_directory: "./infrastructure/terraform"
+      tenant_id: "572cf1ec-3f90-49a2-896f-ab2fa36ca0d3"
+      subscription_id: "be25820a-df86-4794-9e95-6a45cd5c0941"
+    secrets:
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+
+  terraform_dev_destroy:
+    uses: ./.github/workflows/_terraformDestroyTemplate.yml
+    name: "Dev - Destroy"
+    needs: [terraform_dev]
+    with:
+      environment: "dev"
+      terraform_version: "1.8.2"
+      node_version: 18
+      working_directory: "./infrastructure/terraform"
+      tenant_id: "572cf1ec-3f90-49a2-896f-ab2fa36ca0d3"
+      subscription_id: "be25820a-df86-4794-9e95-6a45cd5c0941"
+    secrets:
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}

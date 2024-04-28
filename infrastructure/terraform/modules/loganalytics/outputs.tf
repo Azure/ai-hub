@@ -5,8 +5,8 @@ output "log_analytics_id" {
 }
 
 output "instrumentation_key" {
-  value = azurerm_application_insights.application_insights.instrumentation_key
-  sensitive   = true
+  value     = azurerm_application_insights.application_insights.instrumentation_key
+  sensitive = true
 }
 
 output "app_id" {

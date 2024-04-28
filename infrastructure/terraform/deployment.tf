@@ -54,26 +54,26 @@ module "azure_managed_identity" {
 }
 
 module "videoindexer" {
-  source = "./modules/videoindexer"
-  videoindexer_name   = local.videoindexer_name
-  resource_group_id   = azurerm_resource_group.ingestion.id
-  location            = local.location
-  storage_account_id  = module.azure_storage_account.storage_account_id
+  source             = "./modules/videoindexer"
+  videoindexer_name  = local.videoindexer_name
+  resource_group_id  = azurerm_resource_group.ingestion.id
+  location           = local.location
+  storage_account_id = module.azure_storage_account.storage_account_id
 }
 
 module "azure_search_service" {
-  source = "./modules/aisearch"
-  location = var.location
-  resource_group_name = azurerm_resource_group.ingestion.name
-  search_service_name = local.azure_search_service_name
-  sku = "standard"
-  partition_count = var.partition_count
-  replica_count = var.replica_count
+  source                     = "./modules/aisearch"
+  location                   = var.location
+  resource_group_name        = azurerm_resource_group.ingestion.name
+  search_service_name        = local.azure_search_service_name
+  sku                        = "standard"
+  partition_count            = var.partition_count
+  replica_count              = var.replica_count
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
-  cmk_uai_id = module.azure_managed_identity.user_assigned_identity_id
-  cmk_key_vault_id = module.azure_key_vault.key_vault_id
-  subnet_id = var.subnet_id
-  cmk_key_name = module.azure_key_vault.key_vault_cmk_name
+  cmk_uai_id                 = module.azure_managed_identity.user_assigned_identity_id
+  cmk_key_vault_id           = module.azure_key_vault.key_vault_id
+  subnet_id                  = var.subnet_id
+  cmk_key_name               = module.azure_key_vault.key_vault_cmk_name
 }
 
 module "data_factory" {
@@ -90,9 +90,9 @@ module "data_factory" {
 }
 
 module "document_intelligence" {
-  source = "./modules/documentintel"
-  location = var.location
-  resource_group_name = azurerm_resource_group.ingestion.name
+  source                = "./modules/documentintel"
+  location              = var.location
+  resource_group_name   = azurerm_resource_group.ingestion.name
   docintel_service_name = local.docintel_service_name
 }
 
@@ -110,19 +110,19 @@ module "azure_storage_account_functions" {
 }
 
 module "functions" {
-  source = "./modules/functions"
-  location = local.location
-  resource_group_name = azurerm_resource_group.processing.name
-  function_service_plan_name = local.function_service_plan_name
-  functions_storage_account_id = module.azure_storage_account_functions.storage_account_id
-  video_storage_account_id = module.azure_storage_account.storage_account_id
-  function_sku = var.function_sku
+  source                          = "./modules/functions"
+  location                        = local.location
+  resource_group_name             = azurerm_resource_group.processing.name
+  function_service_plan_name      = local.function_service_plan_name
+  functions_storage_account_id    = module.azure_storage_account_functions.storage_account_id
+  video_storage_account_id        = module.azure_storage_account.storage_account_id
+  function_sku                    = var.function_sku
   assistant_function_service_name = local.azure_function_name_assistant
   shortclip_function_service_name = local.azure_function_name_shortclip
-  user_assigned_identity_id = module.azure_managed_identity.user_assigned_identity_id
-  cognitive_service_id = module.azure_open_ai.azurerm_cognitive_account_service_id
-  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
-  instrumentation_key = module.azure_log_analytics.instrumentation_key
-  app_id = module.azure_log_analytics.app_id
-  azapi_resource_videoindexer_id =  module.videoindexer.azapi_resource_videoindexer_id
+  user_assigned_identity_id       = module.azure_managed_identity.user_assigned_identity_id
+  cognitive_service_id            = module.azure_open_ai.azurerm_cognitive_account_service_id
+  log_analytics_workspace_id      = module.azure_log_analytics.log_analytics_id
+  instrumentation_key             = module.azure_log_analytics.instrumentation_key
+  app_id                          = module.azure_log_analytics.app_id
+  azapi_resource_videoindexer_id  = module.videoindexer.azapi_resource_videoindexer_id
 }

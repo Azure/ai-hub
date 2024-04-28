@@ -3,7 +3,7 @@ variable "sku" {
   type        = string
   sensitive   = false
   default     = "standard"
-  
+
 }
 
 variable "resource_group_name" {
@@ -14,14 +14,14 @@ variable "resource_group_name" {
     condition     = length(var.resource_group_name) >= 2
     error_message = "Please specify a valid name."
   }
-  
+
 }
 
 variable "location" {
   description = "Specifies the location of the resource group."
   type        = string
   sensitive   = false
-  
+
 }
 
 variable "partition_count" {
@@ -29,7 +29,7 @@ variable "partition_count" {
   type        = number
   sensitive   = false
   default     = 1
-  
+
 }
 
 variable "replica_count" {
@@ -37,7 +37,7 @@ variable "replica_count" {
   type        = number
   sensitive   = false
   default     = 1
-  
+
 }
 
 variable "search_service_name" {
@@ -48,7 +48,7 @@ variable "search_service_name" {
     condition     = length(var.search_service_name) >= 2
     error_message = "Please specify a valid name."
   }
-  
+
 }
 
 variable "log_analytics_workspace_id" {
@@ -91,7 +91,7 @@ variable "cmk_key_name" {
   }
 }
 
-variable "subnet_id" { 
+variable "subnet_id" {
   description = "Specifies the subnet ID."
   type        = string
   sensitive   = false

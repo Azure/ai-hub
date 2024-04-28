@@ -1,17 +1,17 @@
 variable "location" {
-    description = "Specifies the location for all Azure resources."
-    type        = string
-    sensitive   = false
+  description = "Specifies the location for all Azure resources."
+  type        = string
+  sensitive   = false
 }
 
 variable "resource_group_name" {
-    description = "Specifies the name of the resource group."
-    type        = string
-    sensitive   = false
-    validation {
-        condition     = length(var.resource_group_name) >= 2
-        error_message = "Please specify a valid name."
-    }
+  description = "Specifies the name of the resource group."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.resource_group_name) >= 2
+    error_message = "Please specify a valid name."
+  }
 }
 
 variable "log_analytics_workspace_id" {
@@ -34,7 +34,7 @@ variable "cmk_uai_id" {
   }
 }
 
-variable "subnet_id" { 
+variable "subnet_id" {
   description = "Specifies the subnet ID."
   type        = string
   sensitive   = false

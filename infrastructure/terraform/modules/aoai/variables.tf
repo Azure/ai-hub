@@ -94,7 +94,7 @@ variable "key_vault_uri" {
   }
 }
 
-variable "subnet_id" { 
+variable "subnet_id" {
   description = "Specifies the subnet ID."
   type        = string
   sensitive   = false

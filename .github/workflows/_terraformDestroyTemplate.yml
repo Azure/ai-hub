@@ -1,0 +1,97 @@
+name: Terraform Destroy Template
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        default: "dev"
+        description: "Specifies the environment of the deployment."
+      config:
+        required: true
+        type: string
+        description: "Specifies the configuration folder for the deployment."
+      terraform_version:
+        required: true
+        type: string
+        description: "Specifies the terraform version."
+      node_version:
+        required: true
+        type: number
+        description: "Specifies the node version."
+      working_directory:
+        required: true
+        type: string
+        description: "Specifies the working directory."
+      tenant_id:
+        required: true
+        type: string
+        description: "Specifies the tenant id of the deployment."
+      subscription_id:
+        required: true
+        type: string
+        description: "Specifies the subscription id of the deployment."
+    secrets:
+      CLIENT_ID:
+        required: true
+        description: "Specifies the client id."
+      CLIENT_SECRET:
+        required: true
+        description: "Specifies the client secret."
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deployment:
+    name: Terraform Destroy
+    runs-on: [self-hosted]
+    continue-on-error: false
+    environment: ${{ inputs.environment }}
+    if: github.event_name == 'push' || github.event_name == 'release'
+
+    env:
+      ARM_TENANT_ID: ${{ inputs.tenant_id }}
+      ARM_SUBSCRIPTION_ID: ${{ inputs.subscription_id }}
+      ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      ARM_USE_OIDC: false
+
+    steps:
+      # Setup Node
+      - name: Setup Node
+        id: node_setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+
+      # Setup Terraform
+      - name: Setup Terraform
+        id: terraform_setup
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+          terraform_wrapper: true
+
+      # Check Out Repository
+      - name: Check Out Repository
+        id: checkout_repository
+        uses: actions/checkout@v4
+
+      # Terraform Init
+      - name: Terraform Init
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          terraform init -backend-config=../config/${CONFIG}/azurerm.tfbackend
+        env:
+          CONFIG: ${{ inputs.config }}
+
+      # Terraform Destroy
+      - name: Terraform Destroy
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          terraform apply -var-file="../config/${CONFIG}/vars.tfvars" -auto-approve -input=false -destroy
+        env:
+          CONFIG: ${{ inputs.config }}

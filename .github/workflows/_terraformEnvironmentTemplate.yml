@@ -1,0 +1,243 @@
+name: Terraform Template
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: "Specifies the environment of the deployment."
+      config:
+        required: true
+        type: string
+        description: "Specifies the configuration folder for the deployment."
+      terraform_version:
+        required: true
+        type: string
+        description: "Specifies the terraform version."
+      node_version:
+        required: true
+        type: number
+        description: "Specifies the node version."
+      working_directory:
+        required: true
+        type: string
+        description: "Specifies the working directory."
+      tenant_id:
+        required: true
+        type: string
+        description: "Specifies the tenant id of the deployment."
+      subscription_id:
+        required: true
+        type: string
+        description: "Specifies the subscription id of the deployment."
+    secrets:
+      CLIENT_ID:
+        required: true
+        description: "Specifies the client id."
+      CLIENT_SECRET:
+        required: true
+        description: "Specifies the client secret."
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  lint:
+    name: Terraform Lint
+    runs-on: [ubuntu-latest]
+    continue-on-error: false
+
+    steps:
+      # Setup Terraform
+      - name: Setup Terraform
+        id: terraform_setup
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+          terraform_wrapper: true
+
+      # Check Out Repository
+      - name: Check Out Repository
+        id: checkout_repository
+        uses: actions/checkout@v4
+
+      # Terraform Format
+      - name: Terraform Format
+        id: terraform_format
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          terraform fmt -check -recursive
+
+      # Add Pull Request Comment
+      - name: Add Pull Request Comment
+        uses: actions/github-script@v7
+        id: pr_comment
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Lint Results
+            * Terraform Version 📎\`${{ inputs.terraform_version }}\`
+            * Working Directory 📂\`${{ inputs.working_directory }}\`
+            * Terraform Format and Style 🖌\`${{ steps.terraform_format.outcome }}\``;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+  plan:
+    name: Terraform Plan
+    runs-on: [self-hosted]
+    continue-on-error: false
+    environment: ${{ inputs.environment }}
+    needs: [lint]
+    concurrency:
+      group: terraform-apply-${{ inputs.config }}-${{ inputs.environment }}
+      cancel-in-progress: false
+
+    env:
+      ARM_TENANT_ID: ${{ inputs.tenant_id }}
+      ARM_SUBSCRIPTION_ID: ${{ inputs.subscription_id }}
+      ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      ARM_USE_OIDC: false
+
+    steps:
+      # Setup Node
+      - name: Setup Node
+        id: node_setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+
+      # Setup Terraform
+      - name: Setup Terraform
+        id: terraform_setup
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+          terraform_wrapper: true
+
+      # Check Out Repository
+      - name: Check Out Repository
+        id: checkout_repository
+        uses: actions/checkout@v4
+
+      # Terraform Init
+      - name: Terraform Init
+        id: terraform_init
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          terraform init -backend-config=../config/${CONFIG}/azurerm.tfbackend
+        env:
+          CONFIG: ${{ inputs.config }}
+
+      # Terraform Validate
+      - name: Terraform Validate
+        id: terraform_validate
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          terraform validate
+
+      # Terraform Plan
+      - name: Terraform Plan
+        id: terraform_plan
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          terraform plan -var-file="../config/${CONFIG}/vars.tfvars" -input=false
+        env:
+          CONFIG: ${{ inputs.config }}
+
+      # Add Pull Request Comment
+      - name: Add Pull Request Comment
+        id: pr_comment
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          PLAN: "terraform\n${{ steps.terraform_plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Validation & Plan Results
+            * Terraform Version 📎\`${{ inputs.terraform_version }}\`
+            * Working Directory 📂\`${{ inputs.working_directory }}\`
+            * Terraform Initialization ⚙️\`${{ steps.terraform_init.outcome }}\`
+            * Terraform Validation 🤖\`${{ steps.terraform_validate.outcome }}\`
+            * Terraform Plan 📖\`${{ steps.terraform_plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+  apply:
+    name: Terraform Apply
+    runs-on: [self-hosted]
+    continue-on-error: false
+    environment: ${{ inputs.environment }}
+    if: github.event_name == 'push' || github.event_name == 'release'
+    needs: [plan]
+    concurrency:
+      group: terraform-apply-${{ inputs.config }}-${{ inputs.environment }}
+      cancel-in-progress: false
+
+    env:
+      ARM_TENANT_ID: ${{ inputs.tenant_id }}
+      ARM_SUBSCRIPTION_ID: ${{ inputs.subscription_id }}
+      ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      ARM_USE_OIDC: false
+
+    steps:
+      # Setup Node
+      - name: Setup Node
+        id: node_setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+
+      # Setup Terraform
+      - name: Setup Terraform
+        id: terraform_setup
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+          terraform_wrapper: true
+
+      # Check Out Repository
+      - name: Check Out Repository
+        id: checkout_repository
+        uses: actions/checkout@v4
+
+      # Terraform Init
+      - name: Terraform Init
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          terraform init -backend-config=../config/${CONFIG}/azurerm.tfbackend
+        env:
+          CONFIG: ${{ inputs.config }}
+
+      # Terraform Apply
+      - name: Terraform Apply
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          terraform apply -var-file="../config/${CONFIG}/vars.tfvars" -auto-approve -input=false
+        env:
+          CONFIG: ${{ inputs.config }}
