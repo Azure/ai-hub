@@ -138,7 +138,7 @@ jobs:
     runs-on: [ubuntu-latest]
     continue-on-error: false
     environment: ${{ inputs.environment }}
-    if: github.event_name == 'push' || github.event_name == 'release'
+    # if: github.event_name == 'push' || github.event_name == 'release'
     needs: [plan]
     concurrency:
       group: terraform-apply-${{ inputs.config }}-${{ inputs.environment }}
