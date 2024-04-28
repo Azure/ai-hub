@@ -25,7 +25,7 @@ resource "azurerm_cognitive_account" "cognitive_service" {
     trimsuffix(replace(var.key_vault_uri, "https://", ""), "/")
   ]
   kind               = var.cognitive_service_kind
-  local_auth_enabled = true
+  local_auth_enabled = false
   network_acls {
     default_action = "Allow"
     ip_rules       = []

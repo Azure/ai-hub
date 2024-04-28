@@ -61,20 +61,6 @@ module "videoindexer" {
   storage_account_id  = module.azure_storage_account.storage_account_id
 }
 
-# module "azure_search_service" {
-#   source = "./modules/aisearch"
-#   location = var.location
-#   resource_group_name = azurerm_resource_group.ingestion.name
-#   search_service_name = local.azure_search_service_name
-#   sku = "standard"
-#   partition_count = var.partition_count
-#   replica_count = var.replica_count
-#   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
-#   cmk_uai_id = module.azure_managed_identity.user_assigned_identity_id
-#   cmk_key_vault_id = module.azure_key_vault.key_vault_id
-#   subnet_id = var.subnet_id
-#   cmk_key_name = module.azure_key_vault.key_vault_cmk_name
-# }
 
 module "data_factory" {
   source = "./modules/datafactory"
@@ -89,12 +75,6 @@ module "data_factory" {
   subnet_id                      = var.subnet_id
 }
 
-# module "document_intelligence" {
-#   source = "./modules/documentintel"
-#   location = var.location
-#   resource_group_name = azurerm_resource_group.ingestion.name
-#   docintel_service_name = local.docintel_service_name
-# }
 
 module "azure_storage_account_functions" {
   source                     = "./modules/storageaccount"
