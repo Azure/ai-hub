@@ -85,8 +85,21 @@ module "data_factory" {
   data_factory_global_parameters = merge(local.data_factory_global_parameters_default, var.data_factory_global_parameters)
   data_factory_github_repo       = local.data_factory_github_repo
   data_factory_azure_devops_repo = local.data_factory_azure_devops_repo
-  log_analytics_workspace_id     = module.azure_log_analytics.log_analytics_id
-  subnet_id                      = var.subnet_id
+  data_factory_published_content = {
+    parameters_file = "${path.root}/modules/datafactory/adfContent/ARMTemplateParametersForFactory.json"
+    template_file   = "${path.root}/modules/datafactory/adfContent/ARMTemplateForFactory.json"
+  }
+  custom_template_variables = {
+    storage_account_id           = module.azure_storage_account.storage_account_id
+    function_shortclip_key       = ""
+    function_shortclip_endpoint  = module.functions.function_shortclip_endpoint
+    function_assisstant_key      = ""
+    function_assisstant_endpoint = module.functions.function_assisstant_endpoint
+    keyvault_endpoint            = module.azure_key_vault.key_vault_uri
+    storage_blob_endpoint        = module.azure_storage_account.storage_account_primary_blob_endpoint
+  }
+  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
+  subnet_id                  = var.subnet_id
 }
 
 module "document_intelligence" {
