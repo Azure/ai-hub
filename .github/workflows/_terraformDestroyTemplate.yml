@@ -43,7 +43,7 @@ on:
 jobs:
   deployment:
     name: Terraform Destroy
-    runs-on: [self-hosted]
+    runs-on: [ubuntu-latest]
     continue-on-error: false
     environment: ${{ inputs.environment }}
     if: github.event_name == 'push' || github.event_name == 'release'

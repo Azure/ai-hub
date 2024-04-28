@@ -68,7 +68,7 @@ jobs:
 
   plan:
     name: Terraform Plan
-    runs-on: [self-hosted]
+    runs-on: [ubuntu-latest]
     continue-on-error: false
     environment: ${{ inputs.environment }}
     needs: [lint]
@@ -131,7 +131,7 @@ jobs:
 
   apply:
     name: Terraform Apply
-    runs-on: [self-hosted]
+    runs-on: [ubuntu-latest]
     continue-on-error: false
     environment: ${{ inputs.environment }}
     if: github.event_name == 'push' || github.event_name == 'release'
