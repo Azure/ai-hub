@@ -1,5 +1,6 @@
 module "azure_open_ai" {
-  source                     = "./modules/aoai"
+  source = "./modules/aoai"
+
   location                   = local.location
   resource_group_name        = azurerm_resource_group.ingestion.name
   cognitive_service_name     = local.azure_open_ai_name
@@ -14,7 +15,8 @@ module "azure_open_ai" {
 }
 
 module "azure_storage_account" {
-  source                     = "./modules/storageaccount"
+  source = "./modules/storageaccount"
+
   location                   = local.location
   storage_account_name       = local.storage_account_name
   resource_group_name        = azurerm_resource_group.ingestion.name
@@ -27,7 +29,8 @@ module "azure_storage_account" {
 }
 
 module "azure_log_analytics" {
-  source                            = "./modules/loganalytics"
+  source = "./modules/loganalytics"
+
   location                          = local.location
   log_analytics_name                = local.log_analytics_name
   log_analytics_sku                 = var.log_analytics_sku
@@ -36,7 +39,8 @@ module "azure_log_analytics" {
 }
 
 module "azure_key_vault" {
-  source                     = "./modules/keyvault"
+  source = "./modules/keyvault"
+
   key_vault_name             = local.azure_key_vault_name
   location                   = local.location
   resource_group_name        = azurerm_resource_group.ingestion.name
@@ -47,14 +51,16 @@ module "azure_key_vault" {
 }
 
 module "azure_managed_identity" {
-  source                      = "./modules/managedidentity"
+  source = "./modules/managedidentity"
+
   location                    = local.location
   user_assigned_identity_name = local.azure_managed_identity_name
   resource_group_name         = azurerm_resource_group.ingestion.name
 }
 
 module "videoindexer" {
-  source             = "./modules/videoindexer"
+  source = "./modules/videoindexer"
+
   videoindexer_name  = local.videoindexer_name
   resource_group_id  = azurerm_resource_group.ingestion.id
   location           = local.location
@@ -90,7 +96,8 @@ module "data_factory" {
 
 
 module "azure_storage_account_functions" {
-  source                     = "./modules/storageaccount"
+  source = "./modules/storageaccount"
+
   location                   = local.location
   storage_account_name       = local.function_storage_account_name
   resource_group_name        = azurerm_resource_group.ingestion.name
@@ -103,7 +110,8 @@ module "azure_storage_account_functions" {
 }
 
 module "functions" {
-  source                           = "./modules/functions"
+  source = "./modules/functions"
+
   location                         = local.location
   resource_group_name              = azurerm_resource_group.ingestion.name
   function_service_plan_name       = local.function_service_plan_name
