@@ -39,7 +39,7 @@ variable "storage_account_container_names" {
   default     = []
   validation {
     condition = alltrue([
-      length([for storage_account_container_name in var.storage_account_container_names : storage_account_container_name if storage_account_container_name != "" || length(storage_account_container_name) < 2]) <= 0
+      length([for storage_account_container_name in var.storage_account_container_names : storage_account_container_name if length(storage_account_container_name) < 2]) <= 0
     ])
     error_message = "Please specify a valid name."
   }
@@ -52,7 +52,7 @@ variable "storage_account_share_names" {
   default     = []
   validation {
     condition = alltrue([
-      length([for storage_account_share_name in var.storage_account_share_names : storage_account_share_name if storage_account_share_name != "" || length(storage_account_share_name) < 2]) <= 0
+      length([for storage_account_share_name in var.storage_account_share_names : storage_account_share_name if length(storage_account_share_name) < 2]) <= 0
     ])
     error_message = "Please specify a valid name."
   }
