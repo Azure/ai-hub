@@ -1,7 +1,7 @@
 resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_log_analytics" {
   name                       = "logAnalytics"
-  target_resource_id         = azurerm_log_analytics_workspace.log_analytics.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics.id
+  target_resource_id         = azurerm_log_analytics_workspace.log_analytics_workspace.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace.id
 
   dynamic "enabled_log" {
     iterator = entry
