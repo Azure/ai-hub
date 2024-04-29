@@ -51,7 +51,7 @@ variable "key_vault_keys" {
   default   = {}
   validation {
     condition = alltrue([
-      length([for curve in values(var.key_vault_keys)[*].curve : curve if !contains(["P-256", "P-256K", "P-384", "P-521"], curve)]) <= 0,
+      # length([for curve in values(var.key_vault_keys)[*].curve : curve if !contains(["P-256", "P-256K", "P-384", "P-521"], curve)]) <= 0,
       length([for key_type in values(var.key_vault_keys)[*].key_type : key_type if !contains(["EC", "EC-HSM", "RSA", "RSA-HSM"], key_type)]) <= 0,
     ])
     error_message = "Please specify a valid language extension."
