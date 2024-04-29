@@ -82,7 +82,7 @@ module "data_factory" {
   }
   custom_template_variables = {
     storage_account_id           = module.azure_storage_account.storage_account_id
-    function_shortclip_key       = module.functions.function_assisstant_shortclip
+    function_shortclip_key       = module.functions.function_shortclip_key
     function_shortclip_endpoint  = module.functions.function_shortclip_endpoint
     function_assisstant_key      = module.functions.function_assisstant_key
     function_assisstant_endpoint = module.functions.function_assisstant_endpoint
