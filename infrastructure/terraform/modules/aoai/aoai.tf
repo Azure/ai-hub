@@ -6,7 +6,7 @@ resource "azurerm_cognitive_account" "cognitive_service" {
     type = "SystemAssigned"
   }
 
-  custom_subdomain_name = var.cognitive_service_name
+  # custom_subdomain_name = var.cognitive_service_name
   # customer_managed_key {
   #   key_vault_key_id   = var.customer_managed_key.key_vault_key_versionless_id
   #   identity_client_id = var.customer_managed_key.user_assigned_identity_client_id
