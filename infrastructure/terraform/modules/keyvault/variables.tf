@@ -42,7 +42,7 @@ variable "key_vault_sku_name" {
 variable "key_vault_keys" {
   description = "Specifies the key vault keys that should be deployed."
   type = map(object({
-    curve    = optional(string, "P-256")
+    # curve    = optional(string, "P-256")
     key_size = optional(number, 2048)
     key_type = optional(string, "RSA")
   }))

@@ -4,7 +4,7 @@ resource "azurerm_key_vault_key" "key_vault_key" {
   name         = each.key
   key_vault_id = azurerm_key_vault.key_vault.id
 
-  curve = each.value.curve
+  # curve = each.value.curve
   key_opts = [
     "decrypt",
     "encrypt",
