@@ -1,5 +1,5 @@
 data "azurerm_function_app_host_keys" "function_app_host_keys_shortclip" {
-  name = azurerm_linux_function_app.shortclip_function.name
+  name                = azurerm_linux_function_app.shortclip_function.name
   resource_group_name = var.resource_group_name
 
   depends_on = [
@@ -8,7 +8,7 @@ data "azurerm_function_app_host_keys" "function_app_host_keys_shortclip" {
 }
 
 data "azurerm_function_app_host_keys" "function_app_host_keys_assistant" {
-  name = azurerm_linux_function_app.assistant_function.name
+  name                = azurerm_linux_function_app.assistant_function.name
   resource_group_name = var.resource_group_name
 
   depends_on = [
