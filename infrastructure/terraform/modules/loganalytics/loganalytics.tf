@@ -1,44 +1,15 @@
-# Create Log Analytics workspace
-
-resource "azurerm_log_analytics_workspace" "log_analytics" {
+resource "azurerm_log_analytics_workspace" "log_analytics_workspace" {
   name                = var.log_analytics_name
   location            = var.location
-  resource_group_name = var.log_analytics_resource_group_name
-  sku                 = var.log_analytics_sku
-  retention_in_days   = var.log_analytics_retention_in_days
-}
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
 
-data "azurerm_monitor_diagnostic_categories" "diagnostic_categories_log_analytics" {
-  resource_id = azurerm_log_analytics_workspace.log_analytics.id
-}
-
-resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_log_analytics" {
-  name                       = "logAnalytics"
-  target_resource_id         = azurerm_log_analytics_workspace.log_analytics.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics.id
-
-  dynamic "enabled_log" {
-    iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.diagnostic_categories_log_analytics.log_category_groups
-    content {
-      category_group = entry.value
-    }
-  }
-
-  dynamic "metric" {
-    iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.diagnostic_categories_log_analytics.metrics
-    content {
-      category = entry.value
-      enabled  = true
-    }
-  }
-}
-
-resource "azurerm_application_insights" "application_insights" {
-  name                = var.log_analytics_name
-  location            = var.location
-  resource_group_name = var.log_analytics_resource_group_name
-  workspace_id        = azurerm_log_analytics_workspace.log_analytics.id
-  application_type    = "web"
+  allow_resource_only_permissions         = false
+  cmk_for_query_forced                    = false
+  immediate_data_purge_on_30_days_enabled = false
+  internet_ingestion_enabled              = true
+  internet_query_enabled                  = true
+  local_authentication_disabled           = false
+  retention_in_days                       = var.log_analytics_retention_in_days
+  sku                                     = "PerGB2018"
 }

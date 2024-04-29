@@ -125,12 +125,12 @@ variable "app_id" {
   }
 }
 
-variable "azapi_resource_videoindexer_id" {
+variable "videoindexer_account_id" {
   description = "Specifies the videoindexer id"
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.azapi_resource_videoindexer_id) >= 2
+    condition     = length(var.videoindexer_account_id) >= 2
     error_message = "Please specify a valid name."
   }
 }

@@ -1,3 +1,4 @@
+# General variables
 variable "location" {
   description = "Specifies the location for all Azure resources."
   type        = string
@@ -12,6 +13,13 @@ variable "resource_group_name" {
     condition     = length(var.resource_group_name) >= 2
     error_message = "Please specify a valid name."
   }
+}
+
+variable "tags" {
+  description = "Specifies the tags that you want to apply to all resources."
+  type        = map(string)
+  sensitive   = false
+  default     = {}
 }
 
 variable "user_assigned_identity_name" {
