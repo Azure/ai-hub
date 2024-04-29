@@ -2,10 +2,10 @@ provider "azurerm" {
   environment     = "public"
     features {
       key_vault {
-          purge_soft_delete_on_destroy               = false
-          purge_soft_deleted_certificates_on_destroy = false
-          purge_soft_deleted_keys_on_destroy         = false
-          purge_soft_deleted_secrets_on_destroy      = false
+          purge_soft_delete_on_destroy               = true
+          purge_soft_deleted_certificates_on_destroy = true
+          purge_soft_deleted_keys_on_destroy         = true
+          purge_soft_deleted_secrets_on_destroy      = true
           recover_soft_deleted_key_vaults            = true
           recover_soft_deleted_certificates          = true
           recover_soft_deleted_keys                  = true
@@ -21,7 +21,7 @@ data "azurerm_subscription" "current" {
 }
 
 terraform {
-  required_version = ">=0.12"
+  required_version = ">=0.14"
 
   required_providers {
     azurerm = {
@@ -30,7 +30,7 @@ terraform {
     }
     azapi = {
       source  = "azure/azapi"
-      version = "1.12.1"
+      version = "1.13.0"
     }
   }
 }
@@ -40,13 +40,13 @@ resource "azurerm_resource_group" "ingestion" {
   location = local.location
 }
 
-resource "azurerm_resource_group" "observability" {
-  name     = local.observability_rg
-  location = local.location
-}
+# resource "azurerm_resource_group" "observability" {
+#   name     = local.observability_rg
+#   location = local.location
+# }
 
-resource "azurerm_resource_group" "processing" {
-  name     = local.processing_rg
-  location = local.location
-}
+# resource "azurerm_resource_group" "processing" {
+#   name     = local.processing_rg
+#   location = local.location
+# }
 
