@@ -41,6 +41,16 @@ module "azure_log_analytics" {
   log_analytics_retention_in_days = 30
 }
 
+module "application_insights" {
+  source = "./modules/applicationinsights"
+
+  location                   = local.location
+  resource_group_name        = azurerm_resource_group.observability.name
+  tags                       = var.tags
+  application_insights_name  = local.application_insights_name
+  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
+}
+
 module "azure_key_vault" {
   source = "./modules/keyvault"
 
@@ -134,7 +144,7 @@ module "functions" {
   cognitive_service_id             = module.azure_open_ai.azurerm_cognitive_account_service_id
   cognitive_service_endpoint       = module.azure_open_ai.azurerm_cognitive_account_endpoint
   log_analytics_workspace_id       = module.azure_log_analytics.log_analytics_id
-  instrumentation_key              = module.azure_log_analytics.application_insights_instrumentation_key
+  instrumentation_key              = module.application_insights.application_insights_instrumentation_key
   app_id                           = module.azure_log_analytics.app_id
   videoindexer_account_id          = module.videoindexer.videoindexer_account_id
 }

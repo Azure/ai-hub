@@ -11,6 +11,7 @@ locals {
   storage_account_name                  = lower(substr(local.cleaned_storage_account_name, 0, min(length(local.cleaned_storage_account_name), 24)))
   azure_managed_identity_name           = "${local.prefix}-uai"
   log_analytics_name                    = "${local.prefix}-law"
+  application_insights_name             = "${local.prefix}-appi"
   azure_key_vault_name                  = "${local.prefix}-kv"
   videoindexer_name                     = "${local.prefix}-vi"
   azure_open_ai_name                    = "${local.prefix}-aoai"
