@@ -40,7 +40,7 @@ terraform {
     storage_account_name = "<provided-via-config>"
     container_name       = "<provided-via-config>"
     key                  = "<provided-via-config>"
-    use_azuread_auth     = true
+    # use_azuread_auth     = true
   }
 }
 

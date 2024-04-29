@@ -1,0 +1,6 @@
+environment          = "public"
+subscription_id      = "861380f2-9c49-47fe-9f42-b44759424e66"
+resource_group_name  = "cloud-shell-storage-westeurope"
+storage_account_name = "csb100320031d9af828"
+container_name       = "tfstates"
+key                  = "terraform.uc1.tfstate"
