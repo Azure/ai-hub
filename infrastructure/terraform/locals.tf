@@ -3,11 +3,19 @@ locals {
   prefix   = "${lower(var.prefix)}-${var.environment}"
   location = var.location
 
+  # Resource names - short clip
+  shortclip_rg                           = "${local.prefix}-shrtclp"
+  storage_account_name_shortclip_cleaned = replace("${local.prefix}-shrtclp-stg}", "/[^a-z0-9]/", "")
+  storage_account_name_shortclip         = lower(substr(local.storage_account_name_shortclip_cleaned, 0, min(length(local.storage_account_name_shortclip_cleaned), 24)))
+  key_vault_name_shortclip               = "${local.prefix}-shrtclp-kv"
+  application_insights_name_shortclip    = "${local.prefix}-shrtclp-appi"
+  function_name_shortclip                = "${local.function_name}-shrtclp-fnctn"
+  user_assigned_identity_name_shortclip  = "${local.prefix}-shrtclp-uai"
+
   # Resource names
   ingestion_rg                          = "${local.prefix}-ingestion"
   observability_rg                      = "${local.prefix}-observability"
   processing_rg                         = "${local.prefix}-processing"
-  shortclip_rg                          = "${local.prefix}-shortclip"
   assisstant_rg                         = "${local.prefix}-assisstant"
   cleaned_storage_account_name          = replace("${local.prefix}-stg}", "/[^a-z0-9]/", "")
   storage_account_name                  = lower(substr(local.cleaned_storage_account_name, 0, min(length(local.cleaned_storage_account_name), 24)))
@@ -27,6 +35,9 @@ locals {
   azure_function_name_helloworld        = "${local.function_name}-helloworld"
   azure_function_name_shortclip         = "${local.function_name}-shortclip"
   azure_function_name_assistant         = "${local.function_name}-assistant"
+
+  # Storage container
+  container_name_shortclip = "shortclip-results"
 
   # Network
   subnet = var.subnet_id == "" ? {} : {
