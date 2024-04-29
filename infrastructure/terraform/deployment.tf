@@ -25,9 +25,6 @@ module "azure_storage_account" {
   tags                 = var.tags
   storage_account_name = local.storage_account_name
   storage_account_container_names = [
-    "videosin",
-    "videosout",
-    "videossassistant",
     local.container_name_shortclip,
   ]
   storage_account_share_names               = []
