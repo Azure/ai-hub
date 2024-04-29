@@ -12,7 +12,7 @@ output "key_vault_uri" {
 
 output "key_vault_key_ids" {
   value = {
-    for key, value in var.key_vault_keys : key => azurerm_key_vault_key.key_vault_key[key].id
+    for key, value in azurerm_key_vault_key.key_vault_key : key => value.id
   }
   description = "Specifies the id of the key vault keys."
   sensitive   = false
@@ -20,7 +20,7 @@ output "key_vault_key_ids" {
 
 output "key_vault_key_versionless_ids" {
   value = {
-    for key, value in var.key_vault_keys : key => azurerm_key_vault_key.key_vault_key[key].resource_versionless_id
+    for key, value in azurerm_key_vault_key.key_vault_key : key => value.resource_versionless_id
   }
   description = "Specifies the versionless id of the key vault keys."
   sensitive   = false
