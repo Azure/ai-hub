@@ -1,8 +1,9 @@
 locals {
-
+  # General
   prefix   = "${lower(var.prefix)}-${var.environment}"
   location = var.location
 
+  # Resource names
   ingestion_rg     = "${local.prefix}-${var.ingestion_rg_suffix}"
   observability_rg = "${local.prefix}-${var.observability_rg_suffix}"
   processing_rg    = "${local.prefix}-${var.processing_rg_suffix}"
@@ -27,12 +28,14 @@ locals {
   azure_function_name_shortclip         = "${local.function_name}-${var.azure_function_shortclip_service_name_suffix}"
   azure_function_name_assistant         = "${local.function_name}-${var.azure_function_assistant_service_name_suffix}"
 
+  # Network
   subnet = var.subnet_id == "" ? {} : {
     resource_group_name  = split("/", var.subnet_id)[4]
     virtual_network_name = split("/", var.subnet_id)[8]
     name                 = split("/", var.subnet_id)[10]
   }
 
+  # Data Factory 
   data_factory_global_parameters_default = {
     openai_api_base = {
       type  = "String"
@@ -43,12 +46,6 @@ locals {
       value = module.azure_storage_account.storage_account_primary_blob_endpoint
     }
   }
-  data_factory_github_repo = {
-    account_name    = "esbran"
-    branch_name     = "main"
-    git_url         = "https://github.com"
-    repository_name = "openaidatafactory"
-    root_folder     = "/"
-  }
+  data_factory_github_repo       = {}
   data_factory_azure_devops_repo = {}
 }
