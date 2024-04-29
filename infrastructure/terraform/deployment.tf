@@ -67,7 +67,6 @@ module "videoindexer" {
   storage_account_id = module.azure_storage_account.storage_account_id
 }
 
-
 module "data_factory" {
   source = "./modules/datafactory"
 
@@ -93,7 +92,6 @@ module "data_factory" {
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
   subnet_id                  = var.subnet_id
 }
-
 
 module "azure_storage_account_functions" {
   source = "./modules/storageaccount"
