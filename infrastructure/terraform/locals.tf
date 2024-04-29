@@ -7,6 +7,8 @@ locals {
   ingestion_rg                          = "${local.prefix}-ingestion"
   observability_rg                      = "${local.prefix}-observability"
   processing_rg                         = "${local.prefix}-processing"
+  shortclip_rg                          = "${local.prefix}-shortclip"
+  assisstant_rg                         = "${local.prefix}-assisstant"
   cleaned_storage_account_name          = replace("${local.prefix}-stg}", "/[^a-z0-9]/", "")
   storage_account_name                  = lower(substr(local.cleaned_storage_account_name, 0, min(length(local.cleaned_storage_account_name), 24)))
   azure_managed_identity_name           = "${local.prefix}-uai"
