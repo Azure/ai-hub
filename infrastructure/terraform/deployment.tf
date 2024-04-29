@@ -20,11 +20,16 @@ module "azure_open_ai" {
 module "azure_storage_account" {
   source = "./modules/storageaccount"
 
-  location                                  = local.location
-  resource_group_name                       = azurerm_resource_group.ingestion.name
-  tags                                      = var.tags
-  storage_account_name                      = local.storage_account_name
-  storage_account_container_names           = []
+  location             = local.location
+  resource_group_name  = azurerm_resource_group.ingestion.name
+  tags                 = var.tags
+  storage_account_name = local.storage_account_name
+  storage_account_container_names = [
+    "videosin",
+    "videosout",
+    "videossassistant",
+  ]
+  storage_account_share_names               = []
   storage_account_shared_access_key_enabled = false
   log_analytics_workspace_id                = module.azure_log_analytics.log_analytics_id
   subnet_id                                 = var.subnet_id
@@ -122,6 +127,7 @@ module "azure_storage_account_functions" {
   tags                                      = var.tags
   storage_account_name                      = local.function_storage_account_name
   storage_account_container_names           = []
+  storage_account_share_names               = []
   storage_account_shared_access_key_enabled = true
   log_analytics_workspace_id                = module.azure_log_analytics.log_analytics_id
   subnet_id                                 = var.subnet_id

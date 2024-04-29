@@ -69,6 +69,17 @@ resource "azurerm_storage_container" "storage_container" {
   ]
 }
 
+resource "azurerm_storage_share" "storage_share" {
+  for_each = toset(var.storage_account_share_names)
+
+  name                 = each.key
+  storage_account_name = azurerm_storage_account.storage.name
+
+  access_tier      = "TransactionOptimized"
+  enabled_protocol = "SMB"
+  quota            = 102400
+}
+
 # resource "azurerm_storage_management_policy" "storage_management_policy" {
 #   storage_account_id = azurerm_storage_account.storage.id
 

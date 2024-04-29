@@ -13,7 +13,7 @@ resource "azurerm_cognitive_account" "cognitive_service" {
   # }
   dynamic_throttling_enabled = false
   fqdns = [
-    "${split(var.customer_managed_key.key_vault_id, "/")[-1]}.vault.azure.net",
+    "${reverse(split(var.customer_managed_key.key_vault_id, "/"))[0]}.vault.azure.net",
   ]
   kind               = var.cognitive_service_kind
   local_auth_enabled = false

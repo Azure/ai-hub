@@ -45,6 +45,19 @@ variable "storage_account_container_names" {
   }
 }
 
+variable "storage_account_share_names" {
+  description = "Specifies the share names of the storage account."
+  type        = list(string)
+  sensitive   = false
+  default     = []
+  validation {
+    condition = alltrue([
+      length([for storage_account_share_name in var.storage_account_share_names : storage_account_share_name if storage_account_share_name != "" || length(storage_account_share_name) < 2]) <= 0
+    ])
+    error_message = "Please specify a valid name."
+  }
+}
+
 variable "storage_account_shared_access_key_enabled" {
   description = "Specifies the key auth setting of the storage account."
   type        = bool
