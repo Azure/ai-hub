@@ -10,6 +10,6 @@ resource "azurerm_role_assignment" "data_factory_role_assignment_open_ai_" {
   description          = "Role Assignment for Data Factory to interact with Open AI models"
   scope                = module.azure_open_ai.cognitive_account_id
   role_definition_name = "Cognitive Services OpenAI User"
-  principal_id         = module.azure.data_factory_principal_id
+  principal_id         = module.data_factory.data_factory_principal_id
   principal_type       = "ServicePrincipal"
 }
