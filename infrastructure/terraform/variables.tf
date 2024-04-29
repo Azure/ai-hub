@@ -32,7 +32,6 @@ variable "tags" {
 }
 
 # Service variables
-
 variable "function_sku" {
   description = "Specifies the SKU for the function app."
   type        = string
