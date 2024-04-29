@@ -15,3 +15,9 @@ output "linux_function_app_primary_key" {
   sensitive   = true
   value       = data.azurerm_function_app_host_keys.function_app_host_keys_shortclip.primary_key
 }
+
+output "linux_function_app_principal_id" {
+  description = "Specifies the principal id of the function."
+  sensitive   = false
+  value       = azurerm_linux_function_app.linux_function_app.identity[0].principal_id
+}
