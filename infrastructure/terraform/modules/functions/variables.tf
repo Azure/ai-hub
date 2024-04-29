@@ -8,6 +8,16 @@ variable "log_analytics_workspace_id" {
   }
 }
 
+variable "helloworld_function_service_name" {
+  description = "Specifies the name of the data factory."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.helloworld_function_service_name) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
 variable "assistant_function_service_name" {
   description = "Specifies the name of the data factory."
   type        = string
@@ -95,17 +105,6 @@ variable "shortclip_function_service_name" {
     error_message = "Please specify a valid name."
   }
 }
-
-variable "cognitive_service_id" {
-  description = "cognitive service resouceID."
-  type        = string
-  sensitive   = false
-  validation {
-    condition     = length(var.cognitive_service_id) >= 2
-    error_message = "Please specify a valid name."
-  }
-}
-
 variable "instrumentation_key" {
   description = "Specifies the instrumentation key of the log analytics workspace."
   type        = string
@@ -132,6 +131,26 @@ variable "azapi_resource_videoindexer_id" {
   sensitive   = false
   validation {
     condition     = length(var.azapi_resource_videoindexer_id) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "cognitive_service_id" {
+  description = "cognitive service resouceID."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.cognitive_service_id) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "cognitive_service_endpoint" {
+  description = "Specifies endpoint of the cognitive service."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.cognitive_service_endpoint) >= 2
     error_message = "Please specify a valid name."
   }
 }

@@ -200,6 +200,17 @@ variable "function_name_suffix" {
   }
 }
 
+variable "azure_function_helloworld_service_name_suffix" {
+  description = "Specifies the name of the function."
+  type        = string
+  sensitive   = false
+  default = "helloworld"
+  validation {
+    condition     = length(var.azure_function_helloworld_service_name_suffix) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
 variable "azure_function_assistant_service_name_suffix" {
   description = "Specifies the name of the function."
   type        = string

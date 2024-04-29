@@ -16,17 +16,17 @@ resource "azurerm_key_vault" "key_vault" {
     virtual_network_subnet_ids = []
   }
   public_network_access_enabled = true
-  purge_protection_enabled      = true
   sku_name                      = var.key_vault_sku_name
   soft_delete_retention_days    = 7
   tenant_id                     = data.azurerm_client_config.current.tenant_id
 }
 
 resource "azapi_resource" "key_vault_key" {
-  type      = "Microsoft.KeyVault/vaults/keys@2022-11-01"
-  name      = "cmk"
-  parent_id = azurerm_key_vault.key_vault.id
-
+  type                      = "Microsoft.KeyVault/vaults/keys@2022-11-01"
+  name                      = "cmk"
+  parent_id                 = azurerm_key_vault.key_vault.id
+  location                  = var.location
+  schema_validation_enabled = false
   body = jsonencode({
     properties = {
       attributes = {
@@ -64,10 +64,11 @@ resource "azapi_resource" "key_vault_key" {
 }
 
 resource "azapi_resource" "key_vault_key_storage" {
-  type      = "Microsoft.KeyVault/vaults/keys@2022-11-01"
-  name      = "cmkStorage"
-  parent_id = azurerm_key_vault.key_vault.id
-
+  type                      = "Microsoft.KeyVault/vaults/keys@2022-11-01"
+  name                      = "cmkStorage"
+  parent_id                 = azurerm_key_vault.key_vault.id
+  location                  = var.location
+  schema_validation_enabled = false
   body = jsonencode({
     properties = {
       attributes = {
@@ -97,7 +98,15 @@ resource "azapi_resource" "key_vault_key_storage" {
             trigger = {
               timeAfterCreate = "P12M"
             }
-          }
+          },
+          {
+            action = {
+              type = "Notify"
+            }
+            trigger = {
+              timeBeforeExpiry = "P30D"
+            }
+          },
         ]
       }
     }

@@ -94,7 +94,7 @@ resource "azapi_resource" "storage_containers" {
   type      = "Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01"
   name      = "default"
   parent_id = "${azurerm_storage_account.storage.id}/blobServices/default"
-
+  schema_validation_enabled = false
   body = jsonencode({
     properties = {
       publicAccess = "None"

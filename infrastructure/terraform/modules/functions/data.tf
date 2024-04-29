@@ -1,22 +1,22 @@
-data "archive_file" "function" {
+data "archive_file" "helloworld" {
   type        = "zip"
   excludes    = split("\n", file("${path.module}/fastapi-on-azure-functions/.funcignore"))
   source_dir  = "${path.module}/fastapi-on-azure-functions"
-  output_path = "${path.module}/fastapi.zip"
+  output_path = "${path.module}/${format("helloworld-%s.zip", formatdate("YYYY-MM-DD'-'hh_mm_ss", timestamp()))}"
 }
 
-data "archive_file" "rag_video_tagging" {
+data "archive_file" "shortclip" {
   type        = "zip"
   excludes    = split("\n", file("${path.module}/rag-video-tagging/code/durablefunction/.funcignore"))
   source_dir  = "${path.module}/rag-video-tagging/code/durablefunction"
-  output_path = "${path.module}/rag.zip"
+  output_path = "${path.module}/${format("shortlcip-%s.zip", formatdate("YYYY-MM-DD'-'hh_mm_ss", timestamp()))}"
 }
 
 data "archive_file" "assistant" {
   type        = "zip"
   excludes    = split("\n", file("${path.module}/functionassistant/.funcignore"))
   source_dir  = "${path.module}/functionassistant"
-  output_path = "${path.module}/functionassistant1.zip"
+  output_path = "${path.module}/${format("assistant-%s.zip", formatdate("YYYY-MM-DD'-'hh_mm_ss", timestamp()))}"
 }
 
 data "azurerm_storage_account" "functions_storage" {
@@ -29,13 +29,7 @@ data "azurerm_storage_account" "video_storage" {
   resource_group_name = lower(element(split("/", var.video_storage_account_id), 4))
 }
 
-data "azurerm_cognitive_account" "cognitive_service" {
-  name                = lower(element(split("/", var.cognitive_service_id), 8))
-  resource_group_name = lower(element(split("/", var.cognitive_service_id), 4))
+data "azurerm_user_assigned_identity" "user_assigned_identity" {
+  name                = lower(element(split("/", var.user_assigned_identity_id), 8))
+  resource_group_name = lower(element(split("/", var.user_assigned_identity_id), 4))
 }
-
-# data "azapi_resource" "video_indexer" {
-#   type                = "Microsoft.VideoIndexer/accounts@2024-01-01"
-#   id = var.azapi_resource_videoindexer_id
-#   # name                = lower(element(split("/", var.azapi_resource_videoindexer_id), 8))
-# }
