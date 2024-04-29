@@ -5,5 +5,5 @@ output "videoindexer_id" {
 
 output "videoindexer_account_id" {
   description = "Specifies the account id of video indexer"
-  value       = azapi_resource.videoindexer.output.properties.accountId
+  value       = jsondecode(azapi_resource.videoindexer.output).properties.accountId
 }
