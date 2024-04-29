@@ -103,21 +103,21 @@ module "azure_storage_account_functions" {
 }
 
 module "functions" {
-  source = "./modules/functions"
-  location = local.location
-  resource_group_name = azurerm_resource_group.ingestion.name
-  function_service_plan_name = local.function_service_plan_name
-  functions_storage_account_id = module.azure_storage_account_functions.storage_account_id
-  video_storage_account_id = module.azure_storage_account.storage_account_id
-  function_sku = var.function_sku
-  helloworld_function_service_name =  local.azure_function_name_helloworld
-  assistant_function_service_name = local.azure_function_name_assistant
-  shortclip_function_service_name = local.azure_function_name_shortclip
-  user_assigned_identity_id = module.azure_managed_identity.user_assigned_identity_id
-  cognitive_service_id = module.azure_open_ai.azurerm_cognitive_account_service_id
-  cognitive_service_endpoint = module.azure_open_ai.azurerm_cognitive_account_endpoint
-  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
-  instrumentation_key = module.azure_log_analytics.instrumentation_key
-  app_id = module.azure_log_analytics.app_id
-  azapi_resource_videoindexer_id =  module.videoindexer.azapi_resource_videoindexer_id
+  source                           = "./modules/functions"
+  location                         = local.location
+  resource_group_name              = azurerm_resource_group.ingestion.name
+  function_service_plan_name       = local.function_service_plan_name
+  functions_storage_account_id     = module.azure_storage_account_functions.storage_account_id
+  video_storage_account_id         = module.azure_storage_account.storage_account_id
+  function_sku                     = var.function_sku
+  helloworld_function_service_name = local.azure_function_name_helloworld
+  assistant_function_service_name  = local.azure_function_name_assistant
+  shortclip_function_service_name  = local.azure_function_name_shortclip
+  user_assigned_identity_id        = module.azure_managed_identity.user_assigned_identity_id
+  cognitive_service_id             = module.azure_open_ai.azurerm_cognitive_account_service_id
+  cognitive_service_endpoint       = module.azure_open_ai.azurerm_cognitive_account_endpoint
+  log_analytics_workspace_id       = module.azure_log_analytics.log_analytics_id
+  instrumentation_key              = module.azure_log_analytics.instrumentation_key
+  app_id                           = module.azure_log_analytics.app_id
+  azapi_resource_videoindexer_id   = module.videoindexer.azapi_resource_videoindexer_id
 }

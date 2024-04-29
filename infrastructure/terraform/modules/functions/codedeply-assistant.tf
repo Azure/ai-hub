@@ -17,7 +17,7 @@
 # }
 
 resource "azurerm_resource_group_template_deployment" "asssistant_function_code_deploy_nested_deployment" {
-  name                =  "code-deployment-${azurerm_storage_blob.assistant_function_blob.name}"
+  name                = "code-deployment-${azurerm_storage_blob.assistant_function_blob.name}"
   resource_group_name = var.resource_group_name
   deployment_mode     = "Incremental"
 
