@@ -11,7 +11,7 @@ module "azure_open_ai" {
   subnet_id                  = var.subnet_id
   customer_managed_key = {
     key_vault_id                     = module.azure_key_vault.key_vault_id
-    key_vault_key_versionless_id     = module.azure_key_vault.key_vault_key_versionless_ids["azure_open_ai"]
+    key_vault_key_versionless_id     = module.azure_key_vault.key_vault_key_versionless_ids["azure-open-ai"]
     user_assigned_identity_id        = module.azure_managed_identity.user_assigned_identity_id
     user_assigned_identity_client_id = module.azure_managed_identity.user_assigned_identity_client_id
   }
@@ -60,8 +60,8 @@ module "azure_key_vault" {
   key_vault_name      = local.azure_key_vault_name
   key_vault_sku_name  = "premium"
   key_vault_keys = {
-    azure_open_ai         = {}
-    azure_storage_account = {}
+    azure-open-ai         = {}
+    azure-storage-account = {}
   }
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
   subnet_id                  = var.subnet_id
