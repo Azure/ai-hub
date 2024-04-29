@@ -9,7 +9,7 @@ resource "azurerm_storage_account" "storage" {
   name                = var.storage_account_name
   location            = var.location
   resource_group_name = var.resource_group_name
-identity {
+  identity {
     type = "SystemAssigned"
   }
 
@@ -91,9 +91,9 @@ resource "azurerm_storage_management_policy" "storage_management_policy" {
 }
 
 resource "azapi_resource" "storage_containers" {
-  type      = "Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01"
-  name      = "default"
-  parent_id = "${azurerm_storage_account.storage.id}/blobServices/default"
+  type                      = "Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01"
+  name                      = "default"
+  parent_id                 = "${azurerm_storage_account.storage.id}/blobServices/default"
   schema_validation_enabled = false
   body = jsonencode({
     properties = {

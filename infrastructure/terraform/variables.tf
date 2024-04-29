@@ -57,9 +57,9 @@ variable "processing_rg_suffix" {
 }
 
 variable "subnet_id" {
-  type        = string
-  sensitive   = false
-  default = "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/swedencentral-vnet/providers/Microsoft.Network/virtualNetworks/swedencentral-vnet/subnets/default"
+  type      = string
+  sensitive = false
+  default   = "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/swedencentral-vnet/providers/Microsoft.Network/virtualNetworks/swedencentral-vnet/subnets/default"
 }
 
 variable "log_analytics_sku" {
@@ -92,7 +92,7 @@ variable "log_analytics_name_suffix" {
   type        = string
   sensitive   = false
   default     = "law"
-    validation {
+  validation {
     condition     = length(var.log_analytics_name_suffix) >= 2
     error_message = "Please specify a valid name."
   }
@@ -193,7 +193,7 @@ variable "function_name_suffix" {
   description = "Specifies the name of the function."
   type        = string
   sensitive   = false
-  default = "func"
+  default     = "func"
   validation {
     condition     = length(var.function_name_suffix) >= 2
     error_message = "Please specify a valid name."
@@ -204,7 +204,7 @@ variable "azure_function_helloworld_service_name_suffix" {
   description = "Specifies the name of the function."
   type        = string
   sensitive   = false
-  default = "helloworld"
+  default     = "helloworld"
   validation {
     condition     = length(var.azure_function_helloworld_service_name_suffix) >= 2
     error_message = "Please specify a valid name."
@@ -215,7 +215,7 @@ variable "azure_function_assistant_service_name_suffix" {
   description = "Specifies the name of the function."
   type        = string
   sensitive   = false
-  default = "assistant"
+  default     = "assistant"
   validation {
     condition     = length(var.azure_function_assistant_service_name_suffix) >= 2
     error_message = "Please specify a valid name."
@@ -226,7 +226,7 @@ variable "azure_function_shortclip_service_name_suffix" {
   description = "Specifies the name of the function."
   type        = string
   sensitive   = false
-  default = "shortclip"
+  default     = "shortclip"
   validation {
     condition     = length(var.azure_function_shortclip_service_name_suffix) >= 2
     error_message = "Please specify a valid name."
@@ -237,7 +237,7 @@ variable "function_sku" {
   description = "Specifies the SKU for the function app."
   type        = string
   sensitive   = false
-  default     = "EP1" 
+  default     = "EP1"
 }
 
 variable "data_factory_global_parameters" {
@@ -248,37 +248,37 @@ variable "data_factory_global_parameters" {
   }))
   sensitive = false
   nullable  = false
-  default   = {
+  default = {
     temperature = {
-      type = "String",
+      type  = "String",
       value = "1"
     },
     top_p = {
-      type = "String",
+      type  = "String",
       value = "1"
     },
     category = {
-      type = "String",
+      type  = "String",
       value = "metaprompt"
     },
     language = {
-      type = "String",
+      type  = "String",
       value = "es-ES"
     },
     indexName = {
-      type = "String",
+      type  = "String",
       value = "esp1Videos"
     },
     viRegion = {
-      type = "String",
+      type  = "String",
       value = "eastus"
     },
     viAccountName = {
-      type = "String",
+      type  = "String",
       value = "metaprompt"
     },
     viAccountId = {
-      type = "String",
+      type  = "String",
       value = "metaprompt"
     },
   }

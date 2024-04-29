@@ -3,10 +3,12 @@ resource "azurerm_data_factory" "data_factory" {
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
+  identity {
+    type = "SystemAssigned"
+  }
 
   managed_virtual_network_enabled = false # Change in prod
   public_network_enabled          = true  # Change in prod
-
   dynamic "global_parameter" {
     for_each = var.data_factory_global_parameters
     content {

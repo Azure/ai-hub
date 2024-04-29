@@ -95,6 +95,6 @@ output "sas_token_url_helloworld_blob" {
   value = nonsensitive("${azurerm_storage_blob.helloworld_function_blob.url}${data.azurerm_storage_account_sas.assistant_function_blob_sas.sas}")
 }
 
-output assistant_function_blob {
+output "assistant_function_blob" {
   value = basename(data.archive_file.assistant.output_path)
 }

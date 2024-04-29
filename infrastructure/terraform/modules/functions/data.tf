@@ -1,3 +1,21 @@
+data "azurerm_function_app_host_keys" "function_app_host_keys_shortclip" {
+  name                = azurerm_linux_function_app.shortclip_function.name
+  resource_group_name = var.resource_group_name
+
+  depends_on = [
+    azurerm_linux_function_app.shortclip_function
+  ]
+}
+
+data "azurerm_function_app_host_keys" "function_app_host_keys_assistant" {
+  name                = azurerm_linux_function_app.assistant_function.name
+  resource_group_name = var.resource_group_name
+
+  depends_on = [
+    azurerm_linux_function_app.assistant_function
+  ]
+}
+
 data "archive_file" "helloworld" {
   type        = "zip"
   excludes    = split("\n", file("${path.module}/fastapi-on-azure-functions/.funcignore"))

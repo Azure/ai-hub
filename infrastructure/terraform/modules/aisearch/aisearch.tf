@@ -6,19 +6,19 @@ locals {
 }
 
 resource "azurerm_search_service" "search_service" {
-  name                = var.search_service_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  sku                 = var.sku
-  partition_count     = var.partition_count
-  replica_count       = var.replica_count
+  name                          = var.search_service_name
+  location                      = var.location
+  resource_group_name           = var.resource_group_name
+  sku                           = var.sku
+  partition_count               = var.partition_count
+  replica_count                 = var.replica_count
   public_network_access_enabled = false
-  local_authentication_enabled = false
+  local_authentication_enabled  = false
   identity {
     type = "SystemAssigned"
   }
   customer_managed_key_enforcement_enabled = false
-  
+
 }
 /*
 resource "azurerm_private_endpoint" "search_service_endpoint" {

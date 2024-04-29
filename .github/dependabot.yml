@@ -1,0 +1,25 @@
+version: 2
+# enable-beta-ecosystems: true
+updates:
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "10:00"
+    labels:
+      - "github-actions"
+      - "dependencies"
+
+  # Maintain dependencies for Terraform
+  - package-ecosystem: "terraform"
+    directory: "/infrastructure/terraform"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "10:00"
+    labels:
+      - "terraform"
+      - "dependencies"

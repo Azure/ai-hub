@@ -16,12 +16,12 @@ variable "resource_group_name" {
     condition     = length(var.resource_group_name) >= 2
     error_message = "Please specify a valid name."
   }
-  
+
 }
 
 variable "location" {
   description = "Specifies the location of the resource group."
   type        = string
   sensitive   = false
-  
+
 }
