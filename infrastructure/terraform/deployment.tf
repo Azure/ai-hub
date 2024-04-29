@@ -145,6 +145,6 @@ module "functions" {
   cognitive_service_endpoint       = module.azure_open_ai.azurerm_cognitive_account_endpoint
   log_analytics_workspace_id       = module.azure_log_analytics.log_analytics_id
   instrumentation_key              = module.application_insights.application_insights_instrumentation_key
-  app_id                           = module.azure_log_analytics.app_id
+  app_id                           = module.application_insights.application_insights_id
   videoindexer_account_id          = module.videoindexer.videoindexer_account_id
 }
