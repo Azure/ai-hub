@@ -28,9 +28,10 @@ module "azure_storage_account" {
     "videosin",
     "videosout",
     "videossassistant",
+    local.container_name_shortclip,
   ]
   storage_account_share_names               = []
-  storage_account_shared_access_key_enabled = false
+  storage_account_shared_access_key_enabled = true
   log_analytics_workspace_id                = module.azure_log_analytics.log_analytics_id
   subnet_id                                 = var.subnet_id
   customer_managed_key                      = null
