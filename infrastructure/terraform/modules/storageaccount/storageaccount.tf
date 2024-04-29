@@ -63,6 +63,10 @@ resource "azurerm_storage_container" "storage_container" {
 
   container_access_type = "private"
   metadata              = {}
+
+  depends_on = [
+    azurerm_role_assignment.current_role_assignment_storage_blob_data_owner
+  ]
 }
 
 # resource "azurerm_storage_management_policy" "storage_management_policy" {
