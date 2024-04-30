@@ -3,41 +3,45 @@ locals {
   prefix   = "${lower(var.prefix)}-${var.environment}"
   location = var.location
 
+  # Resource names orchestration
+  orchestration_rg = "${local.prefix}-orchstrtn"
+  adf_service_name = "${local.prefix}-adf"
+  key_vault_name   = "${local.prefix}-kv"
+
+  # Resource names ai
+  ai_rg                 = "${local.prefix}-ai"
+  videoindexer_name     = "${local.prefix}-vi"
+  open_ai_name          = "${local.prefix}-aoai"
+  search_service_name   = lower(replace("${local.prefix}-search", "/[^a-z0-9]/", ""))
+  docintel_service_name = "${local.prefix}-docintel"
+
+  # Resource names storage
+  storage_rg                   = "${local.prefix}-strg"
+  cleaned_storage_account_name = replace("${local.prefix}-stg}", "/[^a-z0-9]/", "")
+  storage_account_name         = lower(substr(local.cleaned_storage_account_name, 0, min(length(local.cleaned_storage_account_name), 24)))
+  container_name_shortclip     = "shortclip-results"
+
+  # Resource names monitoring
+  monitoring_rg      = "${local.prefix}-mntrng"
+  log_analytics_name = "${local.prefix}-law"
+
   # Resource names - short clip
   shortclip_rg                           = "${local.prefix}-shrtclp"
   storage_account_name_shortclip_cleaned = replace("${local.prefix}-shrtclp-stg}", "/[^a-z0-9]/", "")
   storage_account_name_shortclip         = lower(substr(local.storage_account_name_shortclip_cleaned, 0, min(length(local.storage_account_name_shortclip_cleaned), 24)))
   key_vault_name_shortclip               = "${local.prefix}-shrtclp-kv"
   application_insights_name_shortclip    = "${local.prefix}-shrtclp-appi"
-  function_name_shortclip                = "${local.function_name}-shrtclp-fnctn"
+  function_name_shortclip                = "${local.prefix}-shrtclp-fnctn"
   user_assigned_identity_name_shortclip  = "${local.prefix}-shrtclp-uai"
 
-  # Resource names
-  ingestion_rg                          = "${local.prefix}-ingestion"
-  observability_rg                      = "${local.prefix}-observability"
-  processing_rg                         = "${local.prefix}-processing"
-  assisstant_rg                         = "${local.prefix}-assisstant"
-  cleaned_storage_account_name          = replace("${local.prefix}-stg}", "/[^a-z0-9]/", "")
-  storage_account_name                  = lower(substr(local.cleaned_storage_account_name, 0, min(length(local.cleaned_storage_account_name), 24)))
-  azure_managed_identity_name           = "${local.prefix}-uai"
-  log_analytics_name                    = "${local.prefix}-law"
-  application_insights_name             = "${local.prefix}-appi"
-  azure_key_vault_name                  = "${local.prefix}-kv"
-  videoindexer_name                     = "${local.prefix}-vi"
-  azure_open_ai_name                    = "${local.prefix}-aoai"
-  azure_search_service_name             = lower(replace("${local.prefix}-search", "/[^a-z0-9]/", ""))
-  docintel_service_name                 = "${local.prefix}-docintel"
-  adf_service_name                      = "${local.prefix}-adf"
-  function_name                         = "${local.prefix}-func"
-  function_service_plan_name            = "${local.prefix}-func"
-  cleaned_function_storage_account_name = replace("${local.function_name}}", "/[^a-z0-9]/", "")
-  function_storage_account_name         = lower(substr(local.cleaned_function_storage_account_name, 0, min(length(local.cleaned_function_storage_account_name), 22)))
-  azure_function_name_helloworld        = "${local.function_name}-helloworld"
-  azure_function_name_shortclip         = "${local.function_name}-shortclip"
-  azure_function_name_assistant         = "${local.function_name}-assistant"
-
-  # Storage container
-  container_name_shortclip = "shortclip-results"
+  # Resource names - assisstant
+  assisstant_rg                           = "${local.prefix}-assisstant"
+  storage_account_name_assisstant_cleaned = replace("${local.prefix}-assisst-stg}", "/[^a-z0-9]/", "")
+  storage_account_name_assisstant         = lower(substr(local.storage_account_name_assisstant_cleaned, 0, min(length(local.storage_account_name_assisstant_cleaned), 24)))
+  key_vault_name_assisstant               = "${local.prefix}-assisst-kv"
+  application_insights_name_assisstant    = "${local.prefix}-assisst-appi"
+  function_name_assisstant                = "${local.prefix}-assisst-fnctn"
+  user_assigned_identity_name_assisstant  = "${local.prefix}-assisst-uai"
 
   # Network
   subnet = var.subnet_id == "" ? {} : {
@@ -50,11 +54,11 @@ locals {
   data_factory_global_parameters_default = {
     openai_api_base = {
       type  = "String"
-      value = module.azure_open_ai.azurerm_cognitive_account_endpoint
+      value = module.open_ai.azurerm_cognitive_account_endpoint
     },
     storageaccounturl = {
       type  = "String"
-      value = module.azure_storage_account.storage_account_primary_blob_endpoint
+      value = module.storage_account.storage_account_primary_blob_endpoint
     }
   }
   data_factory_github_repo       = {}
