@@ -22,104 +22,94 @@ variable "tags" {
   default     = {}
 }
 
-variable "function_name" {
-  description = "Specifies the name of the data factory."
+variable "logic_app_name" {
+  description = "Specifies the name of the logic app."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.function_name) >= 2
+    condition     = length(var.logic_app_name) >= 2
     error_message = "Please specify a valid name."
   }
 }
 
 # Service variables
-variable "function_application_settings" {
+variable "logic_app_application_settings" {
   description = "Specifies the videoindexer id"
   type        = map(string)
   sensitive   = false
 }
 
-variable "function_always_on" {
-  description = "Specifies whther always on should be enabled on the function."
+variable "logic_app_always_on" {
+  description = "Specifies whther always on should be enabled on the logic app."
   type        = bool
   sensitive   = false
   default     = false
 }
 
-variable "function_code_path" {
-  description = "Specifies the code location of the function."
+variable "logic_app_code_path" {
+  description = "Specifies the code location of the logic app."
   type        = string
   sensitive   = false
 }
 
-variable "function_storage_account_id" {
+variable "logic_app_storage_account_id" {
   description = "Specifies the resource id of the storage account."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(split("/", var.function_storage_account_id)) == 9
+    condition     = length(split("/", var.logic_app_storage_account_id)) == 9
     error_message = "Please specify a valid name."
   }
 }
 
-variable "function_share_name" {
+variable "logic_app_share_name" {
   description = "Specifies the share name within the storage account."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.function_share_name) >= 2
+    condition     = length(var.logic_app_share_name) >= 2
     error_message = "Please specify a valid name."
   }
 }
 
-variable "function_key_vault_id" {
+variable "logic_app_key_vault_id" {
   description = "Specifies the resource id of the key vault."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(split("/", var.function_key_vault_id)) == 9
+    condition     = length(split("/", var.logic_app_key_vault_id)) == 9
     error_message = "Please specify a valid name."
   }
 }
 
-variable "function_user_assigned_identity_id" {
-  description = "Specifies the resource id of the user assigned identity."
-  type        = string
-  sensitive   = false
-  validation {
-    condition     = length(split("/", var.function_user_assigned_identity_id)) == 9
-    error_message = "Please specify a valid resource ID."
-  }
-}
-
-variable "function_sku" {
-  description = "Specifies the sku name used in the function app service plan."
+variable "logic_app_sku" {
+  description = "Specifies the sku name used in the logic app app service plan."
   type        = string
   sensitive   = false
   nullable    = false
-  default     = "Y1"
+  default     = "WS1"
   validation {
-    condition     = contains(["F1", "B1", "B2", "B3", "S1", "S2", "S3", "P0v3", "P1v3", "P2v3", "P3v3", "P1mv3", "P2mv3", "P3mv3", "P4mv3", "P5mv3", "EP1", "EP2", "EP3", "Y1"], var.function_sku)
+    condition     = contains(["WS1", "WS2", "WS3"], var.logic_app_sku)
     error_message = "Please specify a valid sku name."
   }
 }
 
-variable "function_application_insights_instrumentation_key" {
+variable "logic_app_application_insights_instrumentation_key" {
   description = "Specifies the instrumentation key of application insights."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.function_application_insights_instrumentation_key) >= 2
+    condition     = length(var.logic_app_application_insights_instrumentation_key) >= 2
     error_message = "Please specify a valid name."
   }
 }
 
-variable "function_application_insights_connection_string" {
+variable "logic_app_application_insights_connection_string" {
   description = "Specifies the instrumentation key of application insights."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.function_application_insights_connection_string) >= 2
+    condition     = length(var.logic_app_application_insights_connection_string) >= 2
     error_message = "Please specify a valid name."
   }
 }

@@ -1,9 +1,3 @@
-# resource "azurerm_resource_group" "ingestion" {
-#   name     = local.ingestion_rg
-#   location = local.location
-# }
-
-# New resource groups
 resource "azurerm_resource_group" "orchestration" {
   name     = local.orchestration_rg
   location = local.location

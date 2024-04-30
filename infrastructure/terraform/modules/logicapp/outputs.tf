@@ -1,23 +1,23 @@
-output "linux_function_app_id" {
+output "logic_app_id" {
   description = "Specifies the resource id of the function."
   sensitive   = false
-  value       = azurerm_linux_function_app.linux_function_app.id
+  value       = azurerm_logic_app_standard.logic_app_standard.id
 }
 
-output "linux_function_app_default_hostname" {
+output "logic_app_default_hostname" {
   description = "Specifies the endpoint of the function."
   sensitive   = false
-  value       = azurerm_linux_function_app.linux_function_app.default_hostname
+  value       = azurerm_logic_app_standard.logic_app_standard.default_hostname
 }
 
-output "linux_function_app_primary_key" {
+output "logic_app_primary_key" {
   description = "Specifies the key of the function."
   sensitive   = true
-  value       = data.azurerm_function_app_host_keys.function_app_host_keys.primary_key
+  value       = ""
 }
 
-output "linux_function_app_principal_id" {
+output "logic_app_principal_id" {
   description = "Specifies the principal id of the function."
   sensitive   = false
-  value       = azurerm_linux_function_app.linux_function_app.identity[0].principal_id
+  value       = azurerm_logic_app_standard.logic_app_standard.identity[0].principal_id
 }
