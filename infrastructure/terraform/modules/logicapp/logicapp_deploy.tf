@@ -6,6 +6,6 @@ resource "null_resource" "logic_app_app_deployment" {
   }
 
   provisioner "local-exec" {
-    command = "az functionapp deployment source config-zip --resource-group ${azurerm_logic_app_standard.logic_app_standard.resource_group_name} --name ${azurerm_logic_app_standard.logic_app_standard.name} --src ${one(data.archive_file.file_logic_app[*].output_path)}"
+    command = "az logicapp deployment source config-zip --resource-group ${azurerm_logic_app_standard.logic_app_standard.resource_group_name} --name ${azurerm_logic_app_standard.logic_app_standard.name} --src ${one(data.archive_file.file_logic_app[*].output_path)}"
   }
 }
