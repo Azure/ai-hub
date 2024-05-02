@@ -24,6 +24,8 @@ locals {
   cleaned_storage_account_name = replace("${local.prefix}-stg}", "/[^a-z0-9]/", "")
   storage_account_name         = lower(substr(local.cleaned_storage_account_name, 0, min(length(local.cleaned_storage_account_name), 24)))
   container_name_shortclip     = "shortclip-results"
+  container_name_raw           = "videos-raw"
+  container_name_curated       = "videos-curated"
 
   # Resource names monitoring
   monitoring_rg      = "${local.prefix}-mntrng"
