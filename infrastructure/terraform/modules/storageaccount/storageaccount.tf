@@ -41,6 +41,10 @@ resource "azurerm_storage_account" "storage" {
     default_action             = "Allow"
     ip_rules                   = []
     virtual_network_subnet_ids = []
+    private_link_access {
+      endpoint_tenant_id   = data.azurerm_client_config.current.tenant_id
+      endpoint_resource_id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/providers/Microsoft.Security/datascanners/StorageDataScanner"
+    }
   }
   nfsv3_enabled                 = false
   public_network_access_enabled = true
