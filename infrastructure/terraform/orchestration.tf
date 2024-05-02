@@ -52,6 +52,8 @@ module "logic_app_orchestration" {
     AZURE_OPENAI_ENDPOINT          = module.open_ai.cognitive_account_endpoint
     AZURE_OPENAI_DEPLOYMENT_NAME   = "gpt-4"
     AZURE_BLOB_STORAGE_ENDPOINT    = module.storage_account.storage_account_primary_blob_endpoint
+    VIDEO_INDEXER_ID               = module.videoindexer.videoindexer_id
+    VIDEO_INDEXER_ACCOUNT_ID       = module.videoindexer.videoindexer_account_id
     WORKFLOWS_SUBSCRIPTION_ID      = data.azurerm_subscription.current.subscription_id
     WORKFLOWS_RESOURCE_GROUP_NAME  = azurerm_resource_group.orchestration.name
     WORKFLOWS_LOCATION_NAME        = local.location
@@ -66,12 +68,24 @@ module "logic_app_orchestration" {
   logic_app_application_insights_connection_string   = module.application_insights_orchestration.application_insights_connection_string
   logic_app_api_connections = {
     conversionservice = {
-      kind         = "V2"
-      display_name = "Content Conversion"
-      description  = "A service that allows content to be converted from one format to another."
-      icon_uri     = "https://connectoricons-prod.azureedge.net/releases/v1.0.1677/1.0.1677.3637"
-      brand_color  = "#4f6bed"
-      category     = "Standard"
+      kind             = "V2"
+      display_name     = "Content Conversion"
+      description      = "A service that allows content to be converted from one format to another."
+      icon_uri         = "https://connectoricons-prod.azureedge.net/releases/v1.0.1677/1.0.1677.3637"
+      brand_color      = "#4f6bed"
+      category         = "Standard"
+      parameter_values = {}
+    }
+    videoindexer-v2 = {
+      kind             = "V2"
+      display_name     = "Video Indexer (V2)"
+      description      = "Easily extract insights from your videos and quickly enrich your applications to enhance discovery and engagement. Use the Video Indexer connector to turn your videos into insights."
+      icon_uri         = "https://connectoricons-prod.azureedge.net/releases/v1.0.1654/1.0.1654.3410"
+      brand_color      = "#127B66"
+      category         = "Standard"
+      parameter_values = {
+        api_key = var.videoindexer_api_key
+      }
     }
   }
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
