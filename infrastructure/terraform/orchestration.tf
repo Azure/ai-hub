@@ -42,13 +42,18 @@ module "key_vault_orchestration" {
 module "logic_app_orchestration" {
   source = "./modules/logicapp"
 
-  location                                           = local.location
-  resource_group_name                                = azurerm_resource_group.orchestration.name
-  tags                                               = var.tags
-  logic_app_name                                     = local.logic_app_name
-  logic_app_application_settings                     = {}
+  location            = local.location
+  resource_group_name = azurerm_resource_group.orchestration.name
+  tags                = var.tags
+  logic_app_name      = local.logic_app_name
+  logic_app_application_settings = {
+    STORAGE_CONTAINER_NAME_RAW   = local.container_name_raw
+    AZURE_OPENAI_ENDPOINT        = module.open_ai.cognitive_account_endpoint
+    AZURE_OPENAI_DEPLOYMENT_NAME = "gpt-4"
+    AZURE_BLOB_STORAGE_ENDPOINT  = module.storage_account.storage_account_primary_blob_endpoint
+  }
   logic_app_always_on                                = true
-  logic_app_code_path                                = ""
+  logic_app_code_path                                = "${path.module}/../../utilities/logicApp"
   logic_app_storage_account_id                       = module.storage_account_orchestration.storage_account_id
   logic_app_share_name                               = local.logic_app_name
   logic_app_key_vault_id                             = module.key_vault_orchestration.key_vault_id
@@ -85,6 +90,31 @@ module "data_factory_orchestration" {
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
   subnet_id                  = var.subnet_id
   customer_managed_key       = null
+}
+
+# Role assignments logic app
+resource "azurerm_role_assignment" "logic_app_role_assignment_storage_blob_data_owner" {
+  description          = "Role Assignment for Data Factory to read and write data"
+  scope                = module.storage_account.storage_account_id
+  role_definition_name = "Storage Blob Data Owner"
+  principal_id         = module.logic_app_orchestration.logic_app_principal_id
+  principal_type       = "ServicePrincipal"
+}
+
+resource "azurerm_role_assignment" "logic_app_role_assignment_open_ai" {
+  description          = "Role Assignment for Data Factory to interact with Open AI models"
+  scope                = module.open_ai.cognitive_account_id
+  role_definition_name = "Cognitive Services OpenAI User"
+  principal_id         = module.logic_app_orchestration.logic_app_principal_id
+  principal_type       = "ServicePrincipal"
+}
+
+resource "azurerm_role_assignment" "logic_app_role_assignment_videoindexer" {
+  description          = "Role Assignment for Data Factory to interact with Video Indexer"
+  scope                = module.videoindexer.videoindexer_id
+  role_definition_name = "Contributor"
+  principal_id         = module.logic_app_orchestration.logic_app_principal_id
+  principal_type       = "ServicePrincipal"
 }
 
 # Role assignments data factory
