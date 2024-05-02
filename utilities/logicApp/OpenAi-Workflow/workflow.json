@@ -5,7 +5,7 @@
             "OpenAi-CreateAssisstant-Request": {
                 "type": "Http",
                 "inputs": {
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads?api-version=2024-03-01-preview')",
+                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')",
                     "method": "POST",
                     "body": {
                         "instructions": "@{parameters('META_PROMPT')}",
