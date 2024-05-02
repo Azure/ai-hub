@@ -3,6 +3,10 @@
     "type": "String",
     "value": "@appsetting('STORAGE_CONTAINER_NAME_RAW')"
   },
+  "STORAGE_CONTAINER_NAME_CURATED": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_CONTAINER_NAME_CURATED')"
+  },
   "AZURE_OPENAI_ENDPOINT": {
     "type": "String",
     "value": "@appsetting('AZURE_OPENAI_ENDPOINT')"
@@ -22,5 +26,17 @@
   "AZURE_OPENAI_DEPLOYMENT_NAME": {
     "type": "String",
     "value": "@appsetting('AZURE_OPENAI_DEPLOYMENT_NAME')"
+  },
+  "ConversionserviceConnectionRuntimeUrl": {
+    "type": "String",
+    "value": "@appsetting('ConversionserviceConnectionRuntimeUrl')"
+  },
+  "ConversionserviceAuthentication": {
+    "type": "Object",
+    "value": {
+      "type": "Raw",
+      "scheme": "Key",
+      "parameter": "@appsetting('ConversionserviceConnectionKey')"
+    }
   }
 }
