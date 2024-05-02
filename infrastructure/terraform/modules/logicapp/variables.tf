@@ -123,6 +123,7 @@ variable "logic_app_api_connections" {
     icon_uri     = string
     brand_color  = string
     category     = string
+    parameter_values = optional(map(string), {})
   }))
   sensitive = false
   default   = {}
