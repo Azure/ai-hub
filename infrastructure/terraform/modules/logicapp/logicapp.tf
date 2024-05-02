@@ -42,6 +42,6 @@ resource "azurerm_logic_app_standard" "logic_app_standard" {
     scm_use_main_ip_restriction      = false
     use_32_bit_worker_process        = false
     vnet_route_all_enabled           = false # Change for prod
-    websockets_enabled               = false
+    websockets_enabled               = true
   }
 }
