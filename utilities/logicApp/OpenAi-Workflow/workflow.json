@@ -1,0 +1,228 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "OpenAi-UploadFile-Request": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/files?api-version=2024-02-15-preview')",
+                    "method": "POST",
+                    "body": {
+                        "$content-type": "multipart/form-data",
+                        "$multipart": [
+                            {
+                                "body": "@triggerBody()?['content']?['$content']",
+                                "headers": {
+                                    "Content-Disposition": "form-data; name=\"file\"; filename=\"@{triggerBody()?['properties']['blobName']}\"",
+                                    "Content-Type": "application/json"
+                                }
+                            },
+                            {
+                                "body": "assistants",
+                                "headers": {
+                                    "Content-Disposition": "form-data; name=purpose"
+                                }
+                            }
+                        ]
+                    },
+                    "authentication": {
+                        "type": "ManagedServiceIdentity",
+                        "audience": "https://cognitiveservices.azure.com"
+                    }
+                },
+                "runAfter": {},
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "OpenAi-UploadFile-Response": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('OpenAi-UploadFile-Request')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "object": {
+                                "type": "string"
+                            },
+                            "id": {
+                                "type": "string"
+                            },
+                            "purpose": {
+                                "type": "string"
+                            },
+                            "filename": {
+                                "type": "string"
+                            },
+                            "bytes": {
+                                "type": "integer"
+                            },
+                            "created_at": {
+                                "type": "integer"
+                            },
+                            "status": {
+                                "type": "string"
+                            },
+                            "status_details": {}
+                        }
+                    }
+                },
+                "runAfter": {
+                    "OpenAi-UploadFile-Request": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "OpenAi-CreateAssisstant-Request": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads?api-version=2024-03-01-preview')",
+                    "method": "POST",
+                    "authentication": {
+                        "type": "ManagedServiceIdentity",
+                        "audience": "https://cognitiveservices.azure.com"
+                    }
+                },
+                "runAfter": {
+                    "OpenAi-UploadFile-Response": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "OpenAi-CreateAssisstant-Response": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('OpenAi-CreateAssisstant-Request')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "object": {
+                                "type": "string"
+                            },
+                            "created_at": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {},
+                            "model": {
+                                "type": "string"
+                            },
+                            "instructions": {
+                                "type": "string"
+                            },
+                            "tools": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "type"
+                                    ]
+                                }
+                            },
+                            "file_ids": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "metadata": {
+                                "type": "object",
+                                "properties": {}
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "OpenAi-CreateAssisstant-Request": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "OpenAi-CreateThread-Request": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads?api-version=2024-03-01-preview')",
+                    "method": "POST",
+                    "authentication": {
+                        "type": "ManagedServiceIdentity",
+                        "audience": "https://cognitiveservices.azure.com"
+                    }
+                },
+                "runAfter": {
+                    "OpenAi-CreateAssisstant-Response": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "OpenAi-CreateThread-Response": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('OpenAi-CreateThread-Request')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "object": {
+                                "type": "string"
+                            },
+                            "created_at": {
+                                "type": "integer"
+                            },
+                            "metadata": {
+                                "type": "object",
+                                "properties": {}
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "OpenAi-CreateThread-Request": [
+                        "SUCCEEDED"
+                    ]
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "BlobTrigger": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "path": "@parameters('STORAGE_CONTAINER_NAME_RAW')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "whenABlobIsAddedOrModified",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                }
+            }
+        }
+    },
+    "kind": "Stateful"
+}

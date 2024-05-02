@@ -1,0 +1,18 @@
+{
+  "managedApiConnections": {},
+  "serviceProviderConnections": {
+    "AzureBlob": {
+      "parameterValues": {
+        "blobStorageEndpoint": "@appsetting('AZURE_BLOB_STORAGE_ENDPOINT')",
+        "authProvider": {
+          "Type": "ManagedServiceIdentity"
+        }
+      },
+      "parameterSetName": "ManagedServiceIdentity",
+      "serviceProvider": {
+        "id": "/serviceProviders/AzureBlob"
+      },
+      "displayName": "datalake001"
+    }
+  }
+}
