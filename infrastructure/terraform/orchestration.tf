@@ -47,10 +47,14 @@ module "logic_app_orchestration" {
   tags                = var.tags
   logic_app_name      = local.logic_app_name
   logic_app_application_settings = {
-    STORAGE_CONTAINER_NAME_RAW   = local.container_name_raw
-    AZURE_OPENAI_ENDPOINT        = module.open_ai.cognitive_account_endpoint
-    AZURE_OPENAI_DEPLOYMENT_NAME = "gpt-4"
-    AZURE_BLOB_STORAGE_ENDPOINT  = module.storage_account.storage_account_primary_blob_endpoint
+    STORAGE_CONTAINER_NAME_RAW     = local.container_name_raw
+    STORAGE_CONTAINER_NAME_CURATED = local.container_name_curated
+    AZURE_OPENAI_ENDPOINT          = module.open_ai.cognitive_account_endpoint
+    AZURE_OPENAI_DEPLOYMENT_NAME   = "gpt-4"
+    AZURE_BLOB_STORAGE_ENDPOINT    = module.storage_account.storage_account_primary_blob_endpoint
+    WORKFLOWS_SUBSCRIPTION_ID      = data.azurerm_subscription.current.subscription_id
+    WORKFLOWS_RESOURCE_GROUP_NAME  = azurerm_resource_group.orchestration.name
+    WORKFLOWS_LOCATION_NAME        = local.location
   }
   logic_app_always_on                                = true
   logic_app_code_path                                = "${path.module}/../../utilities/logicApp"
@@ -60,9 +64,19 @@ module "logic_app_orchestration" {
   logic_app_sku                                      = "WS1"
   logic_app_application_insights_instrumentation_key = module.application_insights_orchestration.application_insights_instrumentation_key
   logic_app_application_insights_connection_string   = module.application_insights_orchestration.application_insights_connection_string
-  log_analytics_workspace_id                         = module.azure_log_analytics.log_analytics_id
-  subnet_id                                          = var.subnet_id
-  customer_managed_key                               = null
+  logic_app_api_connections = {
+    conversionservice = {
+      kind         = "V2"
+      display_name = "Content Conversion"
+      description  = "A service that allows content to be converted from one format to another."
+      icon_uri     = "https://connectoricons-prod.azureedge.net/releases/v1.0.1677/1.0.1677.3637"
+      brand_color  = "#4f6bed"
+      category     = "Standard"
+    }
+  }
+  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
+  subnet_id                  = var.subnet_id
+  customer_managed_key       = null
 }
 
 module "data_factory_orchestration" {
