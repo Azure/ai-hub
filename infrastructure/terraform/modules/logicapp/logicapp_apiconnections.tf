@@ -29,7 +29,7 @@ resource "azapi_resource" "api_connection_arm" {
       # authenticatedUser = {}
       customParameterValues = {},
       displayName           = each.value.display_name
-      parameterValues       = {}
+      parameterValues       = each.value.parameter_values
       parameterValueType    = null
       testLinks             = []
       testRequests          = []
