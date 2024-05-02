@@ -27,6 +27,18 @@
     "type": "String",
     "value": "@appsetting('AZURE_OPENAI_DEPLOYMENT_NAME')"
   },
+  "VIDEO_INDEXER_ID": {
+    "type": "String",
+    "value": "@appsetting('VIDEO_INDEXER_ID')"
+  },
+  "VIDEO_INDEXER_ACCOUNT_ID": {
+    "type": "String",
+    "value": "@appsetting('VIDEO_INDEXER_ACCOUNT_ID')"
+  },
+  "WORKFLOWS_LOCATION_NAME": {
+    "type": "String",
+    "value": "@appsetting('WORKFLOWS_LOCATION_NAME')"
+  },
   "ConversionserviceConnectionRuntimeUrl": {
     "type": "String",
     "value": "@appsetting('ConversionserviceConnectionRuntimeUrl')"
@@ -37,6 +49,18 @@
       "type": "Raw",
       "scheme": "Key",
       "parameter": "@appsetting('ConversionserviceConnectionKey')"
+    }
+  },
+  "Videoindexer-V2ConnectionRuntimeUrl": {
+    "type": "String",
+    "value": "@appsetting('Videoindexer-V2ConnectionRuntimeUrl')"
+  },
+  "Videoindexer-V2Authentication": {
+    "type": "Object",
+    "value": {
+      "type": "Raw",
+      "scheme": "Key",
+      "parameter": "@appsetting('Videoindexer-V2ConnectionKey')"
     }
   }
 }

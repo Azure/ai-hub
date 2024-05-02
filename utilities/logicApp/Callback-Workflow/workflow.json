@@ -1,0 +1,87 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Arm-VideoIndexerGenerateAccessToken-Request": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@concat('https://management.azure.com',parameters('VIDEO_INDEXER_ID'),'/generateAccessToken?api-version=2024-01-01')",
+                    "method": "POST",
+                    "body": {
+                        "permissionType": "Contributor",
+                        "scope": "Account"
+                    },
+                    "authentication": {
+                        "type": "ManagedServiceIdentity",
+                        "audience": "https://management.core.windows.net"
+                    }
+                },
+                "runAfter": {},
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Arm-VideoIndexerGenerateAccessToken-Response": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('Arm-VideoIndexerGenerateAccessToken-Request')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "accessToken": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Arm-VideoIndexerGenerateAccessToken-Request": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Videoindexer-GetVideoIndex": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "videoindexer-v2"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/@{encodeURIComponent(parameters('WORKFLOWS_LOCATION_NAME'))}/Accounts/@{encodeURIComponent(parameters('VIDEO_INDEXER_ACCOUNT_ID'))}/Videos/@{encodeURIComponent(triggerBody()?['videoId'])}/Index",
+                    "queries": {
+                        "accessToken": "@body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']",
+                        "language": "English"
+                    }
+                },
+                "runAfter": {
+                    "Arm-VideoIndexerGenerateAccessToken-Response": [
+                        "SUCCEEDED"
+                    ]
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "HTTPTrigger": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "videoId": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "kind": "Stateful"
+}

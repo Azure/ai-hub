@@ -585,7 +585,7 @@
                 "inputs": {
                     "host": {
                         "connection": {
-                            "referenceName": "uc1a2-01-dev-orch-logic-api-conversionservice"
+                            "referenceName": "conversionservice"
                         }
                     },
                     "method": "post",
@@ -669,7 +669,7 @@
                         "inputs": {
                             "host": {
                                 "connection": {
-                                    "referenceName": "uc1a2-01-dev-orch-logic-api-conversionservice"
+                                    "referenceName": "conversionservice"
                                 }
                             },
                             "method": "post",
