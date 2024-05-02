@@ -32,6 +32,12 @@ variable "tags" {
 }
 
 # Service variables
+variable "videoindexer_api_key" {
+  description = "Specifies the API Key for Video Indexer."
+  type        = string
+  sensitive   = true
+}
+
 variable "function_sku" {
   description = "Specifies the SKU for the function app."
   type        = string
