@@ -5,7 +5,7 @@ locals {
     # WEBSITE_RUN_FROM_PACKAGE     = "1"
   }
   logic_app_application_settings_connection_runtime_urls = {
-    for key, value in azapi_resource.api_connection_arm:
+    for key, value in azapi_resource.api_connection_arm :
     "${title(key)}ConnectionRuntimeUrl" => jsondecode(value.output).properties.connectionRuntimeUrl
   }
   logic_app_application_settings = merge(local.logic_app_application_settings_default, local.logic_app_application_settings_connection_runtime_urls, var.logic_app_application_settings)
