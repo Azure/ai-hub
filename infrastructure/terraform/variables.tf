@@ -39,6 +39,7 @@ variable "videoindexer_api_key" {
   description = "Specifies the API Key for Video Indexer."
   type        = string
   sensitive   = true
+  default     = ""
 }
 
 variable "logic_app_sku" {
