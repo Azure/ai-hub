@@ -313,7 +313,7 @@
 									"key": "sas_token",
 									"value": {
 										"type": "Expression",
-										"content": "?sv=2022-11-02&ss=b&srt=sco&sp=rwdlaciytfx&se=2024-06-23T15:33:12Z&st=2024-02-23T08:33:12Z&spr=https&sig=gUvv0OWry7bXUm6V7pXanwYvIdvuvZ%2BXKY%2BDe0%2BPVw8%3D"
+										"content": ""
 									}
 								}
 							],
@@ -946,7 +946,7 @@
 					},
 					"sas_token": {
 						"type": "string",
-						"defaultValue": "?sv=2022-11-02&ss=b&srt=sco&sp=rwdlaciytfx&se=2024-06-23T15:33:12Z&st=2024-02-23T08:33:12Z&spr=https&sig=gUvv0OWry7bXUm6V7pXanwYvIdvuvZ%2BXKY%2BDe0%2BPVw8%3D"
+						"defaultValue": ""
 					},
 					"storageaccounturl": {
 						"type": "string",
