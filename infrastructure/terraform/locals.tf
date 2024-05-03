@@ -39,15 +39,6 @@ locals {
   function_name_shortclip                = "${local.prefix}-shrtclp-fnctn"
   user_assigned_identity_name_shortclip  = "${local.prefix}-shrtclp-uai"
 
-  # Resource names - assisstant
-  assisstant_rg                           = "${local.prefix}-assisstant"
-  storage_account_name_assisstant_cleaned = replace("${local.prefix}-assisst-stg}", "/[^a-z0-9]/", "")
-  storage_account_name_assisstant         = lower(substr(local.storage_account_name_assisstant_cleaned, 0, min(length(local.storage_account_name_assisstant_cleaned), 24)))
-  key_vault_name_assisstant               = "${local.prefix}-assisst-kv"
-  application_insights_name_assisstant    = "${local.prefix}-assisst-appi"
-  function_name_assisstant                = "${local.prefix}-assisst-fnctn"
-  user_assigned_identity_name_assisstant  = "${local.prefix}-assisst-uai"
-
   # Network
   subnet = var.subnet_id == "" ? {} : {
     resource_group_name  = split("/", var.subnet_id)[4]
