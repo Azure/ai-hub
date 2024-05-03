@@ -62,5 +62,17 @@
       "scheme": "Key",
       "parameter": "@appsetting('Videoindexer-V2ConnectionKey')"
     }
+  },
+  "AZURE_BLOB_STORAGE_ENDPOINT": {
+    "type": "String",
+    "value": "@appsetting('AZURE_BLOB_STORAGE_ENDPOINT')"
+  },
+  "FUNCTION_SHORTCLIP_HOSTNAME": {
+    "type": "String",
+    "value": "@appsetting('FUNCTION_SHORTCLIP_HOSTNAME')"
+  },
+  "FUNCTION_SHORTCLIP_KEY": {
+    "type": "String",
+    "value": "@appsetting('FUNCTION_SHORTCLIP_KEY')"
   }
 }
