@@ -90,7 +90,7 @@
             "OpenAi-CreateRun-Request": {
                 "type": "Http",
                 "inputs": {
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',variables('threadId'),'/runs?api-version=2024-03-01-preview')",
+                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/runs?api-version=2024-03-01-preview')",
                     "method": "POST",
                     "body": {
                         "assistant_id": "@{body('OpenAi-CreateAssisstant-Response')?['id']}",
