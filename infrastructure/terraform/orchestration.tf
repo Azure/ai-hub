@@ -3,7 +3,7 @@ module "storage_account_orchestration" {
   source = "./modules/storageaccount"
 
   location                        = local.location
-  resource_group_name             = azurerm_resource_group.shortclip.name
+  resource_group_name             = azurerm_resource_group.orchestration.name
   tags                            = var.tags
   storage_account_name            = local.storage_account_name_orchestration
   storage_account_container_names = []
@@ -20,9 +20,9 @@ module "application_insights_orchestration" {
   source = "./modules/applicationinsights"
 
   location                   = local.location
-  resource_group_name        = azurerm_resource_group.shortclip.name
+  resource_group_name        = azurerm_resource_group.orchestration.name
   tags                       = var.tags
-  application_insights_name  = local.application_insights_name_shortclip
+  application_insights_name  = local.application_insights_name_orchestration
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
 }
 
@@ -47,16 +47,18 @@ module "logic_app_orchestration" {
   tags                = var.tags
   logic_app_name      = local.logic_app_name
   logic_app_application_settings = {
-    STORAGE_CONTAINER_NAME_RAW     = local.container_name_raw
-    STORAGE_CONTAINER_NAME_CURATED = local.container_name_curated
-    AZURE_OPENAI_ENDPOINT          = module.open_ai.cognitive_account_endpoint
-    AZURE_OPENAI_DEPLOYMENT_NAME   = "gpt-4"
-    AZURE_BLOB_STORAGE_ENDPOINT    = module.storage_account.storage_account_primary_blob_endpoint
-    VIDEO_INDEXER_ID               = module.videoindexer.videoindexer_id
-    VIDEO_INDEXER_ACCOUNT_ID       = module.videoindexer.videoindexer_account_id
-    WORKFLOWS_SUBSCRIPTION_ID      = data.azurerm_subscription.current.subscription_id
-    WORKFLOWS_RESOURCE_GROUP_NAME  = azurerm_resource_group.orchestration.name
-    WORKFLOWS_LOCATION_NAME        = local.location
+    APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights_orchestration.application_insights_instrumentation_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights_orchestration.application_insights_connection_string
+    STORAGE_CONTAINER_NAME_RAW            = local.container_name_raw
+    STORAGE_CONTAINER_NAME_CURATED        = local.container_name_curated
+    AZURE_OPENAI_ENDPOINT                 = module.open_ai.cognitive_account_endpoint
+    AZURE_OPENAI_DEPLOYMENT_NAME          = "gpt-4"
+    AZURE_BLOB_STORAGE_ENDPOINT           = module.storage_account.storage_account_primary_blob_endpoint
+    VIDEO_INDEXER_ID                      = module.videoindexer.videoindexer_id
+    VIDEO_INDEXER_ACCOUNT_ID              = module.videoindexer.videoindexer_account_id
+    WORKFLOWS_SUBSCRIPTION_ID             = data.azurerm_subscription.current.subscription_id
+    WORKFLOWS_RESOURCE_GROUP_NAME         = azurerm_resource_group.orchestration.name
+    WORKFLOWS_LOCATION_NAME               = local.location
   }
   logic_app_always_on                                = true
   logic_app_code_path                                = "${path.module}/../../utilities/logicApp"
