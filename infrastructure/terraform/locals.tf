@@ -5,7 +5,6 @@ locals {
 
   # Resource names orchestration
   orchestration_rg                           = "${local.prefix}-orchstrtn"
-  adf_service_name_orchestration             = "${local.prefix}-orch-adf"
   key_vault_name_orchestration               = "${local.prefix}-orch-kv"
   storage_account_name_orchestration_cleaned = replace("${local.prefix}-orch-stg}", "/[^a-z0-9]/", "")
   storage_account_name_orchestration         = lower(substr(local.storage_account_name_orchestration_cleaned, 0, min(length(local.storage_account_name_orchestration_cleaned), 24)))
@@ -55,18 +54,4 @@ locals {
     virtual_network_name = split("/", var.subnet_id)[8]
     name                 = split("/", var.subnet_id)[10]
   }
-
-  # Data Factory 
-  data_factory_global_parameters_default = {
-    openai_api_base = {
-      type  = "String"
-      value = module.open_ai.azurerm_cognitive_account_endpoint
-    },
-    storageaccounturl = {
-      type  = "String"
-      value = module.storage_account.storage_account_primary_blob_endpoint
-    }
-  }
-  data_factory_github_repo       = {}
-  data_factory_azure_devops_repo = {}
 }
