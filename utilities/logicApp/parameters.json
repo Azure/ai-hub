@@ -1,0 +1,66 @@
+{
+  "STORAGE_CONTAINER_NAME_RAW": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_CONTAINER_NAME_RAW')"
+  },
+  "STORAGE_CONTAINER_NAME_CURATED": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_CONTAINER_NAME_CURATED')"
+  },
+  "AZURE_OPENAI_ENDPOINT": {
+    "type": "String",
+    "value": "@appsetting('AZURE_OPENAI_ENDPOINT')"
+  },
+  "META_PROMPT": {
+    "type": "String",
+    "value": "Your task is to extract scenes from a sports TV show that are suitable for making short videos. You have identify the scenes that are more impactful, by identifying scenes or keywords with topics like \"intense discussion\", \"crucial point\", \"well-known guest\", \"dramatic\". You have to process each scene to find the ones that can be used to generate a short video. Use code interpreter when analyzing the provided content. Write and execute a script to process the document, extract relevant data for each scene and create a JSON file with the name provided in the prompt. You will then provide a download link for the created file. Output: Generate a JSON file with the following structure summarized the most relevant scenes: { \"summary\": \"This is the summary of the whole video\", \"scenes\": [ { \"id\": \"scene id\", \"title\": \"short title of the scene based on summary\", \"reasoning\": \"This scene is suitable for making short videos that can go viral on social media because...\", \"description\": \"brief description of what this scene is about\", \"start_time\": \"start time of the scene\", \"end_time\": \"end time of the scene\", \"transcript\": \"This is the transcript of the scene\", \"translation\": \"Translation of the transcript to English\" } ] } - Your output must be in strict JSON format. Don't include any comments or other characters that are not part of the JSON format. - You must proceed with the full analysis and summarization to populate the JSON file with accurate data. Don't skip scenes. - Use the following format for start time and end time of the scenes: dd:hh:mm:ss. - You identify only the top 5 more relevat scenes. - you have to provide reasoning for the rating."
+  },
+  "USER_MESSAGE": {
+    "type": "String",
+    "value": "Please summarize the content in the provided file, and create the required JSON file for me to download as a result with the file named as response."
+  },
+  "ASSISSTANT_NAME": {
+    "type": "String",
+    "value": "videoAssistant"
+  },
+  "AZURE_OPENAI_DEPLOYMENT_NAME": {
+    "type": "String",
+    "value": "@appsetting('AZURE_OPENAI_DEPLOYMENT_NAME')"
+  },
+  "VIDEO_INDEXER_ID": {
+    "type": "String",
+    "value": "@appsetting('VIDEO_INDEXER_ID')"
+  },
+  "VIDEO_INDEXER_ACCOUNT_ID": {
+    "type": "String",
+    "value": "@appsetting('VIDEO_INDEXER_ACCOUNT_ID')"
+  },
+  "WORKFLOWS_LOCATION_NAME": {
+    "type": "String",
+    "value": "@appsetting('WORKFLOWS_LOCATION_NAME')"
+  },
+  "ConversionserviceConnectionRuntimeUrl": {
+    "type": "String",
+    "value": "@appsetting('ConversionserviceConnectionRuntimeUrl')"
+  },
+  "ConversionserviceAuthentication": {
+    "type": "Object",
+    "value": {
+      "type": "Raw",
+      "scheme": "Key",
+      "parameter": "@appsetting('ConversionserviceConnectionKey')"
+    }
+  },
+  "Videoindexer-V2ConnectionRuntimeUrl": {
+    "type": "String",
+    "value": "@appsetting('Videoindexer-V2ConnectionRuntimeUrl')"
+  },
+  "Videoindexer-V2Authentication": {
+    "type": "Object",
+    "value": {
+      "type": "Raw",
+      "scheme": "Key",
+      "parameter": "@appsetting('Videoindexer-V2ConnectionKey')"
+    }
+  }
+}

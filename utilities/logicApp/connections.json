@@ -1,0 +1,39 @@
+{
+  "managedApiConnections": {
+    "conversionservice": {
+      "api": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/providers/Microsoft.Web/locations/@{appsetting('WORKFLOWS_LOCATION_NAME')}/managedApis/conversionservice"
+      },
+      "connection": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')}/providers/Microsoft.Web/connections/uc1a2-01-dev-orch-logic-api-conversionservice"
+      },
+      "connectionRuntimeUrl": "@parameters('ConversionserviceConnectionRuntimeUrl')",
+      "authentication": "@parameters('ConversionserviceAuthentication')"
+    },
+    "videoindexer-v2": {
+      "api": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/providers/Microsoft.Web/locations/@{appsetting('WORKFLOWS_LOCATION_NAME')}/managedApis/videoindexer-v2"
+      },
+      "connection": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')}/providers/Microsoft.Web/connections/uc1a2-01-dev-orch-logic-api-videoindexer-v2"
+      },
+      "connectionRuntimeUrl": "@parameters('Videoindexer-V2ConnectionRuntimeUrl')",
+      "authentication": "@parameters('Videoindexer-V2Authentication')"
+    }
+  },
+  "serviceProviderConnections": {
+    "AzureBlob": {
+      "parameterValues": {
+        "blobStorageEndpoint": "@appsetting('AZURE_BLOB_STORAGE_ENDPOINT')",
+        "authProvider": {
+          "Type": "ManagedServiceIdentity"
+        }
+      },
+      "parameterSetName": "ManagedServiceIdentity",
+      "serviceProvider": {
+        "id": "/serviceProviders/AzureBlob"
+      },
+      "displayName": "datalake001"
+    }
+  }
+}
