@@ -2,604 +2,111 @@
     "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
-            "OpenAi-CreateAssisstant-Request": {
-                "type": "Http",
-                "inputs": {
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')",
-                    "method": "POST",
-                    "body": {
-                        "instructions": "@{parameters('META_PROMPT')}",
-                        "model": "@{parameters('AZURE_OPENAI_DEPLOYMENT_NAME')}",
-                        "name": "@{concat(parameters('ASSISSTANT_NAME'), workflow()['id'])}"
-                    },
-                    "authentication": {
-                        "type": "ManagedServiceIdentity",
-                        "audience": "https://cognitiveservices.azure.com"
-                    }
-                },
-                "runAfter": {
-                    "Compose-Transcript": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "runtimeConfiguration": {
-                    "contentTransfer": {
-                        "transferMode": "Chunked"
-                    }
-                }
-            },
-            "OpenAi-CreateAssisstant-Response": {
-                "type": "ParseJson",
-                "inputs": {
-                    "content": "@body('OpenAi-CreateAssisstant-Request')",
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "object": {
-                                "type": "string"
-                            },
-                            "created_at": {
-                                "type": "integer"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "description": {},
-                            "model": {
-                                "type": "string"
-                            },
-                            "instructions": {
-                                "type": "string"
-                            },
-                            "tools": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "type": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "type"
-                                    ]
-                                }
-                            },
-                            "file_ids": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "metadata": {
-                                "type": "object",
-                                "properties": {}
-                            }
-                        }
-                    }
-                },
-                "runAfter": {
-                    "OpenAi-CreateAssisstant-Request": [
-                        "SUCCEEDED"
-                    ]
-                }
-            },
-            "OpenAi-CreateRun-Request": {
-                "type": "Http",
-                "inputs": {
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',variables('threadId'),'/runs?api-version=2024-03-01-preview')",
-                    "method": "POST",
-                    "body": {
-                        "assistant_id": "@{body('OpenAi-CreateAssisstant-Response')?['id']}",
-                        "thread": {
-                            "messages": "@outputs('Compose-Transcript')"
-                        }
-                    },
-                    "authentication": {
-                        "type": "ManagedServiceIdentity",
-                        "audience": "https://cognitiveservices.azure.com"
-                    }
-                },
-                "runAfter": {
-                    "OpenAi-CreateAssisstant-Response": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "runtimeConfiguration": {
-                    "contentTransfer": {
-                        "transferMode": "Chunked"
-                    }
-                }
-            },
-            "OpenAi-CreateRun-Response": {
-                "type": "ParseJson",
-                "inputs": {
-                    "content": "@body('OpenAi-CreateRun-Request')",
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "object": {
-                                "type": "string"
-                            },
-                            "created_at": {
-                                "type": "integer"
-                            },
-                            "assistant_id": {
-                                "type": "string"
-                            },
-                            "thread_id": {
-                                "type": "string"
-                            },
-                            "status": {
-                                "type": "string"
-                            },
-                            "started_at": {},
-                            "expires_at": {
-                                "type": "integer"
-                            },
-                            "cancelled_at": {},
-                            "failed_at": {},
-                            "completed_at": {},
-                            "required_action": {},
-                            "last_error": {},
-                            "model": {
-                                "type": "string"
-                            },
-                            "instructions": {
-                                "type": "string"
-                            },
-                            "tools": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "type": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "type"
-                                    ]
-                                }
-                            },
-                            "file_ids": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "metadata": {
-                                "type": "object",
-                                "properties": {}
-                            },
-                            "temperature": {
-                                "type": "integer"
-                            },
-                            "usage": {}
-                        }
-                    }
-                },
-                "runAfter": {
-                    "OpenAi-CreateRun-Request": [
-                        "SUCCEEDED"
-                    ]
-                }
-            },
-            "InitializeVariable-RunStatus": {
-                "type": "InitializeVariable",
-                "inputs": {
-                    "variables": [
-                        {
-                            "name": "runStatus",
-                            "type": "string",
-                            "value": "Unknown"
-                        }
-                    ]
-                },
-                "runAfter": {
-                    "OpenAi-CreateRun-Response": [
-                        "SUCCEEDED"
-                    ]
-                }
-            },
-            "Until": {
-                "type": "Until",
-                "expression": "@equals(variables('runStatus'),'completed')",
-                "limit": {
-                    "count": 10,
-                    "timeout": "PT1H"
-                },
-                "actions": {
-                    "OpenAi-GetRun-Request": {
-                        "type": "Http",
-                        "inputs": {
-                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/runs/',body('OpenAi-CreateRun-Response')?['id'],'?api-version=2024-02-15-preview')",
-                            "method": "GET",
-                            "authentication": {
-                                "type": "ManagedServiceIdentity",
-                                "audience": "https://cognitiveservices.azure.com"
-                            }
-                        },
-                        "runtimeConfiguration": {
-                            "contentTransfer": {
-                                "transferMode": "Chunked"
-                            }
-                        }
-                    },
-                    "OpenAi-GetRun-Response": {
-                        "type": "ParseJson",
-                        "inputs": {
-                            "content": "@body('OpenAi-GetRun-Request')",
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "type": {
-                                        "type": "string"
-                                    },
-                                    "properties": {
-                                        "type": "object",
-                                        "properties": {
-                                            "id": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "object": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "created_at": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "assistant_id": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "thread_id": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "status": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "started_at": {
-                                                "type": "object",
-                                                "properties": {}
-                                            },
-                                            "expires_at": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "cancelled_at": {
-                                                "type": "object",
-                                                "properties": {}
-                                            },
-                                            "failed_at": {
-                                                "type": "object",
-                                                "properties": {}
-                                            },
-                                            "completed_at": {
-                                                "type": "object",
-                                                "properties": {}
-                                            },
-                                            "required_action": {
-                                                "type": "object",
-                                                "properties": {}
-                                            },
-                                            "last_error": {
-                                                "type": "object",
-                                                "properties": {}
-                                            },
-                                            "model": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "instructions": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "tools": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    },
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "type": {
-                                                                "type": "string"
-                                                            },
-                                                            "properties": {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "type": {
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "type": {
-                                                                                "type": "string"
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            },
-                                                            "required": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            "file_ids": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    },
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "type": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            "metadata": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "temperature": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "usage": {
-                                                "type": "object",
-                                                "properties": {}
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "runAfter": {
-                            "OpenAi-GetRun-Request": [
-                                "SUCCEEDED"
-                            ]
-                        }
-                    },
-                    "SetVariable-RunStatus": {
-                        "type": "SetVariable",
-                        "inputs": {
-                            "name": "runStatus",
-                            "value": "@{body('OpenAi-GetRun-Response')?['properties']?['status']}"
-                        },
-                        "runAfter": {
-                            "OpenAi-GetRun-Response": [
-                                "SUCCEEDED"
-                            ]
-                        }
-                    },
-                    "Delay": {
-                        "type": "Wait",
-                        "inputs": {
-                            "interval": {
-                                "count": 30,
-                                "unit": "Second"
-                            }
-                        },
-                        "runAfter": {
-                            "SetVariable-RunStatus": [
-                                "SUCCEEDED"
-                            ]
-                        }
-                    }
-                },
-                "runAfter": {
-                    "InitializeVariable-RunStatus": [
-                        "SUCCEEDED"
-                    ]
-                }
-            },
-            "OpenAi-GetMessages-Request": {
-                "type": "Http",
-                "inputs": {
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/messages?api-version=2024-02-15-preview')",
-                    "method": "GET",
-                    "authentication": {
-                        "type": "ManagedServiceIdentity",
-                        "audience": "https://cognitiveservices.azure.com"
-                    }
-                },
-                "runAfter": {
-                    "Until": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "runtimeConfiguration": {
-                    "contentTransfer": {
-                        "transferMode": "Chunked"
-                    }
-                }
-            },
-            "OpenAi-GetMessages-Response": {
-                "type": "ParseJson",
-                "inputs": {
-                    "content": "@body('OpenAi-GetMessages-Request')",
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "object": {
-                                "type": "string"
-                            },
-                            "data": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "string"
-                                        },
-                                        "object": {
-                                            "type": "string"
-                                        },
-                                        "created_at": {
-                                            "type": "integer"
-                                        },
-                                        "assistant_id": {},
-                                        "thread_id": {
-                                            "type": "string"
-                                        },
-                                        "run_id": {},
-                                        "role": {
-                                            "type": "string"
-                                        },
-                                        "content": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    },
-                                                    "text": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "value": {
-                                                                "type": "string"
-                                                            },
-                                                            "annotations": {
-                                                                "type": "array"
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                "required": [
-                                                    "type",
-                                                    "text"
-                                                ]
-                                            }
-                                        },
-                                        "file_ids": {
-                                            "type": "array"
-                                        },
-                                        "metadata": {
-                                            "type": "object",
-                                            "properties": {}
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "object",
-                                        "created_at",
-                                        "assistant_id",
-                                        "thread_id",
-                                        "run_id",
-                                        "role",
-                                        "content",
-                                        "file_ids",
-                                        "metadata"
-                                    ]
-                                }
-                            },
-                            "first_id": {
-                                "type": "string"
-                            },
-                            "last_id": {
-                                "type": "string"
-                            },
-                            "has_more": {
-                                "type": "boolean"
-                            }
-                        }
-                    }
-                },
-                "runAfter": {
-                    "OpenAi-GetMessages-Request": [
-                        "SUCCEEDED"
-                    ]
-                }
-            },
             "Compose-BlobContent": {
-                "type": "Compose",
                 "inputs": "@base64ToString(triggerBody()?['content']['$content'])",
-                "runAfter": {}
+                "runAfter": {},
+                "type": "Compose"
+            },
+            "Compose-Transcript": {
+                "inputs": "@variables('transcript')",
+                "runAfter": {
+                    "ForEach-Section": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "Compose"
+            },
+            "ForEach-Section": {
+                "actions": {
+                    "AppendToArrayVariable-Transcript": {
+                        "inputs": {
+                            "name": "transcript",
+                            "value": "@outputs('Compose-Scene')"
+                        },
+                        "runAfter": {
+                            "Compose-Scene": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "type": "AppendToArrayVariable"
+                    },
+                    "Compose-Scene": {
+                        "inputs": {
+                            "content": "@{body('HtmlToText-Scene')}",
+                            "role": "user"
+                        },
+                        "runAfter": {
+                            "HtmlToText-Scene": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "type": "Compose"
+                    },
+                    "HtmlToText-Scene": {
+                        "inputs": {
+                            "body": "<p>@{items('ForEach-Section')}</p>",
+                            "host": {
+                                "connection": {
+                                    "referenceName": "conversionservice"
+                                }
+                            },
+                            "method": "post",
+                            "path": "/html2text"
+                        },
+                        "type": "ApiConnection"
+                    }
+                },
+                "foreach": "@body('HtmlToText-BlobContent-Response')?['sections']",
+                "runAfter": {
+                    "InitializeVariable-Transcipt": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "Foreach"
+            },
+            "FunctionShortClip-VideoExtraction-Request": {
+                "inputs": {
+                    "body": {
+                        "orchestrator_workflow_name": "video_extraction_orchestrator",
+                        "orchestrator_workflow_properties": {
+                            "content_url_openai": "@{concat(parameters('AZURE_BLOB_STORAGE_ENDPOINT'), body('UploadBlob-Assisstant')?['properties']?['blobFullPathWithContainer'])}",
+                            "content_url_video": "@{concat(parameters('AZURE_BLOB_STORAGE_ENDPOINT'), triggerBody()?['name'])}"
+                        }
+                    },
+                    "method": "POST",
+                    "uri": "@concat(parameters('FUNCTION_SHORTCLIP_HOSTNAME'), 'api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))"
+                },
+                "runAfter": {
+                    "UploadBlob-Assisstant": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                },
+                "type": "Http"
             },
             "HtmlToText-BlobContent": {
-                "type": "ApiConnection",
                 "inputs": {
+                    "body": "<p>@{outputs('Compose-BlobContent')}</p>",
                     "host": {
                         "connection": {
                             "referenceName": "conversionservice"
                         }
                     },
                     "method": "post",
-                    "body": "<p>@{outputs('Compose-BlobContent')}</p>",
                     "path": "/html2text"
                 },
                 "runAfter": {
                     "Compose-BlobContent": [
                         "SUCCEEDED"
                     ]
-                }
+                },
+                "type": "ApiConnection"
             },
             "HtmlToText-BlobContent-Response": {
-                "type": "ParseJson",
                 "inputs": {
                     "content": "@body('HtmlToText-BlobContent')",
                     "schema": {
@@ -642,10 +149,27 @@
                     "HtmlToText-BlobContent": [
                         "SUCCEEDED"
                     ]
-                }
+                },
+                "type": "ParseJson"
+            },
+            "InitializeVariable-RunStatus": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "runStatus",
+                            "type": "string",
+                            "value": "Unknown"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "OpenAi-CreateRun-Response": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "InitializeVariable"
             },
             "InitializeVariable-Transcipt": {
-                "type": "InitializeVariable",
                 "inputs": {
                     "variables": [
                         {
@@ -658,71 +182,570 @@
                     "HtmlToText-BlobContent-Response": [
                         "SUCCEEDED"
                     ]
-                }
+                },
+                "type": "InitializeVariable"
             },
-            "ForEach-Section": {
-                "type": "Foreach",
-                "foreach": "@body('HtmlToText-BlobContent-Response')?['sections']",
-                "actions": {
-                    "HtmlToText-Scene": {
-                        "type": "ApiConnection",
-                        "inputs": {
-                            "host": {
-                                "connection": {
-                                    "referenceName": "conversionservice"
-                                }
+            "OpenAi-CreateAssisstant-Request": {
+                "inputs": {
+                    "authentication": {
+                        "audience": "https://cognitiveservices.azure.com",
+                        "type": "ManagedServiceIdentity"
+                    },
+                    "body": {
+                        "instructions": "@{parameters('META_PROMPT')}",
+                        "model": "@{parameters('AZURE_OPENAI_DEPLOYMENT_NAME')}",
+                        "name": "@{concat(parameters('ASSISSTANT_NAME'), workflow()['id'])}"
+                    },
+                    "method": "POST",
+                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')"
+                },
+                "runAfter": {
+                    "Compose-Transcript": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                },
+                "type": "Http"
+            },
+            "OpenAi-CreateAssisstant-Response": {
+                "inputs": {
+                    "content": "@body('OpenAi-CreateAssisstant-Request')",
+                    "schema": {
+                        "properties": {
+                            "created_at": {
+                                "type": "integer"
                             },
-                            "method": "post",
-                            "body": "<p>@{items('ForEach-Section')}</p>",
-                            "path": "/html2text"
-                        }
-                    },
-                    "Compose-Scene": {
-                        "type": "Compose",
-                        "inputs": {
-                            "content": "@{body('HtmlToText-Scene')}",
-                            "role": "user"
+                            "description": {},
+                            "file_ids": {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            "id": {
+                                "type": "string"
+                            },
+                            "instructions": {
+                                "type": "string"
+                            },
+                            "metadata": {
+                                "properties": {},
+                                "type": "object"
+                            },
+                            "model": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "object": {
+                                "type": "string"
+                            },
+                            "tools": {
+                                "items": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "type"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            }
                         },
-                        "runAfter": {
-                            "HtmlToText-Scene": [
-                                "SUCCEEDED"
-                            ]
-                        }
-                    },
-                    "AppendToArrayVariable-Transcript": {
-                        "type": "AppendToArrayVariable",
-                        "inputs": {
-                            "name": "transcript",
-                            "value": "@outputs('Compose-Scene')"
-                        },
-                        "runAfter": {
-                            "Compose-Scene": [
-                                "SUCCEEDED"
-                            ]
-                        }
+                        "type": "object"
                     }
                 },
                 "runAfter": {
-                    "InitializeVariable-Transcipt": [
+                    "OpenAi-CreateAssisstant-Request": [
                         "SUCCEEDED"
                     ]
-                }
+                },
+                "type": "ParseJson"
             },
-            "Compose-Transcript": {
-                "type": "Compose",
-                "inputs": "@variables('transcript')",
+            "OpenAi-CreateRun-Request": {
+                "inputs": {
+                    "authentication": {
+                        "audience": "https://cognitiveservices.azure.com",
+                        "type": "ManagedServiceIdentity"
+                    },
+                    "body": {
+                        "assistant_id": "@{body('OpenAi-CreateAssisstant-Response')?['id']}",
+                        "thread": {
+                            "messages": "@outputs('Compose-Transcript')"
+                        }
+                    },
+                    "method": "POST",
+                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/runs?api-version=2024-03-01-preview')"
+                },
                 "runAfter": {
-                    "ForEach-Section": [
+                    "OpenAi-CreateAssisstant-Response": [
                         "SUCCEEDED"
                     ]
-                }
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                },
+                "type": "Http"
+            },
+            "OpenAi-CreateRun-Response": {
+                "inputs": {
+                    "content": "@body('OpenAi-CreateRun-Request')",
+                    "schema": {
+                        "properties": {
+                            "assistant_id": {
+                                "type": "string"
+                            },
+                            "cancelled_at": {},
+                            "completed_at": {},
+                            "created_at": {
+                                "type": "integer"
+                            },
+                            "expires_at": {
+                                "type": "integer"
+                            },
+                            "failed_at": {},
+                            "file_ids": {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            "id": {
+                                "type": "string"
+                            },
+                            "instructions": {
+                                "type": "string"
+                            },
+                            "last_error": {},
+                            "metadata": {
+                                "properties": {},
+                                "type": "object"
+                            },
+                            "model": {
+                                "type": "string"
+                            },
+                            "object": {
+                                "type": "string"
+                            },
+                            "required_action": {},
+                            "started_at": {},
+                            "status": {
+                                "type": "string"
+                            },
+                            "temperature": {
+                                "type": "integer"
+                            },
+                            "thread_id": {
+                                "type": "string"
+                            },
+                            "tools": {
+                                "items": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "type"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            "usage": {}
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "OpenAi-CreateRun-Request": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "OpenAi-GetMessages-Request": {
+                "inputs": {
+                    "authentication": {
+                        "audience": "https://cognitiveservices.azure.com",
+                        "type": "ManagedServiceIdentity"
+                    },
+                    "method": "GET",
+                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/messages?api-version=2024-02-15-preview')"
+                },
+                "runAfter": {
+                    "Until": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                },
+                "type": "Http"
+            },
+            "OpenAi-GetMessages-Response": {
+                "inputs": {
+                    "content": "@body('OpenAi-GetMessages-Request')",
+                    "schema": {
+                        "properties": {
+                            "data": {
+                                "items": {
+                                    "properties": {
+                                        "assistant_id": {},
+                                        "content": {
+                                            "items": {
+                                                "properties": {
+                                                    "text": {
+                                                        "properties": {
+                                                            "annotations": {
+                                                                "type": "array"
+                                                            },
+                                                            "value": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "type",
+                                                    "text"
+                                                ],
+                                                "type": "object"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "created_at": {
+                                            "type": "integer"
+                                        },
+                                        "file_ids": {
+                                            "type": "array"
+                                        },
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "metadata": {
+                                            "properties": {},
+                                            "type": "object"
+                                        },
+                                        "object": {
+                                            "type": "string"
+                                        },
+                                        "role": {
+                                            "type": "string"
+                                        },
+                                        "run_id": {},
+                                        "thread_id": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "object",
+                                        "created_at",
+                                        "assistant_id",
+                                        "thread_id",
+                                        "run_id",
+                                        "role",
+                                        "content",
+                                        "file_ids",
+                                        "metadata"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            "first_id": {
+                                "type": "string"
+                            },
+                            "has_more": {
+                                "type": "boolean"
+                            },
+                            "last_id": {
+                                "type": "string"
+                            },
+                            "object": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "OpenAi-GetMessages-Request": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "Until": {
+                "actions": {
+                    "Delay": {
+                        "inputs": {
+                            "interval": {
+                                "count": 30,
+                                "unit": "Second"
+                            }
+                        },
+                        "runAfter": {
+                            "SetVariable-RunStatus": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "type": "Wait"
+                    },
+                    "OpenAi-GetRun-Request": {
+                        "inputs": {
+                            "authentication": {
+                                "audience": "https://cognitiveservices.azure.com",
+                                "type": "ManagedServiceIdentity"
+                            },
+                            "method": "GET",
+                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/runs/',body('OpenAi-CreateRun-Response')?['id'],'?api-version=2024-02-15-preview')"
+                        },
+                        "runtimeConfiguration": {
+                            "contentTransfer": {
+                                "transferMode": "Chunked"
+                            }
+                        },
+                        "type": "Http"
+                    },
+                    "OpenAi-GetRun-Response": {
+                        "inputs": {
+                            "content": "@body('OpenAi-GetRun-Request')",
+                            "schema": {
+                                "properties": {
+                                    "properties": {
+                                        "properties": {
+                                            "assistant_id": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "cancelled_at": {
+                                                "properties": {},
+                                                "type": "object"
+                                            },
+                                            "completed_at": {
+                                                "properties": {},
+                                                "type": "object"
+                                            },
+                                            "created_at": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "expires_at": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "failed_at": {
+                                                "properties": {},
+                                                "type": "object"
+                                            },
+                                            "file_ids": {
+                                                "properties": {
+                                                    "items": {
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "id": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "instructions": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "last_error": {
+                                                "properties": {},
+                                                "type": "object"
+                                            },
+                                            "metadata": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "model": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "object": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "required_action": {
+                                                "properties": {},
+                                                "type": "object"
+                                            },
+                                            "started_at": {
+                                                "properties": {},
+                                                "type": "object"
+                                            },
+                                            "status": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "temperature": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "thread_id": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "tools": {
+                                                "properties": {
+                                                    "items": {
+                                                        "properties": {
+                                                            "properties": {
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "properties": {
+                                                                            "type": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "required": {
+                                                                "items": {
+                                                                    "type": "string"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "type": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "usage": {
+                                                "properties": {},
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "type": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "runAfter": {
+                            "OpenAi-GetRun-Request": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "type": "ParseJson"
+                    },
+                    "SetVariable-RunStatus": {
+                        "inputs": {
+                            "name": "runStatus",
+                            "value": "@{body('OpenAi-GetRun-Response')?['properties']?['status']}"
+                        },
+                        "runAfter": {
+                            "OpenAi-GetRun-Response": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "type": "SetVariable"
+                    }
+                },
+                "expression": "@equals(variables('runStatus'),'completed')",
+                "limit": {
+                    "count": 10,
+                    "timeout": "PT1H"
+                },
+                "runAfter": {
+                    "InitializeVariable-RunStatus": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "Until"
             },
             "UploadBlob-Assisstant": {
-                "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "containerName": "@concat(parameters('STORAGE_CONTAINER_NAME_RAW'), '/', workflow()['id'])",
                         "blobName": "assisstant.json",
+                        "containerName": "@concat(parameters('STORAGE_CONTAINER_NAME_RAW'), '/', workflow()['id'])",
                         "content": "@body('OpenAi-GetMessages-Response')?['data'][0]['content'][0]['text']['value']"
                     },
                     "serviceProviderConfiguration": {
@@ -735,38 +758,14 @@
                     "OpenAi-GetMessages-Response": [
                         "SUCCEEDED"
                     ]
-                }
-            },
-            "FunctionShortClip-VideoExtraction-Request": {
-                "type": "Http",
-                "inputs": {
-                    "uri": "@concat(parameters('FUNCTION_SHORTCLIP_HOSTNAME'), 'api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))",
-                    "method": "POST",
-                    "body": {
-                        "orchestrator_workflow_name": "video_extraction_orchestrator",
-                        "orchestrator_workflow_properties": {
-                            "content_url_video": "@{concat(parameters('AZURE_BLOB_STORAGE_ENDPOINT'), triggerBody()?['name'])}",
-                            "content_url_openai": "@{concat(parameters('AZURE_BLOB_STORAGE_ENDPOINT'), body('UploadBlob-Assisstant')?['properties']?['blobFullPathWithContainer'])}"
-                        }
-                    }
                 },
-                "runAfter": {
-                    "UploadBlob-Assisstant": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "runtimeConfiguration": {
-                    "contentTransfer": {
-                        "transferMode": "Chunked"
-                    }
-                }
+                "type": "ServiceProvider"
             }
         },
         "contentVersion": "1.0.0.0",
         "outputs": {},
         "triggers": {
             "BlobTrigger": {
-                "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
                         "path": "@parameters('STORAGE_CONTAINER_NAME_RAW')"
@@ -776,7 +775,8 @@
                         "operationId": "whenABlobIsAddedOrModified",
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
-                }
+                },
+                "type": "ServiceProvider"
             }
         }
     },
