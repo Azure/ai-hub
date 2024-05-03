@@ -62,6 +62,252 @@
                         "SUCCEEDED"
                     ]
                 }
+            },
+            "Compose-VideoIndex": {
+                "type": "Compose",
+                "inputs": "@body('Videoindexer-GetVideoIndex')",
+                "runAfter": {
+                    "Videoindexer-GetVideoIndex": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "UploadBlob-VideoIndex": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
+                        "blobName": "@concat(workflow()['id'], 'videoindexer.json')",
+                        "content": "@outputs('Compose-VideoIndex')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "uploadBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "Compose-VideoIndex": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Videoindexer-CreatePromptContent-Request": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',triggerBody()?['videoId'],'/PromptContent')",
+                    "method": "POST",
+                    "headers": {
+                        "accessToken": "@{body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']}"
+                    }
+                },
+                "runAfter": {
+                    "Videoindexer-GetVideoIndex": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Until": {
+                "type": "Until",
+                "expression": "@equals(variables('statusCode'),200)",
+                "limit": {
+                    "count": 60,
+                    "timeout": "PT1H"
+                },
+                "actions": {
+                    "Delay": {
+                        "type": "Wait",
+                        "inputs": {
+                            "interval": {
+                                "count": 30,
+                                "unit": "Second"
+                            }
+                        }
+                    },
+                    "Videoindexer-GetPromptContent-Request": {
+                        "type": "Http",
+                        "inputs": {
+                            "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',triggerBody()?['videoId'],'/PromptContent')",
+                            "method": "GET",
+                            "headers": {
+                                "accessToken": "@{body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']}"
+                            }
+                        },
+                        "runAfter": {
+                            "Delay": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "runtimeConfiguration": {
+                            "contentTransfer": {
+                                "transferMode": "Chunked"
+                            }
+                        }
+                    },
+                    "SetVariable-StatusCode": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "statusCode",
+                            "value": "@outputs('Videoindexer-GetPromptContent-Request')?['statusCode']"
+                        },
+                        "runAfter": {
+                            "Videoindexer-GetPromptContent-Response": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Videoindexer-GetPromptContent-Response": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@body('Videoindexer-GetPromptContent-Request')",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "partition": {},
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "sections": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "start": {
+                                                    "type": "string"
+                                                },
+                                                "end": {
+                                                    "type": "string"
+                                                },
+                                                "content": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "start",
+                                                "end",
+                                                "content"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Videoindexer-GetPromptContent-Request": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "InitializeVariable-StatusCode": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "InitializeVariable-StatusCode": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "statusCode",
+                            "type": "integer",
+                            "value": 0
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Videoindexer-CreatePromptContent-Request": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "UploadBlob-PromptContent": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
+                        "blobName": "@concat(workflow()['id'], '/promptcontent.json')",
+                        "content": "@body('Videoindexer-GetPromptContent-Request')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "uploadBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "Until": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Videoindexer-GetArtifactUrl-Request": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',triggerBody()?['videoId'],'/ArtifactUrl')",
+                    "method": "GET",
+                    "headers": {
+                        "accessToken": "@{body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']}",
+                        "type": "KeyframesThumbnails"
+                    }
+                },
+                "runAfter": {
+                    "Videoindexer-GetVideoIndex": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Videoindexer-GetArtifact-Request": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@body('Videoindexer-GetArtifactUrl-Request')",
+                    "method": "GET"
+                },
+                "runAfter": {
+                    "Videoindexer-GetArtifactUrl-Request": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "UploadBlob-Artifact": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
+                        "blobName": "@concat(workflow()['id'], '/artifact.json')",
+                        "content": "@body('Videoindexer-GetArtifact-Request')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "uploadBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "Videoindexer-GetArtifact-Request": [
+                        "SUCCEEDED"
+                    ]
+                }
             }
         },
         "contentVersion": "1.0.0.0",
