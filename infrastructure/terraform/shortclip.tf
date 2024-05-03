@@ -74,7 +74,7 @@ module "function_shortclip" {
   function_share_name                               = local.function_name_shortclip
   function_key_vault_id                             = module.key_vault_shortclip.key_vault_id
   function_user_assigned_identity_id                = module.user_assigned_identity_shortclip.user_assigned_identity_id
-  function_sku                                      = "EP1"
+  function_sku                                      = var.function_sku
   function_application_insights_instrumentation_key = module.application_insights_shortclip.application_insights_instrumentation_key
   function_application_insights_connection_string   = module.application_insights_shortclip.application_insights_connection_string
   log_analytics_workspace_id                        = module.azure_log_analytics.log_analytics_id

@@ -93,14 +93,13 @@ variable "function_user_assigned_identity_id" {
 }
 
 variable "function_sku" {
-  description = "Specifies the sku name used in the function app service plan."
+  description = "Specifies the SKU for the function app."
   type        = string
   sensitive   = false
-  nullable    = false
-  default     = "Y1"
+  default     = "EP1"
   validation {
-    condition     = contains(["F1", "B1", "B2", "B3", "S1", "S2", "S3", "P0v3", "P1v3", "P2v3", "P3v3", "P1mv3", "P2mv3", "P3mv3", "P4mv3", "P5mv3", "EP1", "EP2", "EP3", "Y1"], var.function_sku)
-    error_message = "Please specify a valid sku name."
+    condition     = contains(["EP1", "EP2", "EP3"], var.function_sku)
+    error_message = "Please use an allowed value: \"EP1\", \"EP2\", \"EP3\"."
   }
 }
 
