@@ -3,14 +3,17 @@ variable "location" {
   description = "Specifies the location for all Azure resources."
   type        = string
   sensitive   = false
-  default     = "eastus"
+  default     = "swedencentral"
 }
 
 variable "prefix" {
   description = "Specifies the location for all Azure resources."
   type        = string
   sensitive   = false
-  default     = "esp2"
+  validation {
+    condition     = length(var.prefix) >= 2 && length(var.prefix) <= 10
+    error_message = "Please specify a prefix with more than two and less than 10 characters."
+  }
 }
 
 variable "environment" {
@@ -19,8 +22,8 @@ variable "environment" {
   sensitive   = false
   default     = "dev"
   validation {
-    condition     = contains(["dev", "tst", "qa", "prd"], var.environment)
-    error_message = "Please use an allowed value: \"dev\", \"tst\", \"qa\" or \"prd\"."
+    condition     = contains(["int", "dev", "tst", "uat", "prd"], var.environment)
+    error_message = "Please use an allowed value: \"int\", \"dev\", \"tst\", \"uat\" or \"prd\"."
   }
 }
 
@@ -38,60 +41,25 @@ variable "videoindexer_api_key" {
   sensitive   = true
 }
 
+variable "logic_app_sku" {
+  description = "Specifies the SKU for the logic app."
+  type        = string
+  sensitive   = false
+  default     = "WS1"
+  validation {
+    condition     = contains(["WS1", "WS2", "WS3"], var.logic_app_sku)
+    error_message = "Please use an allowed value: \"WS1\", \"WS2\", \"WS3\"."
+  }
+}
+
 variable "function_sku" {
   description = "Specifies the SKU for the function app."
   type        = string
   sensitive   = false
   default     = "EP1"
-}
-
-variable "data_factory_global_parameters" {
-  description = "Specifies the Azure Data Factory global parameters."
-  type = map(object({
-    type  = optional(string, "String")
-    value = optional(any, "")
-  }))
-  sensitive = false
-  nullable  = false
-  default = {
-    temperature = {
-      type  = "String",
-      value = "1"
-    },
-    top_p = {
-      type  = "String",
-      value = "1"
-    },
-    category = {
-      type  = "String",
-      value = "metaprompt"
-    },
-    language = {
-      type  = "String",
-      value = "es-ES"
-    },
-    indexName = {
-      type  = "String",
-      value = "esp1Videos"
-    },
-    viRegion = {
-      type  = "String",
-      value = "eastus"
-    },
-    viAccountName = {
-      type  = "String",
-      value = "metaprompt"
-    },
-    viAccountId = {
-      type  = "String",
-      value = "metaprompt"
-    },
-  }
   validation {
-    condition = alltrue([
-      length([for type in values(var.data_factory_global_parameters)[*].type : type if !contains(["Array", "Bool", "Float", "Int", "Object", "String"], type)]) <= 0,
-    ])
-    error_message = "Please specify a valid global parameter configuration."
+    condition     = contains(["EP1", "EP2", "EP3"], var.function_sku)
+    error_message = "Please use an allowed value: \"EP1\", \"EP2\", \"EP3\"."
   }
 }
 

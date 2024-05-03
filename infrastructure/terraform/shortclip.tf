@@ -62,7 +62,7 @@ module "function_shortclip" {
     AzureWebJobsFeatureFlags       = "EnableWorkerIndexing"
     TaskHubName                    = "shortclip"
     # App specific settings
-    STORAGE_DOMAIN_NAME           = replace(trimprefix(module.storage_account.storage_account_id, "https://"), "/", "")
+    STORAGE_DOMAIN_NAME           = replace(trimprefix(module.storage_account.storage_account_primary_blob_endpoint, "https://"), "/", "")
     STORAGE_CONTAINER_NAME        = local.container_name_shortclip
     AZURE_OPEN_AI_API_VERSION     = "2024-02-15-preview"
     AZURE_OPEN_AI_DEPLOYMENT_NAME = "gpt-4"
@@ -74,7 +74,7 @@ module "function_shortclip" {
   function_share_name                               = local.function_name_shortclip
   function_key_vault_id                             = module.key_vault_shortclip.key_vault_id
   function_user_assigned_identity_id                = module.user_assigned_identity_shortclip.user_assigned_identity_id
-  function_sku                                      = "EP1"
+  function_sku                                      = var.function_sku
   function_application_insights_instrumentation_key = module.application_insights_shortclip.application_insights_instrumentation_key
   function_application_insights_connection_string   = module.application_insights_shortclip.application_insights_connection_string
   log_analytics_workspace_id                        = module.azure_log_analytics.log_analytics_id

@@ -736,6 +736,30 @@
                         "SUCCEEDED"
                     ]
                 }
+            },
+            "FunctionShortClip-VideoExtraction-Request": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@concat(parameters('FUNCTION_SHORTCLIP_HOSTNAME'), 'api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))",
+                    "method": "POST",
+                    "body": {
+                        "orchestrator_workflow_name": "video_extraction_orchestrator",
+                        "orchestrator_workflow_properties": {
+                            "content_url_video": "@{concat(parameters('AZURE_BLOB_STORAGE_ENDPOINT'), triggerBody()?['name'])}",
+                            "content_url_openai": "@{concat(parameters('AZURE_BLOB_STORAGE_ENDPOINT'), body('UploadBlob-Assisstant')?['properties']?['blobFullPathWithContainer'])}"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "UploadBlob-Assisstant": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
             }
         },
         "contentVersion": "1.0.0.0",

@@ -38,6 +38,9 @@ on:
       CLIENT_SECRET:
         required: true
         description: "Specifies the client secret."
+      VIDEOINDEXER_API_KEY:
+        required: true
+        description: "Specifies the client secret."
 
 jobs:
   lint:
@@ -132,6 +135,7 @@ jobs:
           terraform plan -var-file="../config/${CONFIG}/vars.tfvars" -input=false
         env:
           CONFIG: ${{ inputs.config }}
+          TF_VAR_videoindexer_api_key: ${{ secrets.VIDEOINDEXER_API_KEY }}
 
   apply:
     name: Terraform Apply
@@ -182,6 +186,13 @@ jobs:
         env:
           CONFIG: ${{ inputs.config }}
 
+      # Login to Azure
+      - name: Azure Login
+        id: azure_login
+        uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.CLIENT_ID }}","clientSecret":"${{ secrets.CLIENT_SECRET }}","subscriptionId":"${{ inputs.subscription_id }}","tenantId":"${{ inputs.tenant_id }}"}'
+
       # Terraform Apply
       - name: Terraform Apply
         working-directory: ${{ inputs.working_directory }}
@@ -189,3 +200,4 @@ jobs:
           terraform apply -var-file="../config/${CONFIG}/vars.tfvars" -auto-approve -input=false
         env:
           CONFIG: ${{ inputs.config }}
+          TF_VAR_videoindexer_api_key: ${{ secrets.VIDEOINDEXER_API_KEY }}

@@ -22,8 +22,3 @@ resource "azurerm_resource_group" "shortclip" {
   name     = local.shortclip_rg
   location = local.location
 }
-
-resource "azurerm_resource_group" "assisstant" {
-  name     = local.assisstant_rg
-  location = local.location
-}

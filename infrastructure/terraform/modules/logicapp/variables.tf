@@ -83,14 +83,13 @@ variable "logic_app_key_vault_id" {
 }
 
 variable "logic_app_sku" {
-  description = "Specifies the sku name used in the logic app app service plan."
+  description = "Specifies the SKU for the logic app."
   type        = string
   sensitive   = false
-  nullable    = false
   default     = "WS1"
   validation {
     condition     = contains(["WS1", "WS2", "WS3"], var.logic_app_sku)
-    error_message = "Please specify a valid sku name."
+    error_message = "Please use an allowed value: \"WS1\", \"WS2\", \"WS3\"."
   }
 }
 
