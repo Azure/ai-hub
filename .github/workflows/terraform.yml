@@ -25,8 +25,8 @@ jobs:
     uses: ./.github/workflows/_terraformEnvironmentTemplate.yml
     name: "Dev"
     with:
-      environment: "uday_dev"
-      config: "UdayTenant"
+      environment: "dev"
+      config: "SharedTenant"
       terraform_version: "1.8.2"
       node_version: 18
       working_directory: "./infrastructure/terraform"
@@ -41,8 +41,8 @@ jobs:
     name: "Dev - Destroy"
     needs: [terraform_dev]
     with:
-      environment: "uday_dev"
-      config: "UdayTenant"
+      environment: "dev"
+      config: "SharedTenant"
       terraform_version: "1.8.2"
       node_version: 18
       working_directory: "./infrastructure/terraform"
