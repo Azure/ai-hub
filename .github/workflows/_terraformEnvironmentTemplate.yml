@@ -38,6 +38,9 @@ on:
       CLIENT_SECRET:
         required: true
         description: "Specifies the client secret."
+      VIDEOINDEXER_API_KEY:
+        required: true
+        description: "Specifies the client secret."
 
 jobs:
   lint:
@@ -132,6 +135,7 @@ jobs:
           terraform plan -var-file="../config/${CONFIG}/vars.tfvars" -input=false
         env:
           CONFIG: ${{ inputs.config }}
+          TF_VAR_videoindexer_api_key: ${{ secrets.VIDEOINDEXER_API_KEY }}
 
   apply:
     name: Terraform Apply
@@ -189,3 +193,4 @@ jobs:
           terraform apply -var-file="../config/${CONFIG}/vars.tfvars" -auto-approve -input=false
         env:
           CONFIG: ${{ inputs.config }}
+          TF_VAR_videoindexer_api_key: ${{ secrets.VIDEOINDEXER_API_KEY }}
