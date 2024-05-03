@@ -9,7 +9,7 @@ locals {
   key_vault_name_orchestration               = "${local.prefix}-orch-kv"
   storage_account_name_orchestration_cleaned = replace("${local.prefix}-orch-stg}", "/[^a-z0-9]/", "")
   storage_account_name_orchestration         = lower(substr(local.storage_account_name_orchestration_cleaned, 0, min(length(local.storage_account_name_orchestration_cleaned), 24)))
-  application_insights_name                  = "${local.prefix}-orch-appi"
+  application_insights_name_orchestration    = "${local.prefix}-orch-appi"
   logic_app_name                             = "${local.prefix}-orch-logic"
 
   # Resource names ai
