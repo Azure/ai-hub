@@ -67,6 +67,10 @@
     "type": "String",
     "value": "@appsetting('AZURE_BLOB_STORAGE_ENDPOINT')"
   },
+  "AZURE_BLOB_STORAGE_CONNECTIONSTRING": {
+    "type": "String",
+    "value": "@appsetting('AZURE_BLOB_STORAGE_CONNECTIONSTRING')"
+  },
   "FUNCTION_SHORTCLIP_HOSTNAME": {
     "type": "String",
     "value": "@appsetting('FUNCTION_SHORTCLIP_HOSTNAME')"

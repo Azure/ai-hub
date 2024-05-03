@@ -5,31 +5,32 @@
         "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/providers/Microsoft.Web/locations/@{appsetting('WORKFLOWS_LOCATION_NAME')}/managedApis/conversionservice"
       },
       "connection": {
-        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')}/providers/Microsoft.Web/connections/uc1a2-01-dev-orch-logic-api-conversionservice"
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')}/providers/Microsoft.Web/connections/@{appsetting('WEBSITE_CONTENTSHARE')}-api-conversionservice"
       },
       "connectionRuntimeUrl": "@parameters('ConversionserviceConnectionRuntimeUrl')",
-      "authentication": "@parameters('ConversionserviceAuthentication')"
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      }
     },
     "videoindexer-v2": {
       "api": {
         "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/providers/Microsoft.Web/locations/@{appsetting('WORKFLOWS_LOCATION_NAME')}/managedApis/videoindexer-v2"
       },
       "connection": {
-        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')}/providers/Microsoft.Web/connections/uc1a2-01-dev-orch-logic-api-videoindexer-v2"
+        "id": "@appsetting('VIDEO_INDEXER_ID')"
       },
       "connectionRuntimeUrl": "@parameters('Videoindexer-V2ConnectionRuntimeUrl')",
-      "authentication": "@parameters('Videoindexer-V2Authentication')"
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      }
     }
   },
   "serviceProviderConnections": {
     "AzureBlob": {
       "parameterValues": {
-        "blobStorageEndpoint": "@appsetting('AZURE_BLOB_STORAGE_ENDPOINT')",
-        "authProvider": {
-          "Type": "ManagedServiceIdentity"
-        }
+        "connectionString": "@appsetting('AZURE_BLOB_STORAGE_CONNECTIONSTRING')"
       },
-      "parameterSetName": "ManagedServiceIdentity",
+      "parameterSetName": "connectionString",
       "serviceProvider": {
         "id": "/serviceProviders/AzureBlob"
       },
