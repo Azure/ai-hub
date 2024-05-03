@@ -186,6 +186,13 @@ jobs:
         env:
           CONFIG: ${{ inputs.config }}
 
+      # Login to Azure
+      - name: Azure Login
+        id: azure_login
+        uses: azure/login@v1
+        with:
+          creds: '{"clientId":"${{ secrets.CLIENT_ID }}","clientSecret":"${{ secrets.CLIENT_SECRET }}","subscriptionId":"${{ inputs.subscription_id }}","tenantId":"${{ inputs.tenant_id }}"}'
+
       # Terraform Apply
       - name: Terraform Apply
         working-directory: ${{ inputs.working_directory }}
