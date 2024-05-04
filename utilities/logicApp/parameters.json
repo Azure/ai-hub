@@ -1,4 +1,16 @@
 {
+  "STORAGE_ACCOUNT_SUBSCRIPTION_ID": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_ACCOUNT_SUBSCRIPTION_ID')"
+  },
+  "STORAGE_ACCOUNT_RESOURCE_GROUP_NAME": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_ACCOUNT_RESOURCE_GROUP_NAME')"
+  },
+  "STORAGE_ACCOUNT_NAME": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_ACCOUNT_NAME')"
+  },
   "STORAGE_CONTAINER_NAME_RAW": {
     "type": "String",
     "value": "@appsetting('STORAGE_CONTAINER_NAME_RAW')"
@@ -74,17 +86,5 @@
   "FUNCTION_SHORTCLIP_KEY": {
     "type": "String",
     "value": "@appsetting('FUNCTION_SHORTCLIP_KEY')"
-  },
-  "STORAGE_ACCOUNT_SUBSCRIPTION_ID": {
-    "type": "String",
-    "value": "@appsetting('STORAGE_ACCOUNT_SUBSCRIPTION_ID')"
-  },
-  "STORAGE_ACCOUNT_RESOURCE_GROUP_NAME": {
-    "type": "String",
-    "value": "@appsetting('STORAGE_ACCOUNT_RESOURCE_GROUP_NAME')"
-  },
-  "STORAGE_ACCOUNT_NAME": {
-    "type": "String",
-    "value": "@appsetting('STORAGE_ACCOUNT_NAME')"
   }
 }

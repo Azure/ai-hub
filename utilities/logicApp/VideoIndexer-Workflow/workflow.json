@@ -2,27 +2,6 @@
     "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
-            "BlobSASURI-BlobFile": {
-                "type": "ServiceProvider",
-                "inputs": {
-                    "parameters": {
-                        "containerName": "@triggerBody()?['containerInfo']?['name']",
-                        "blobName": "@triggerBody()?['name']",
-                        "permissions": "Read",
-                        "sharedAccessProtocol": "Https"
-                    },
-                    "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob",
-                        "operationId": "getBlobSASUri",
-                        "serviceProviderId": "/serviceProviders/AzureBlob"
-                    }
-                },
-                "runAfter": {
-                    "Arm-StorageListServiceSas-Request": [
-                        "SUCCEEDED"
-                    ]
-                }
-            },
             "Arm-VideoIndexerGenerateAccessToken-Request": {
                 "type": "Http",
                 "inputs": {
@@ -38,7 +17,7 @@
                     }
                 },
                 "runAfter": {
-                    "BlobSASURI-BlobFile": [
+                    "Arm-StorageListServiceSas-Response": [
                         "SUCCEEDED"
                     ]
                 },
@@ -80,7 +59,7 @@
                     "queries": {
                         "accessToken": "@body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']",
                         "name": "@{concat(triggerBody()?['properties']?['blobTierLastModifiedTime'], triggerBody()?['name'])}",
-                        "videoUrl": "@{body('BlobSASURI-BlobFile')?['blobUri']}"
+                        "videoUrl": "@{concat('https://',parameters('STORAGE_ACCOUNT_NAME'),'.blob.core.windows.net',triggerBody()?['properties']?['blobFullPathWithContainer'],'?',body('Arm-StorageListServiceSas-Response')?['serviceSasToken'])}"
                     }
                 },
                 "runAfter": {
@@ -128,10 +107,15 @@
                     "uri": "@concat('https://management.azure.com/subscriptions/',parameters('STORAGE_ACCOUNT_SUBSCRIPTION_ID'),'/resourceGroups/',parameters('STORAGE_ACCOUNT_RESOURCE_GROUP_NAME'),'/providers/Microsoft.Storage/storageAccounts/',parameters('STORAGE_ACCOUNT_NAME'), '/ListServiceSas?api-version=2023-01-01')",
                     "method": "POST",
                     "body": {
-                        "canonicalizedResource": "/blob@{triggerBody()?['properties']?['blobFullPathWithContainer']}",
-                        "signedResource": "c",
+                        "canonicalizedResource": "/blob@{parameters('STORAGE_ACCOUNT_NAME')}@{triggerBody()?['properties']?['blobFullPathWithContainer']}",
+                        "signedResource": "b",
                         "signedPermission": "r",
-                        "signedProtocol": "https"
+                        "signedProtocol": "https",
+                        "signedExpiry": "@{getFutureTime(1, 'Hour', 'o')}"
+                    },
+                    "authentication": {
+                        "type": "ManagedServiceIdentity",
+                        "audience": "https://management.core.windows.net"
                     }
                 },
                 "runAfter": {},
@@ -139,6 +123,46 @@
                     "contentTransfer": {
                         "transferMode": "Chunked"
                     }
+                }
+            },
+            "Arm-StorageListServiceSas-Response": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('Arm-StorageListServiceSas-Request')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "serviceSasToken": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Arm-StorageListServiceSas-Request": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "BlobSASURI-BlobFile": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@triggerBody()?['containerInfo']?['name']",
+                        "blobName": "@triggerBody()?['name']",
+                        "permissions": "Read",
+                        "sharedAccessProtocol": "Https"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "getBlobSASUri",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "OpenAi-CreateAssisstant-Request": [
+                        "SUCCEEDED"
+                    ]
                 }
             }
         },
