@@ -40,12 +40,12 @@ resource "azapi_resource" "api_connections" {
   response_export_values    = ["properties.connectionRuntimeUrl"]
 }
 
-resource "azapi_resource" "api_connection__access_policies" {
-  for_each = azapi_resource.api_connections
+resource "azapi_resource" "api_connection_access_policies" {
+  for_each = var.logic_app_api_connections
 
   type      = "Microsoft.Web/connections/accessPolicies@2016-06-01"
-  parent_id = each.value.id
-  name      = "${each.value.name}-${azurerm_logic_app_standard.logic_app_standard.identity[0].principal_id}"
+  parent_id = azapi_resource.api_connections[each.key].id
+  name      = "${each.key}-${azurerm_logic_app_standard.logic_app_standard.identity[0].principal_id}"
   location  = var.location
 
   body = jsonencode({
