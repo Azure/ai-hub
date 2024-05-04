@@ -5,7 +5,7 @@ data "azurerm_managed_api" "managed_apis" {
   location = var.location
 }
 
-resource "azapi_resource" "api_connection_arm" {
+resource "azapi_resource" "api_connections" {
   for_each = var.logic_app_api_connections
 
   type      = "Microsoft.Web/connections@2016-06-01"
@@ -38,4 +38,27 @@ resource "azapi_resource" "api_connection_arm" {
 
   schema_validation_enabled = false
   response_export_values    = ["properties.connectionRuntimeUrl"]
+}
+
+resource "azapi_resource" "api_connection__access_policies" {
+  for_each = azapi_resource.api_connections
+
+  type      = "Microsoft.Web/connections/accessPolicies@2016-06-01"
+  parent_id = each.value.id
+  name      = "${each.value.name}-${azurerm_logic_app_standard.logic_app_standard.identity[0].principal_id}"
+  location  = var.location
+
+  body = jsonencode({
+    properties = {
+      principal = {
+        type = "ActiveDirectory"
+        identity = {
+          tenantId = azurerm_logic_app_standard.logic_app_standard.identity[0].tenant_id
+          objectId = azurerm_logic_app_standard.logic_app_standard.identity[0].principal_id
+        }
+      }
+    }
+  })
+
+  schema_validation_enabled = false
 }
