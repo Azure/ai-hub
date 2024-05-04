@@ -84,7 +84,7 @@ TEMPLATE
       "connectionName" = {
         value = "${var.logic_app_name}-api-${each.key}"
       },
-      "principalId"    = {
+      "principalId" = {
         value = "${azurerm_logic_app_standard.logic_app_standard.identity[0].principal_id}"
       }
     }
