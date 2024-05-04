@@ -51,18 +51,21 @@ module "logic_app_orchestration" {
     APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights_orchestration.application_insights_instrumentation_key
     APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights_orchestration.application_insights_connection_string
     # App specific settings
-    AZURE_BLOB_STORAGE_ENDPOINT    = module.storage_account.storage_account_primary_blob_endpoint
-    STORAGE_CONTAINER_NAME_RAW     = local.container_name_raw
-    STORAGE_CONTAINER_NAME_CURATED = local.container_name_curated
-    AZURE_OPENAI_ENDPOINT          = module.open_ai.cognitive_account_endpoint
-    AZURE_OPENAI_DEPLOYMENT_NAME   = "gpt-4"
-    VIDEO_INDEXER_ID               = module.videoindexer.videoindexer_id
-    VIDEO_INDEXER_ACCOUNT_ID       = module.videoindexer.videoindexer_account_id
-    WORKFLOWS_SUBSCRIPTION_ID      = data.azurerm_subscription.current.subscription_id
-    WORKFLOWS_RESOURCE_GROUP_NAME  = azurerm_resource_group.orchestration.name
-    WORKFLOWS_LOCATION_NAME        = local.location
-    FUNCTION_SHORTCLIP_HOSTNAME    = module.function_shortclip.linux_function_app_default_hostname
-    FUNCTION_SHORTCLIP_KEY         = module.function_shortclip.linux_function_app_primary_key
+    AZURE_BLOB_STORAGE_ENDPOINT         = module.storage_account.storage_account_primary_blob_endpoint
+    STORAGE_ACCOUNT_SUBSCRIPTION_ID     = data.azurerm_subscription.current.subscription_id
+    STORAGE_ACCOUNT_RESOURCE_GROUP_NAME = module.storage_account.storage_account_resource_group_name
+    STORAGE_ACCOUNT_NAME                = module.storage_account.storage_account_name
+    STORAGE_CONTAINER_NAME_RAW          = local.container_name_raw
+    STORAGE_CONTAINER_NAME_CURATED      = local.container_name_curated
+    AZURE_OPENAI_ENDPOINT               = module.open_ai.cognitive_account_endpoint
+    AZURE_OPENAI_DEPLOYMENT_NAME        = "gpt-4"
+    VIDEO_INDEXER_ID                    = module.videoindexer.videoindexer_id
+    VIDEO_INDEXER_ACCOUNT_ID            = module.videoindexer.videoindexer_account_id
+    WORKFLOWS_SUBSCRIPTION_ID           = data.azurerm_subscription.current.subscription_id
+    WORKFLOWS_RESOURCE_GROUP_NAME       = azurerm_resource_group.orchestration.name
+    WORKFLOWS_LOCATION_NAME             = local.location
+    FUNCTION_SHORTCLIP_HOSTNAME         = module.function_shortclip.linux_function_app_default_hostname
+    FUNCTION_SHORTCLIP_KEY              = module.function_shortclip.linux_function_app_primary_key
   }
   logic_app_always_on                                = true
   logic_app_code_path                                = "${path.module}/../../utilities/logicApp"
@@ -108,10 +111,10 @@ resource "azurerm_role_assignment" "logic_app_role_assignment_storage_blob_data_
   principal_type       = "ServicePrincipal"
 }
 
-resource "azurerm_role_assignment" "logic_app_role_assignment_storage_blob_delegator" {
+resource "azurerm_role_assignment" "logic_app_role_assignment_storage_account_contributor" {
   description          = "Role Assignment for Data Factory to generate SAS tokens."
   scope                = module.storage_account.storage_account_id
-  role_definition_name = "Storage Blob Delegator"
+  role_definition_name = "Storage Account Contributor"
   principal_id         = module.logic_app_orchestration.logic_app_principal_id
   principal_type       = "ServicePrincipal"
 }
