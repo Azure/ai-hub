@@ -108,6 +108,14 @@ resource "azurerm_role_assignment" "logic_app_role_assignment_storage_blob_data_
   principal_type       = "ServicePrincipal"
 }
 
+resource "azurerm_role_assignment" "logic_app_role_assignment_storage_blob_delegator" {
+  description          = "Role Assignment for Data Factory to generate SAS tokens."
+  scope                = module.storage_account.storage_account_id
+  role_definition_name = "Storage Blob Delegator"
+  principal_id         = module.logic_app_orchestration.logic_app_principal_id
+  principal_type       = "ServicePrincipal"
+}
+
 resource "azurerm_role_assignment" "logic_app_role_assignment_open_ai" {
   description          = "Role Assignment for Data Factory to interact with Open AI models"
   scope                = module.open_ai.cognitive_account_id
