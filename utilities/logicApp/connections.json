@@ -17,7 +17,7 @@
         "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/providers/Microsoft.Web/locations/@{appsetting('WORKFLOWS_LOCATION_NAME')}/managedApis/videoindexer-v2"
       },
       "connection": {
-        "id": "@appsetting('VIDEO_INDEXER_ID')"
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')}/providers/Microsoft.Web/connections/@{appsetting('WEBSITE_CONTENTSHARE')}-api-videoindexer-v2"
       },
       "connectionRuntimeUrl": "@parameters('Videoindexer-V2ConnectionRuntimeUrl')",
       "authentication": {
