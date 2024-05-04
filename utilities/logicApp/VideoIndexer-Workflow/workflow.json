@@ -2,36 +2,18 @@
     "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
-            "BlobSASURI-BlobFile": {
-                "type": "ServiceProvider",
-                "inputs": {
-                    "parameters": {
-                        "containerName": "@triggerBody()?['containerInfo']?['name']",
-                        "blobName": "@triggerBody()?['name']",
-                        "permissions": "Read",
-                        "sharedAccessProtocol": "Https"
-                    },
-                    "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob",
-                        "operationId": "getBlobSASUri",
-                        "serviceProviderId": "/serviceProviders/AzureBlob"
-                    }
-                },
-                "runAfter": {}
-            },
             "Arm-VideoIndexerGenerateAccessToken-Request": {
-                "type": "Http",
                 "inputs": {
-                    "uri": "@concat('https://management.azure.com',parameters('VIDEO_INDEXER_ID'),'/generateAccessToken?api-version=2024-01-01')",
-                    "method": "POST",
+                    "authentication": {
+                        "audience": "https://management.core.windows.net",
+                        "type": "ManagedServiceIdentity"
+                    },
                     "body": {
                         "permissionType": "Contributor",
                         "scope": "Account"
                     },
-                    "authentication": {
-                        "type": "ManagedServiceIdentity",
-                        "audience": "https://management.core.windows.net"
-                    }
+                    "method": "POST",
+                    "uri": "@concat('https://management.azure.com',parameters('VIDEO_INDEXER_ID'),'/generateAccessToken?api-version=2024-01-01')"
                 },
                 "runAfter": {
                     "BlobSASURI-BlobFile": [
@@ -42,29 +24,82 @@
                     "contentTransfer": {
                         "transferMode": "Chunked"
                     }
-                }
+                },
+                "type": "Http"
             },
             "Arm-VideoIndexerGenerateAccessToken-Response": {
-                "type": "ParseJson",
                 "inputs": {
                     "content": "@body('Arm-VideoIndexerGenerateAccessToken-Request')",
                     "schema": {
-                        "type": "object",
                         "properties": {
                             "accessToken": {
                                 "type": "string"
                             }
-                        }
+                        },
+                        "type": "object"
                     }
                 },
                 "runAfter": {
                     "Arm-VideoIndexerGenerateAccessToken-Request": [
                         "SUCCEEDED"
                     ]
-                }
+                },
+                "type": "ParseJson"
+            },
+            "BlobSASURI-BlobFile": {
+                "inputs": {
+                    "parameters": {
+                        "blobName": "@triggerBody()?['name']",
+                        "containerName": "@triggerBody()?['containerInfo']?['name']",
+                        "permissions": "Read",
+                        "sharedAccessProtocol": "Https"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "getBlobSASUri",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {},
+                "type": "ServiceProvider"
+            },
+            "Initialize_variable": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "uri",
+                            "type": "object",
+                            "value": "@body('BlobSASURI-BlobFile')"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Arm-VideoIndexerGenerateAccessToken-Response": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "InitializeVariable"
+            },
+            "Parse_JSON": {
+                "inputs": {
+                    "content": "@variables('uri')",
+                    "schema": {
+                        "properties": {
+                            "blobUri": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "ParseJson"
             },
             "Videoindexer-UploadAndIndex": {
-                "type": "ApiConnection",
                 "inputs": {
                     "host": {
                         "connection": {
@@ -74,56 +109,23 @@
                     "method": "post",
                     "path": "/@{encodeURIComponent(parameters('WORKFLOWS_LOCATION_NAME'))}/Accounts/@{encodeURIComponent(parameters('VIDEO_INDEXER_ACCOUNT_ID'))}/Videos",
                     "queries": {
-                        "accessToken": "@body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']",
-                        "name": "@{concat(triggerBody()?['properties']?['blobTierLastModifiedTime'], triggerBody()?['name'])}",
-                        "videoUrl": "@{body('BlobSASURI-BlobFile')?['blobUri']}"
+                        "accessToken": "@{body('Arm-VideoIndexerGenerateAccessToken-Response')['accessToken']}",
+                        "name": "@triggerBody()?['name']",
+                        "videoUrl": "@body('Parse_JSON')?['blobUri']"
                     }
                 },
                 "runAfter": {
-                    "Arm-VideoIndexerGenerateAccessToken-Response": [
-                        "SUCCEEDED"
-                    ]
-                }
-            },
-            "OpenAi-CreateAssisstant-Request": {
-                "type": "Http",
-                "inputs": {
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')",
-                    "method": "POST",
-                    "body": {
-                        "instructions": "@{parameters('META_PROMPT')}",
-                        "name": "esp1",
-                        "model": "gpt-4",
-                        "file_ids": [
-                            "@{body('Videoindexer-UploadAndIndex')?['id']}"
-                        ],
-                        "tools": [
-                            {
-                                "type": "code_interpreter"
-                            },
-                            {
-                                "type": "retrieval"
-                            }
-                        ]
-                    }
-                },
-                "runAfter": {
-                    "Videoindexer-UploadAndIndex": [
+                    "Parse_JSON": [
                         "SUCCEEDED"
                     ]
                 },
-                "runtimeConfiguration": {
-                    "contentTransfer": {
-                        "transferMode": "Chunked"
-                    }
-                }
+                "type": "ApiConnection"
             }
         },
         "contentVersion": "1.0.0.0",
         "outputs": {},
         "triggers": {
             "BlobTrigger": {
-                "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
                         "path": "@parameters('STORAGE_CONTAINER_NAME_RAW')"
@@ -133,7 +135,8 @@
                         "operationId": "whenABlobIsAddedOrModified",
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
-                }
+                },
+                "type": "ServiceProvider"
             }
         }
     },
