@@ -17,7 +17,11 @@
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
                 },
-                "runAfter": {}
+                "runAfter": {
+                    "Arm-StorageListServiceSas-Request": [
+                        "SUCCEEDED"
+                    ]
+                }
             },
             "Arm-VideoIndexerGenerateAccessToken-Request": {
                 "type": "Http",
@@ -112,6 +116,25 @@
                         "SUCCEEDED"
                     ]
                 },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Arm-StorageListServiceSas-Request": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@concat('https://management.azure.com/subscriptions/',parameters('STORAGE_ACCOUNT_SUBSCRIPTION_ID'),'/resourceGroups/',parameters('STORAGE_ACCOUNT_RESOURCE_GROUP_NAME'),'/providers/Microsoft.Storage/storageAccounts/',parameters('STORAGE_ACCOUNT_NAME'), '/ListServiceSas?api-version=2023-01-01')",
+                    "method": "POST",
+                    "body": {
+                        "canonicalizedResource": "/blob@{triggerBody()?['properties']?['blobFullPathWithContainer']}",
+                        "signedResource": "c",
+                        "signedPermission": "r",
+                        "signedProtocol": "https"
+                    }
+                },
+                "runAfter": {},
                 "runtimeConfiguration": {
                     "contentTransfer": {
                         "transferMode": "Chunked"
