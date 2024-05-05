@@ -58,7 +58,7 @@
                     "path": "/@{encodeURIComponent(parameters('WORKFLOWS_LOCATION_NAME'))}/Accounts/@{encodeURIComponent(parameters('VIDEO_INDEXER_ACCOUNT_ID'))}/Videos",
                     "queries": {
                         "accessToken": "@body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']",
-                        "name": "@{concat(utcNow('yyyy-MM-dd-HH-mm-ss'),'-', triggerBody()?['name'])}",
+                        "name": "@{triggerBody()?['properties']?['blobName']}",
                         "videoUrl": "@{concat('https://',parameters('STORAGE_ACCOUNT_NAME'),'.blob.core.windows.net',triggerBody()?['properties']?['blobFullPathWithContainer'],'?',body('Arm-StorageListServiceSas-Response')?['serviceSasToken'])}",
                         "callbackUrl": "@body('Arm-LogicAppListCallbackUri-Response')?['value']"
                     }

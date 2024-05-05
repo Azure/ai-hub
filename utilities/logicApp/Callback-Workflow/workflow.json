@@ -16,7 +16,12 @@
                         "audience": "https://management.core.windows.net"
                     }
                 },
-                "runAfter": {},
+                "runAfter": {
+                    "InitializeVariable-VideoId": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "operationOptions": "DisableAsyncPattern",
                 "runtimeConfiguration": {
                     "contentTransfer": {
                         "transferMode": "Chunked"
@@ -51,7 +56,7 @@
                         }
                     },
                     "method": "get",
-                    "path": "/@{encodeURIComponent(parameters('WORKFLOWS_LOCATION_NAME'))}/Accounts/@{encodeURIComponent(parameters('VIDEO_INDEXER_ACCOUNT_ID'))}/Videos/@{encodeURIComponent(triggerBody()?['videoId'])}/Index",
+                    "path": "/@{encodeURIComponent(parameters('WORKFLOWS_LOCATION_NAME'))}/Accounts/@{encodeURIComponent(parameters('VIDEO_INDEXER_ACCOUNT_ID'))}/Videos/@{encodeURIComponent(variables('videoId'))}/Index",
                     "queries": {
                         "accessToken": "@body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']",
                         "language": "English"
@@ -77,8 +82,9 @@
                 "inputs": {
                     "parameters": {
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
-                        "blobName": "@concat(workflow()['id'], 'videoindexer.json')",
-                        "content": "@outputs('Compose-VideoIndex')"
+                        "blobName": "@concat(body('Videoindexer-GetVideoIndex')?['name'], '/videoindexer.json')",
+                        "content": "@outputs('Compose-VideoIndex')",
+                        "overrideIfExists": "true"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
@@ -95,9 +101,9 @@
             "Videoindexer-CreatePromptContent-Request": {
                 "type": "Http",
                 "inputs": {
-                    "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',triggerBody()?['videoId'],'/PromptContent')",
+                    "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',variables('videoId'),'/PromptContent')",
                     "method": "POST",
-                    "headers": {
+                    "queries": {
                         "accessToken": "@{body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']}"
                     }
                 },
@@ -106,6 +112,7 @@
                         "SUCCEEDED"
                     ]
                 },
+                "operationOptions": "DisableAsyncPattern",
                 "runtimeConfiguration": {
                     "contentTransfer": {
                         "transferMode": "Chunked"
@@ -132,9 +139,9 @@
                     "Videoindexer-GetPromptContent-Request": {
                         "type": "Http",
                         "inputs": {
-                            "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',triggerBody()?['videoId'],'/PromptContent')",
+                            "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',variables('videoId'),'/PromptContent')",
                             "method": "GET",
-                            "headers": {
+                            "queries": {
                                 "accessToken": "@{body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']}"
                             }
                         },
@@ -143,6 +150,7 @@
                                 "SUCCEEDED"
                             ]
                         },
+                        "operationOptions": "DisableAsyncPattern",
                         "runtimeConfiguration": {
                             "contentTransfer": {
                                 "transferMode": "Chunked"
@@ -236,8 +244,9 @@
                 "inputs": {
                     "parameters": {
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
-                        "blobName": "@concat(workflow()['id'], '/promptcontent.json')",
-                        "content": "@body('Videoindexer-GetPromptContent-Request')"
+                        "blobName": "@concat(body('Videoindexer-GetVideoIndex')?['name'], '/promptcontent.json')",
+                        "content": "@body('Videoindexer-GetPromptContent-Request')",
+                        "overrideIfExists": "true"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
@@ -254,9 +263,9 @@
             "Videoindexer-GetArtifactUrl-Request": {
                 "type": "Http",
                 "inputs": {
-                    "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',triggerBody()?['videoId'],'/ArtifactUrl')",
+                    "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',variables('videoId'),'/ArtifactUrl')",
                     "method": "GET",
-                    "headers": {
+                    "queries": {
                         "accessToken": "@{body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']}",
                         "type": "KeyframesThumbnails"
                     }
@@ -266,6 +275,7 @@
                         "SUCCEEDED"
                     ]
                 },
+                "operationOptions": "DisableAsyncPattern",
                 "runtimeConfiguration": {
                     "contentTransfer": {
                         "transferMode": "Chunked"
@@ -283,6 +293,7 @@
                         "SUCCEEDED"
                     ]
                 },
+                "operationOptions": "DisableAsyncPattern",
                 "runtimeConfiguration": {
                     "contentTransfer": {
                         "transferMode": "Chunked"
@@ -294,8 +305,9 @@
                 "inputs": {
                     "parameters": {
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
-                        "blobName": "@concat(workflow()['id'], '/artifact.json')",
-                        "content": "@body('Videoindexer-GetArtifact-Request')"
+                        "blobName": "@concat(body('Videoindexer-GetVideoIndex')?['name'], '/artifact.json')",
+                        "content": "@body('Videoindexer-GetArtifact-Request')",
+                        "overrideIfExists": "true"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
@@ -308,6 +320,19 @@
                         "SUCCEEDED"
                     ]
                 }
+            },
+            "InitializeVariable-VideoId": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "videoId",
+                            "type": "string",
+                            "value": "@{triggerOutputs()?['queries']['id']}"
+                        }
+                    ]
+                },
+                "runAfter": {}
             }
         },
         "contentVersion": "1.0.0.0",
@@ -319,11 +344,7 @@
                 "inputs": {
                     "schema": {
                         "type": "object",
-                        "properties": {
-                            "videoId": {
-                                "type": "string"
-                            }
-                        }
+                        "properties": {}
                     }
                 }
             }
