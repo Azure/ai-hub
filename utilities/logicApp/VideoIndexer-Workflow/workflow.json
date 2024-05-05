@@ -58,7 +58,7 @@
                     "path": "/@{encodeURIComponent(parameters('WORKFLOWS_LOCATION_NAME'))}/Accounts/@{encodeURIComponent(parameters('VIDEO_INDEXER_ACCOUNT_ID'))}/Videos",
                     "queries": {
                         "accessToken": "@body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']",
-                        "name": "@{concat(triggerBody()?['properties']?['blobTierLastModifiedTime'], triggerBody()?['name'])}",
+                        "name": "@{concat(utcNow('yyyy-MM-dd-HH-mm-ss'),'-', triggerBody()?['name'])}",
                         "videoUrl": "@{concat('https://',parameters('STORAGE_ACCOUNT_NAME'),'.blob.core.windows.net',triggerBody()?['properties']?['blobFullPathWithContainer'],'?',body('Arm-StorageListServiceSas-Response')?['serviceSasToken'])}"
                     }
                 },
@@ -68,50 +68,17 @@
                     ]
                 }
             },
-            "OpenAi-CreateAssisstant-Request": {
-                "type": "Http",
-                "inputs": {
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')",
-                    "method": "POST",
-                    "body": {
-                        "instructions": "@{parameters('META_PROMPT')}",
-                        "name": "esp1",
-                        "model": "gpt-4",
-                        "file_ids": [
-                            "@{body('Videoindexer-UploadAndIndex')?['id']}"
-                        ],
-                        "tools": [
-                            {
-                                "type": "code_interpreter"
-                            },
-                            {
-                                "type": "retrieval"
-                            }
-                        ]
-                    }
-                },
-                "runAfter": {
-                    "Videoindexer-UploadAndIndex": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "runtimeConfiguration": {
-                    "contentTransfer": {
-                        "transferMode": "Chunked"
-                    }
-                }
-            },
             "Arm-StorageListServiceSas-Request": {
                 "type": "Http",
                 "inputs": {
                     "uri": "@concat('https://management.azure.com/subscriptions/',parameters('STORAGE_ACCOUNT_SUBSCRIPTION_ID'),'/resourceGroups/',parameters('STORAGE_ACCOUNT_RESOURCE_GROUP_NAME'),'/providers/Microsoft.Storage/storageAccounts/',parameters('STORAGE_ACCOUNT_NAME'), '/ListServiceSas?api-version=2023-01-01')",
                     "method": "POST",
                     "body": {
-                        "canonicalizedResource": "/blob@{parameters('STORAGE_ACCOUNT_NAME')}@{triggerBody()?['properties']?['blobFullPathWithContainer']}",
+                        "canonicalizedResource": "/blob/@{parameters('STORAGE_ACCOUNT_NAME')}@{triggerBody()?['properties']?['blobFullPathWithContainer']}",
                         "signedResource": "b",
                         "signedPermission": "r",
                         "signedProtocol": "https",
-                        "signedExpiry": "@{getFutureTime(1, 'Hour', 'o')}"
+                        "signedExpiry": "@{getFutureTime(3, 'Hour', 'o')}"
                     },
                     "authentication": {
                         "type": "ManagedServiceIdentity",
@@ -143,27 +110,6 @@
                         "SUCCEEDED"
                     ]
                 }
-            },
-            "BlobSASURI-BlobFile": {
-                "type": "ServiceProvider",
-                "inputs": {
-                    "parameters": {
-                        "containerName": "@triggerBody()?['containerInfo']?['name']",
-                        "blobName": "@triggerBody()?['name']",
-                        "permissions": "Read",
-                        "sharedAccessProtocol": "Https"
-                    },
-                    "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob",
-                        "operationId": "getBlobSASUri",
-                        "serviceProviderId": "/serviceProviders/AzureBlob"
-                    }
-                },
-                "runAfter": {
-                    "OpenAi-CreateAssisstant-Request": [
-                        "SUCCEEDED"
-                    ]
-                }
             }
         },
         "contentVersion": "1.0.0.0",
@@ -173,7 +119,7 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "path": "@parameters('STORAGE_CONTAINER_NAME_RAW')"
+                        "path": "@concat(parameters('STORAGE_CONTAINER_NAME_RAW'),'/videos/{blobname}.{blobextension}')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
