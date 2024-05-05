@@ -187,5 +187,5 @@ __azurite_db*__.json
 infrastructure/apps/functionassistant/.vscode
 =======
 infrastructure/terraform/.terraform.lock.hcl
-infrastructure/terraform/modules/functions/*.zip
+infrastructure/terraform/**/*.zip
 
