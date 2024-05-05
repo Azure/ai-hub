@@ -58,9 +58,7 @@
   "ConversionserviceAuthentication": {
     "type": "Object",
     "value": {
-      "type": "Raw",
-      "scheme": "Key",
-      "parameter": "@appsetting('ConversionserviceConnectionKey')"
+      "type": "ManagedServiceIdentity"
     }
   },
   "Videoindexer-V2ConnectionRuntimeUrl": {
@@ -70,9 +68,7 @@
   "Videoindexer-V2Authentication": {
     "type": "Object",
     "value": {
-      "type": "Raw",
-      "scheme": "Key",
-      "parameter": "@appsetting('Videoindexer-V2ConnectionKey')"
+      "type": "ManagedServiceIdentity"
     }
   },
   "AZURE_BLOB_STORAGE_ENDPOINT": {
@@ -86,5 +82,9 @@
   "FUNCTION_SHORTCLIP_KEY": {
     "type": "String",
     "value": "@appsetting('FUNCTION_SHORTCLIP_KEY')"
+  },
+  "CALLBACK_WORKFLOW_RELATIVE_PATH": {
+    "type": "String",
+    "value": "/videoindexer/callback"
   }
 }
