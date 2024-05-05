@@ -121,7 +121,7 @@
             "UploadBlob-Artifact": {
                 "inputs": {
                     "parameters": {
-                        "blobName": "@concat(workflow()['id'], '/artifact.json')",
+                        "blobName": "@concat(\nbody('Videoindexer-GetVideoIndex')?['name'], \n'/artifact.zip')",
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
                         "content": "@body('Videoindexer-GetArtifact-Request')",
                         "overrideIfExists": "true"
@@ -142,7 +142,7 @@
             "UploadBlob-PromptContent": {
                 "inputs": {
                     "parameters": {
-                        "blobName": "@concat(workflow()['id'], '/promptcontent.json')",
+                        "blobName": "@concat(\nbody('Videoindexer-GetVideoIndex')?['name'], \n'/promptcontent.json')",
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
                         "content": "@body('Videoindexer-GetPromptContent-Request')",
                         "overrideIfExists": "true"
@@ -163,7 +163,7 @@
             "UploadBlob-VideoIndex": {
                 "inputs": {
                     "parameters": {
-                        "blobName": "@concat(workflow()['id'], 'videoindexer.json')",
+                        "blobName": "@concat(\nbody('Videoindexer-GetVideoIndex')?['name'], \n'/index.json')",
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
                         "content": "@outputs('Compose-VideoIndex')",
                         "overrideIfExists": "true"
