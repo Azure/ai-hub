@@ -79,7 +79,8 @@
                     "parameters": {
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
                         "blobName": "@concat(workflow()['id'], '/videoindexer.json')",
-                        "content": "@outputs('Compose-VideoIndex')"
+                        "content": "@outputs('Compose-VideoIndex')",
+                        "overrideIfExists": "true"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
@@ -107,6 +108,7 @@
                         "SUCCEEDED"
                     ]
                 },
+                "operationOptions": "DisableAsyncPattern",
                 "runtimeConfiguration": {
                     "contentTransfer": {
                         "transferMode": "Chunked"
@@ -144,6 +146,7 @@
                                 "SUCCEEDED"
                             ]
                         },
+                        "operationOptions": "DisableAsyncPattern",
                         "runtimeConfiguration": {
                             "contentTransfer": {
                                 "transferMode": "Chunked"
@@ -238,7 +241,8 @@
                     "parameters": {
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
                         "blobName": "@concat(workflow()['id'], '/promptcontent.json')",
-                        "content": "@body('Videoindexer-GetPromptContent-Request')"
+                        "content": "@body('Videoindexer-GetPromptContent-Request')",
+                        "overrideIfExists": "true"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
@@ -267,6 +271,7 @@
                         "SUCCEEDED"
                     ]
                 },
+                "operationOptions": "DisableAsyncPattern",
                 "runtimeConfiguration": {
                     "contentTransfer": {
                         "transferMode": "Chunked"
@@ -284,6 +289,7 @@
                         "SUCCEEDED"
                     ]
                 },
+                "operationOptions": "DisableAsyncPattern",
                 "runtimeConfiguration": {
                     "contentTransfer": {
                         "transferMode": "Chunked"
@@ -296,7 +302,8 @@
                     "parameters": {
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
                         "blobName": "@concat(workflow()['id'], '/artifact.json')",
-                        "content": "@body('Videoindexer-GetArtifact-Request')"
+                        "content": "@body('Videoindexer-GetArtifact-Request')",
+                        "overrideIfExists": "true"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
