@@ -50,9 +50,13 @@ module "logic_app_orchestration" {
     # Logic App config settings
     APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights_orchestration.application_insights_instrumentation_key
     APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights_orchestration.application_insights_connection_string
+    WEBSITE_RUN_FROM_PACKAGE              = "1"
     # App specific settings
+    LOGIC_APP_ID                        = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${azurerm_resource_group.orchestration.name}/providers/Microsoft.Web/sites/${local.logic_app_name}"
     AZURE_BLOB_STORAGE_ENDPOINT         = module.storage_account.storage_account_primary_blob_endpoint
-    AZURE_BLOB_STORAGE_CONNECTIONSTRING = module.storage_account.storage_account_primary_connection_string
+    STORAGE_ACCOUNT_SUBSCRIPTION_ID     = data.azurerm_subscription.current.subscription_id
+    STORAGE_ACCOUNT_RESOURCE_GROUP_NAME = module.storage_account.storage_account_resource_group_name
+    STORAGE_ACCOUNT_NAME                = module.storage_account.storage_account_name
     STORAGE_CONTAINER_NAME_RAW          = local.container_name_raw
     STORAGE_CONTAINER_NAME_CURATED      = local.container_name_curated
     AZURE_OPENAI_ENDPOINT               = module.open_ai.cognitive_account_endpoint
@@ -109,10 +113,26 @@ resource "azurerm_role_assignment" "logic_app_role_assignment_storage_blob_data_
   principal_type       = "ServicePrincipal"
 }
 
+resource "azurerm_role_assignment" "logic_app_role_assignment_logic_apps_standard_operator" {
+  description          = "Role Assignment for Logic App to dynamically fetch callback URIs"
+  scope                = module.logic_app_orchestration.logic_app_id
+  role_definition_name = "Logic Apps Standard Operator (Preview)"
+  principal_id         = module.logic_app_orchestration.logic_app_principal_id
+  principal_type       = "ServicePrincipal"
+}
+
+resource "azurerm_role_assignment" "logic_app_role_assignment_storage_account_contributor" {
+  description          = "Role Assignment for Data Factory to generate SAS tokens."
+  scope                = module.storage_account.storage_account_id
+  role_definition_name = "Storage Account Contributor"
+  principal_id         = module.logic_app_orchestration.logic_app_principal_id
+  principal_type       = "ServicePrincipal"
+}
+
 resource "azurerm_role_assignment" "logic_app_role_assignment_open_ai" {
   description          = "Role Assignment for Data Factory to interact with Open AI models"
   scope                = module.open_ai.cognitive_account_id
-  role_definition_name = "Cognitive Services OpenAI User"
+  role_definition_name = "Cognitive Services OpenAI Contributor"
   principal_id         = module.logic_app_orchestration.logic_app_principal_id
   principal_type       = "ServicePrincipal"
 }

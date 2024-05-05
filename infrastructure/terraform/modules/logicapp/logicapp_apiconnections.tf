@@ -5,7 +5,7 @@ data "azurerm_managed_api" "managed_apis" {
   location = var.location
 }
 
-resource "azapi_resource" "api_connection_arm" {
+resource "azapi_resource" "api_connections" {
   for_each = var.logic_app_api_connections
 
   type      = "Microsoft.Web/connections@2016-06-01"
@@ -40,53 +40,25 @@ resource "azapi_resource" "api_connection_arm" {
   response_export_values    = ["properties.connectionRuntimeUrl"]
 }
 
-resource "azurerm_resource_group_template_deployment" "api_connection_arm_access_policy" {
+resource "azapi_resource" "api_connection_access_policies" {
   for_each = var.logic_app_api_connections
 
-  name                = "${var.logic_app_name}-api-${each.key}"
-  resource_group_name = var.resource_group_name
-  deployment_mode     = "Incremental"
+  type      = "Microsoft.Web/connections/accessPolicies@2016-06-01"
+  parent_id = azapi_resource.api_connections[each.key].id
+  name      = "${each.key}-${azurerm_logic_app_standard.logic_app_standard.identity[0].principal_id}"
+  location  = var.location
 
-  template_content = <<TEMPLATE
-{
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "connectionName": {
-      "type": "string"
-    },
-    "principalId": {
-      "type": "string"
-    }
-  },
-  "resources": [
-    {
-      "type": "Microsoft.Web/connections/accessPolicies",
-      "name": "[concat(parameters('connectionName'), '/', parameters('principalId'))]",
-      "apiVersion": "2016-06-01",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "principal": {
-          "type": "ActiveDirectory",
-          "identity": {
-            "objectId": "[parameters('principalId')]",
-            "tenantId": "[subscription().tenantId]"
-          }
+  body = jsonencode({
+    properties = {
+      principal = {
+        type = "ActiveDirectory"
+        identity = {
+          tenantId = azurerm_logic_app_standard.logic_app_standard.identity[0].tenant_id
+          objectId = azurerm_logic_app_standard.logic_app_standard.identity[0].principal_id
         }
       }
     }
-  ]
-}
-TEMPLATE
+  })
 
-  parameters_content = jsonencode(
-    {
-      "connectionName" = {
-        value = "${var.logic_app_name}-api-${each.key}"
-      },
-      "principalId" = {
-        value = "${azurerm_logic_app_standard.logic_app_standard.identity[0].principal_id}"
-      }
-    }
-  )
+  schema_validation_enabled = false
 }
