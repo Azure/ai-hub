@@ -17,6 +17,7 @@
                     }
                 },
                 "runAfter": {},
+                "operationOptions": "DisableAsyncPattern",
                 "runtimeConfiguration": {
                     "contentTransfer": {
                         "transferMode": "Chunked"
@@ -77,7 +78,7 @@
                 "inputs": {
                     "parameters": {
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
-                        "blobName": "@concat(workflow()['id'], 'videoindexer.json')",
+                        "blobName": "@concat(workflow()['id'], '/videoindexer.json')",
                         "content": "@outputs('Compose-VideoIndex')"
                     },
                     "serviceProviderConfiguration": {
@@ -97,7 +98,7 @@
                 "inputs": {
                     "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',triggerBody()?['videoId'],'/PromptContent')",
                     "method": "POST",
-                    "headers": {
+                    "queries": {
                         "accessToken": "@{body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']}"
                     }
                 },
@@ -134,7 +135,7 @@
                         "inputs": {
                             "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',triggerBody()?['videoId'],'/PromptContent')",
                             "method": "GET",
-                            "headers": {
+                            "queries": {
                                 "accessToken": "@{body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']}"
                             }
                         },
@@ -256,7 +257,7 @@
                 "inputs": {
                     "uri": "@concat('https://api.videoindexer.ai/' , parameters('WORKFLOWS_LOCATION_NAME'), '/Accounts/',parameters('VIDEO_INDEXER_ACCOUNT_ID'),'/Videos/',triggerBody()?['videoId'],'/ArtifactUrl')",
                     "method": "GET",
-                    "headers": {
+                    "queries": {
                         "accessToken": "@{body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']}",
                         "type": "KeyframesThumbnails"
                     }
