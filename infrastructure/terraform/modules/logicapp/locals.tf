@@ -1,11 +1,11 @@
 locals {
   logic_app_application_settings_default = {
     FUNCTIONS_WORKER_RUNTIME     = "node"
-    WEBSITE_NODE_DEFAULT_VERSION = "~18"
+    WEBSITE_NODE_DEFAULT_VERSION = "~20"
     # WEBSITE_RUN_FROM_PACKAGE     = "1"
   }
   logic_app_application_settings_connection_runtime_urls = {
-    for key, value in azapi_resource.api_connection_arm :
+    for key, value in azapi_resource.api_connections :
     "${title(key)}ConnectionRuntimeUrl" => jsondecode(value.output).properties.connectionRuntimeUrl
   }
   logic_app_application_settings = merge(local.logic_app_application_settings_default, local.logic_app_application_settings_connection_runtime_urls, var.logic_app_application_settings)
