@@ -52,6 +52,7 @@ module "logic_app_orchestration" {
     APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights_orchestration.application_insights_connection_string
     WEBSITE_RUN_FROM_PACKAGE              = "1"
     # App specific settings
+    LOGIC_APP_ID                        = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${azurerm_resource_group.orchestration.name}/providers/Microsoft.Web/sites/${local.logic_app_name}"
     AZURE_BLOB_STORAGE_ENDPOINT         = module.storage_account.storage_account_primary_blob_endpoint
     STORAGE_ACCOUNT_SUBSCRIPTION_ID     = data.azurerm_subscription.current.subscription_id
     STORAGE_ACCOUNT_RESOURCE_GROUP_NAME = module.storage_account.storage_account_resource_group_name
@@ -108,6 +109,14 @@ resource "azurerm_role_assignment" "logic_app_role_assignment_storage_blob_data_
   description          = "Role Assignment for Data Factory to read and write data"
   scope                = module.storage_account.storage_account_id
   role_definition_name = "Storage Blob Data Owner"
+  principal_id         = module.logic_app_orchestration.logic_app_principal_id
+  principal_type       = "ServicePrincipal"
+}
+
+resource "azurerm_role_assignment" "logic_app_role_assignment_logic_apps_standard_operator" {
+  description          = "Role Assignment for Logic App to dynamically fetch callback URIs"
+  scope                = module.logic_app_orchestration.logic_app_id
+  role_definition_name = "Logic Apps Standard Operator (Preview)"
   principal_id         = module.logic_app_orchestration.logic_app_principal_id
   principal_type       = "ServicePrincipal"
 }
