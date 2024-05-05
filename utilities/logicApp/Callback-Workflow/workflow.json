@@ -328,7 +328,7 @@
                         {
                             "name": "videoId",
                             "type": "string",
-                            "value": "@triggerBody()?['id']"
+                            "value": "@{triggerOutputs()?['queries']['id']}"
                         }
                     ]
                 },
@@ -344,14 +344,7 @@
                 "inputs": {
                     "schema": {
                         "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "state": {
-                                "type": "string"
-                            }
-                        }
+                        "properties": {}
                     }
                 }
             }
