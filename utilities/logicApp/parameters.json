@@ -1,4 +1,16 @@
 {
+  "STORAGE_ACCOUNT_SUBSCRIPTION_ID": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_ACCOUNT_SUBSCRIPTION_ID')"
+  },
+  "STORAGE_ACCOUNT_RESOURCE_GROUP_NAME": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_ACCOUNT_RESOURCE_GROUP_NAME')"
+  },
+  "STORAGE_ACCOUNT_NAME": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_ACCOUNT_NAME')"
+  },
   "STORAGE_CONTAINER_NAME_RAW": {
     "type": "String",
     "value": "@appsetting('STORAGE_CONTAINER_NAME_RAW')"
@@ -46,9 +58,7 @@
   "ConversionserviceAuthentication": {
     "type": "Object",
     "value": {
-      "type": "Raw",
-      "scheme": "Key",
-      "parameter": "@appsetting('ConversionserviceConnectionKey')"
+      "type": "ManagedServiceIdentity"
     }
   },
   "Videoindexer-V2ConnectionRuntimeUrl": {
@@ -58,9 +68,7 @@
   "Videoindexer-V2Authentication": {
     "type": "Object",
     "value": {
-      "type": "Raw",
-      "scheme": "Key",
-      "parameter": "@appsetting('Videoindexer-V2ConnectionKey')"
+      "type": "ManagedServiceIdentity"
     }
   },
   "AZURE_BLOB_STORAGE_ENDPOINT": {
@@ -74,5 +82,9 @@
   "FUNCTION_SHORTCLIP_KEY": {
     "type": "String",
     "value": "@appsetting('FUNCTION_SHORTCLIP_KEY')"
+  },
+  "LOGIC_APP_ID": {
+    "type": "String",
+    "value": "@appsetting('LOGIC_APP_ID')"
   }
 }

@@ -11,7 +11,7 @@ resource "azurerm_logic_app_standard" "logic_app_standard" {
   app_settings               = local.logic_app_application_settings
   bundle_version             = "[1.*, 2.0.0)"
   client_affinity_enabled    = false
-  client_certificate_mode    = "Required"
+  client_certificate_mode    = "Optional"
   enabled                    = true
   https_only                 = true
   storage_account_access_key = data.azurerm_storage_account.storage_account.primary_access_key

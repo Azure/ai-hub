@@ -2,23 +2,6 @@
     "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
-            "BlobSASURI-BlobFile": {
-                "type": "ServiceProvider",
-                "inputs": {
-                    "parameters": {
-                        "containerName": "@triggerBody()?['containerInfo']?['name']",
-                        "blobName": "@triggerBody()?['name']",
-                        "permissions": "Read",
-                        "sharedAccessProtocol": "Https"
-                    },
-                    "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob",
-                        "operationId": "getBlobSASUri",
-                        "serviceProviderId": "/serviceProviders/AzureBlob"
-                    }
-                },
-                "runAfter": {}
-            },
             "Arm-VideoIndexerGenerateAccessToken-Request": {
                 "type": "Http",
                 "inputs": {
@@ -34,7 +17,7 @@
                     }
                 },
                 "runAfter": {
-                    "BlobSASURI-BlobFile": [
+                    "Arm-StorageListServiceSas-Response": [
                         "SUCCEEDED"
                     ]
                 },
@@ -75,40 +58,72 @@
                     "path": "/@{encodeURIComponent(parameters('WORKFLOWS_LOCATION_NAME'))}/Accounts/@{encodeURIComponent(parameters('VIDEO_INDEXER_ACCOUNT_ID'))}/Videos",
                     "queries": {
                         "accessToken": "@body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']",
-                        "name": "@{concat(triggerBody()?['properties']?['blobTierLastModifiedTime'], triggerBody()?['name'])}",
-                        "videoUrl": "@{body('BlobSASURI-BlobFile')?['blobUri']}"
+                        "name": "@{concat(utcNow('yyyy-MM-dd-HH-mm-ss'),'-', triggerBody()?['name'])}",
+                        "videoUrl": "@{concat('https://',parameters('STORAGE_ACCOUNT_NAME'),'.blob.core.windows.net',triggerBody()?['properties']?['blobFullPathWithContainer'],'?',body('Arm-StorageListServiceSas-Response')?['serviceSasToken'])}",
+                        "callbackUrl": "@body('Arm-LogicAppListCallbackUri-Response')?['value']"
                     }
                 },
                 "runAfter": {
-                    "Arm-VideoIndexerGenerateAccessToken-Response": [
+                    "Arm-LogicAppListCallbackUri-Response": [
                         "SUCCEEDED"
                     ]
                 }
             },
-            "OpenAi-CreateAssisstant-Request": {
+            "Arm-StorageListServiceSas-Request": {
                 "type": "Http",
                 "inputs": {
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')",
+                    "uri": "@concat('https://management.azure.com/subscriptions/',parameters('STORAGE_ACCOUNT_SUBSCRIPTION_ID'),'/resourceGroups/',parameters('STORAGE_ACCOUNT_RESOURCE_GROUP_NAME'),'/providers/Microsoft.Storage/storageAccounts/',parameters('STORAGE_ACCOUNT_NAME'), '/ListServiceSas?api-version=2023-01-01')",
                     "method": "POST",
                     "body": {
-                        "instructions": "@{parameters('META_PROMPT')}",
-                        "name": "esp1",
-                        "model": "gpt-4",
-                        "file_ids": [
-                            "@{body('Videoindexer-UploadAndIndex')?['id']}"
-                        ],
-                        "tools": [
-                            {
-                                "type": "code_interpreter"
-                            },
-                            {
-                                "type": "retrieval"
+                        "canonicalizedResource": "/blob/@{parameters('STORAGE_ACCOUNT_NAME')}@{triggerBody()?['properties']?['blobFullPathWithContainer']}",
+                        "signedResource": "b",
+                        "signedPermission": "r",
+                        "signedProtocol": "https",
+                        "signedExpiry": "@{getFutureTime(3, 'Hour', 'o')}"
+                    },
+                    "authentication": {
+                        "type": "ManagedServiceIdentity",
+                        "audience": "https://management.core.windows.net"
+                    }
+                },
+                "runAfter": {},
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Arm-StorageListServiceSas-Response": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('Arm-StorageListServiceSas-Request')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "serviceSasToken": {
+                                "type": "string"
                             }
-                        ]
+                        }
                     }
                 },
                 "runAfter": {
-                    "Videoindexer-UploadAndIndex": [
+                    "Arm-StorageListServiceSas-Request": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Arm-LogicAppListCallbackUri-Request": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@concat('https://management.azure.com',parameters('LOGIC_APP_ID'),'/hostruntime/runtime/webhooks/workflow/api/management/workflows/Callback-Workflow/triggers/HTTPTrigger/listCallbackUrl?api-version=2018-11-01')",
+                    "method": "POST",
+                    "authentication": {
+                        "type": "ManagedServiceIdentity",
+                        "audience": "https://management.core.windows.net"
+                    }
+                },
+                "runAfter": {
+                    "Arm-VideoIndexerGenerateAccessToken-Response": [
                         "SUCCEEDED"
                     ]
                 },
@@ -116,6 +131,48 @@
                     "contentTransfer": {
                         "transferMode": "Chunked"
                     }
+                }
+            },
+            "Arm-LogicAppListCallbackUri-Response": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('Arm-LogicAppListCallbackUri-Request')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "value": {
+                                "type": "string"
+                            },
+                            "method": {
+                                "type": "string"
+                            },
+                            "basePath": {
+                                "type": "string"
+                            },
+                            "queries": {
+                                "type": "object",
+                                "properties": {
+                                    "api-version": {
+                                        "type": "string"
+                                    },
+                                    "sp": {
+                                        "type": "string"
+                                    },
+                                    "sv": {
+                                        "type": "string"
+                                    },
+                                    "sig": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Arm-LogicAppListCallbackUri-Request": [
+                        "SUCCEEDED"
+                    ]
                 }
             }
         },
@@ -126,7 +183,7 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "path": "@parameters('STORAGE_CONTAINER_NAME_RAW')"
+                        "path": "@concat(parameters('STORAGE_CONTAINER_NAME_RAW'),'/videos/{blobname}.{blobextension}')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
