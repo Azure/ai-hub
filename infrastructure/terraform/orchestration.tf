@@ -111,7 +111,7 @@ resource "azurerm_role_assignment" "logic_app_role_assignment_storage_blob_data_
 resource "azurerm_role_assignment" "logic_app_role_assignment_open_ai" {
   description          = "Role Assignment for Data Factory to interact with Open AI models"
   scope                = module.open_ai.cognitive_account_id
-  role_definition_name = "Cognitive Services OpenAI User"
+  role_definition_name = "Cognitive Services OpenAI Contributor"
   principal_id         = module.logic_app_orchestration.logic_app_principal_id
   principal_type       = "ServicePrincipal"
 }
