@@ -83,8 +83,8 @@
     "type": "String",
     "value": "@appsetting('FUNCTION_SHORTCLIP_KEY')"
   },
-  "CALLBACK_WORKFLOW_RELATIVE_PATH": {
+  "LOGIC_APP_ID": {
     "type": "String",
-    "value": "/videoindexer/callback"
+    "value": "@appsetting('LOGIC_APP_ID')"
   }
 }

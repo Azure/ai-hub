@@ -59,11 +59,12 @@
                     "queries": {
                         "accessToken": "@body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']",
                         "name": "@{concat(utcNow('yyyy-MM-dd-HH-mm-ss'),'-', triggerBody()?['name'])}",
-                        "videoUrl": "@{concat('https://',parameters('STORAGE_ACCOUNT_NAME'),'.blob.core.windows.net',triggerBody()?['properties']?['blobFullPathWithContainer'],'?',body('Arm-StorageListServiceSas-Response')?['serviceSasToken'])}"
+                        "videoUrl": "@{concat('https://',parameters('STORAGE_ACCOUNT_NAME'),'.blob.core.windows.net',triggerBody()?['properties']?['blobFullPathWithContainer'],'?',body('Arm-StorageListServiceSas-Response')?['serviceSasToken'])}",
+                        "callbackUrl": "@body('Arm-LogicAppListCallbackUri-Response')?['value']"
                     }
                 },
                 "runAfter": {
-                    "Arm-VideoIndexerGenerateAccessToken-Response": [
+                    "Arm-LogicAppListCallbackUri-Response": [
                         "SUCCEEDED"
                     ]
                 }
@@ -107,6 +108,69 @@
                 },
                 "runAfter": {
                     "Arm-StorageListServiceSas-Request": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Arm-LogicAppListCallbackUri-Request": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@concat('https://management.azure.com',parameters('LOGIC_APP_ID'),'/hostruntime/runtime/webhooks/workflow/api/management/workflows/Callback-Workflow/triggers/HTTPTrigger/listCallbackUrl?api-version=2018-11-01')",
+                    "method": "POST",
+                    "authentication": {
+                        "type": "ManagedServiceIdentity",
+                        "audience": "https://management.core.windows.net"
+                    }
+                },
+                "runAfter": {
+                    "Arm-VideoIndexerGenerateAccessToken-Response": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Arm-LogicAppListCallbackUri-Response": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('Arm-LogicAppListCallbackUri-Request')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "value": {
+                                "type": "string"
+                            },
+                            "method": {
+                                "type": "string"
+                            },
+                            "basePath": {
+                                "type": "string"
+                            },
+                            "queries": {
+                                "type": "object",
+                                "properties": {
+                                    "api-version": {
+                                        "type": "string"
+                                    },
+                                    "sp": {
+                                        "type": "string"
+                                    },
+                                    "sv": {
+                                        "type": "string"
+                                    },
+                                    "sig": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Arm-LogicAppListCallbackUri-Request": [
                         "SUCCEEDED"
                     ]
                 }
