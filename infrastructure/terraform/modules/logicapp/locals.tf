@@ -1,7 +1,7 @@
 locals {
   logic_app_application_settings_default = {
     FUNCTIONS_WORKER_RUNTIME     = "node"
-    WEBSITE_NODE_DEFAULT_VERSION = "~18"
+    WEBSITE_NODE_DEFAULT_VERSION = "~20"
     # WEBSITE_RUN_FROM_PACKAGE     = "1"
   }
   logic_app_application_settings_connection_runtime_urls = {
