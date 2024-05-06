@@ -8,9 +8,7 @@
         "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')}/providers/Microsoft.Web/connections/@{appsetting('WEBSITE_CONTENTSHARE')}-api-conversionservice"
       },
       "connectionRuntimeUrl": "@parameters('ConversionserviceConnectionRuntimeUrl')",
-      "authentication": {
-        "type": "ManagedServiceIdentity"
-      }
+      "authentication": "@parameters('ConversionserviceAuthentication')"
     },
     "videoindexer-v2": {
       "api": {
@@ -20,9 +18,7 @@
         "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')}/providers/Microsoft.Web/connections/@{appsetting('WEBSITE_CONTENTSHARE')}-api-videoindexer-v2"
       },
       "connectionRuntimeUrl": "@parameters('Videoindexer-V2ConnectionRuntimeUrl')",
-      "authentication": {
-        "type": "ManagedServiceIdentity"
-      }
+      "authentication": "@parameters('Videoindexer-V2Authentication')"
     }
   },
   "serviceProviderConnections": {
