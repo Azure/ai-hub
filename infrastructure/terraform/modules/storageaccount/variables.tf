@@ -65,6 +65,13 @@ variable "storage_account_shared_access_key_enabled" {
   default     = false
 }
 
+variable "storage_account_hns_enabled" {
+  description = "Specifies the hns setting of the storage account."
+  type        = bool
+  sensitive   = false
+  default     = false
+}
+
 # Monitoring variables
 variable "log_analytics_workspace_id" {
   description = "Specifies the resource ID of the log analytics workspace used for the stamp"
