@@ -88,15 +88,13 @@ module "logic_app_orchestration" {
       parameter_values = {}
     }
     videoindexer-v2 = {
-      kind         = "V2"
-      display_name = "Video Indexer (V2)"
-      description  = "Easily extract insights from your videos and quickly enrich your applications to enhance discovery and engagement. Use the Video Indexer connector to turn your videos into insights."
-      icon_uri     = "https://connectoricons-prod.azureedge.net/releases/v1.0.1654/1.0.1654.3410"
-      brand_color  = "#127B66"
-      category     = "Standard"
-      parameter_values = {
-        api_key = var.videoindexer_api_key
-      }
+      kind             = "V2"
+      display_name     = "Video Indexer (V2)"
+      description      = "Easily extract insights from your videos and quickly enrich your applications to enhance discovery and engagement. Use the Video Indexer connector to turn your videos into insights."
+      icon_uri         = "https://connectoricons-prod.azureedge.net/releases/v1.0.1654/1.0.1654.3410"
+      brand_color      = "#127B66"
+      category         = "Standard"
+      parameter_values = {}
     }
   }
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
