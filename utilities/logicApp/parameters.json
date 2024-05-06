@@ -11,6 +11,14 @@
     "type": "String",
     "value": "@appsetting('STORAGE_ACCOUNT_NAME')"
   },
+  "STORAGE_CONTAINER_NAME_UPLOAD_MOVIES": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_CONTAINER_NAME_UPLOAD_MOVIES')"
+  },
+  "STORAGE_CONTAINER_NAME_UPLOAD_NEWS": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_CONTAINER_NAME_UPLOAD_NEWS')"
+  },
   "STORAGE_CONTAINER_NAME_RAW": {
     "type": "String",
     "value": "@appsetting('STORAGE_CONTAINER_NAME_RAW')"
