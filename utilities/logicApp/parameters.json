@@ -86,5 +86,21 @@
   "LOGIC_APP_ID": {
     "type": "String",
     "value": "@appsetting('LOGIC_APP_ID')"
+  },
+  "NEWS_STORAGE_CONTAINER_NAME_CURATED": {
+    "type": "String",
+    "value": "@appsetting('NEWS_STORAGE_CONTAINER_NAME_CURATED')"
+  },
+  "azureFunctionOperation-ResourceGroup": {
+    "type": "String",
+    "value": "uc1a2-01-dev-shrtclp"
+  },
+  "azureFunctionOperation-SiteName": {
+    "type": "String",
+    "value": "uc1a2-01-dev-shrtclp-fnctn"
+  },
+  "azureFunctionOperation-TriggerUrl": {
+    "type": "String",
+    "value": "https://uc1a2-01-dev-shrtclp-fnctn.azurewebsites.net/api/startworkflow"
   }
 }

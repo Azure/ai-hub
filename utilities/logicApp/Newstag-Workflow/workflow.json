@@ -1,0 +1,24 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {},
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "BlobTrigger": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "path": "@concat(parameters('NEWS_STORAGE_CONTAINER_NAME_CURATED'))"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "whenABlobIsAddedOrModified",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                }
+            }
+        }
+    },
+    "kind": "Stateful"
+}
