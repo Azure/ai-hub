@@ -66,6 +66,7 @@ module "logic_app_orchestration" {
     WORKFLOWS_SUBSCRIPTION_ID           = data.azurerm_subscription.current.subscription_id
     WORKFLOWS_RESOURCE_GROUP_NAME       = azurerm_resource_group.orchestration.name
     WORKFLOWS_LOCATION_NAME             = local.location
+    FUNCTION_SHORTCLIP_ID               = module.function_shortclip.linux_function_app_id
     FUNCTION_SHORTCLIP_HOSTNAME         = module.function_shortclip.linux_function_app_default_hostname
     FUNCTION_SHORTCLIP_KEY              = module.function_shortclip.linux_function_app_primary_key
   }
