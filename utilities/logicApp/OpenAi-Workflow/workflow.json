@@ -2,11 +2,6 @@
     "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
-            "Compose-BlobContent": {
-                "type": "Compose",
-                "inputs": "@base64ToString(triggerBody()?['content']['content'])",
-                "runAfter": {}
-            },
             "Compose-Transcript": {
                 "type": "Compose",
                 "inputs": "@variables('transcript')",
@@ -18,7 +13,7 @@
             },
             "ForEach-Section": {
                 "type": "Foreach",
-                "foreach": "@body('HtmlToText-BlobContent-Response')?['sections']",
+                "foreach": "@body('Parse_JSON')?['sections']",
                 "actions": {
                     "AppendToArrayVariable-Transcript": {
                         "type": "AppendToArrayVariable",
@@ -88,70 +83,6 @@
                     }
                 }
             },
-            "HtmlToText-BlobContent": {
-                "type": "ApiConnection",
-                "inputs": {
-                    "host": {
-                        "connection": {
-                            "referenceName": "conversionservice"
-                        }
-                    },
-                    "method": "post",
-                    "body": "<p>@{outputs('Compose-BlobContent')}</p>",
-                    "path": "/html2text"
-                },
-                "runAfter": {
-                    "Compose-BlobContent": [
-                        "SUCCEEDED"
-                    ]
-                }
-            },
-            "HtmlToText-BlobContent-Response": {
-                "type": "ParseJson",
-                "inputs": {
-                    "content": "@body('HtmlToText-BlobContent')",
-                    "schema": {
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "partition": {},
-                            "sections": {
-                                "items": {
-                                    "properties": {
-                                        "content": {
-                                            "type": "string"
-                                        },
-                                        "end": {
-                                            "type": "string"
-                                        },
-                                        "id": {
-                                            "type": "integer"
-                                        },
-                                        "start": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "start",
-                                        "end",
-                                        "content"
-                                    ],
-                                    "type": "object"
-                                },
-                                "type": "array"
-                            }
-                        },
-                        "type": "object"
-                    }
-                },
-                "runAfter": {
-                    "HtmlToText-BlobContent": [
-                        "SUCCEEDED"
-                    ]
-                }
-            },
             "InitializeVariable-RunStatus": {
                 "type": "InitializeVariable",
                 "inputs": {
@@ -180,7 +111,7 @@
                     ]
                 },
                 "runAfter": {
-                    "HtmlToText-BlobContent-Response": [
+                    "Parse_JSON": [
                         "SUCCEEDED"
                     ]
                 }
@@ -760,6 +691,48 @@
                         "SUCCEEDED"
                     ]
                 }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerBody()",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "partition": {},
+                            "name": {
+                                "type": "string"
+                            },
+                            "sections": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "start": {
+                                            "type": "string"
+                                        },
+                                        "end": {
+                                            "type": "string"
+                                        },
+                                        "content": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "start",
+                                        "end",
+                                        "content"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {}
             }
         },
         "contentVersion": "1.0.0.0",
