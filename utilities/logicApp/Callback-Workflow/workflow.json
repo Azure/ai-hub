@@ -305,7 +305,7 @@
                 "inputs": {
                     "parameters": {
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
-                        "blobName": "@concat(body('Videoindexer-GetVideoIndex')?['name'], '/artifact.json')",
+                        "blobName": "@concat(body('Videoindexer-GetVideoIndex')?['name'], '/artifact.zip')",
                         "content": "@body('Videoindexer-GetArtifact-Request')",
                         "overrideIfExists": "true"
                     },
