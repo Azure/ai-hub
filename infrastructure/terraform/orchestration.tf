@@ -11,6 +11,7 @@ module "storage_account_orchestration" {
     local.logic_app_name
   ]
   storage_account_shared_access_key_enabled = true
+  storage_account_hns_enabled               = false
   log_analytics_workspace_id                = module.azure_log_analytics.log_analytics_id
   subnet_id                                 = var.subnet_id
   customer_managed_key                      = null
