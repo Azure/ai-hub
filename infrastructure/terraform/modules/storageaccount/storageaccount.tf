@@ -33,7 +33,7 @@ resource "azurerm_storage_account" "storage" {
   default_to_oauth_authentication   = true
   enable_https_traffic_only         = true
   infrastructure_encryption_enabled = true
-  is_hns_enabled                    = true
+  is_hns_enabled                    = var.storage_account_hns_enabled
   large_file_share_enabled          = false
   min_tls_version                   = "TLS1_2"
   network_rules {

@@ -11,6 +11,7 @@ module "storage_account_orchestration" {
     local.logic_app_name
   ]
   storage_account_shared_access_key_enabled = true
+  storage_account_hns_enabled               = false
   log_analytics_workspace_id                = module.azure_log_analytics.log_analytics_id
   subnet_id                                 = var.subnet_id
   customer_managed_key                      = null
@@ -62,7 +63,7 @@ module "logic_app_orchestration" {
     STORAGE_CONTAINER_NAME_RAW           = local.container_name_raw
     STORAGE_CONTAINER_NAME_CURATED       = local.container_name_curated
     AZURE_OPENAI_ENDPOINT                = module.open_ai.cognitive_account_endpoint
-    AZURE_OPENAI_DEPLOYMENT_NAME         = "gpt-4"
+    AZURE_OPENAI_DEPLOYMENT_NAME        = local.gpt_model_name
     VIDEO_INDEXER_ID                     = module.videoindexer.videoindexer_id
     VIDEO_INDEXER_ACCOUNT_ID             = module.videoindexer.videoindexer_account_id
     WORKFLOWS_SUBSCRIPTION_ID            = data.azurerm_subscription.current.subscription_id
