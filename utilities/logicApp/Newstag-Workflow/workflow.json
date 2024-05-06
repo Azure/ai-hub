@@ -1,7 +1,261 @@
 {
     "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
-        "actions": {},
+        "actions": {
+            "ReadBlob-Config": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@triggerBody()?['containerInfo']?['name']",
+                        "blobName": "@triggerBody()?['name']",
+                        "inferContentType": true
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "readBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {}
+            },
+            "ParseBlob-Config": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('AzureFunctionShortClip-NewsTagExtraction-Request')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "language": {
+                                "type": "string"
+                            },
+                            "shortclip": {
+                                "type": "integer"
+                            },
+                            "newstags": {
+                                "type": "integer"
+                            },
+                            "containerName": {
+                                "type": "string"
+                            },
+                            "promptContentBlobName": {
+                                "type": "string"
+                            },
+                            "artifactBlobName": {
+                                "type": "string"
+                            },
+                            "videoIndexName": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "ReadBlob-Config": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Condition": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@body('ParseBlob-Config')?['newstags']",
+                                1
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "AzureFunctionShortClip-NewsTagExtraction-Request": {
+                        "type": "Function",
+                        "inputs": {
+                            "method": "POST",
+                            "body": {
+                                "orchestrator_workflow_name": "newstag_extraction_orchestrator",
+                                "orchestrator_workflow_properties": {
+                                    "content_url_videoindexer": "https://@{parameters('AZURE_BLOB_STORAGE_ENDPOINT')}@{body('ParseBlob-Config')?['containerName']}/@{body('ParseBlob-Config')?['videoIndexName']}"
+                                }
+                            },
+                            "function": {
+                                "connectionName": "azureFunctionOperation"
+                            }
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {
+                        "TerminateSucceeded": {
+                            "type": "Terminate",
+                            "inputs": {
+                                "runStatus": "Succeeded"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "ParseBlob-Config": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "AzureFunctionShortClip-NewsTagExtraction-Response": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('AzureFunctionShortClip-NewsTagExtraction-Request')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "statusQueryGetUri": {
+                                "type": "string"
+                            },
+                            "sendEventPostUri": {
+                                "type": "string"
+                            },
+                            "terminatePostUri": {
+                                "type": "string"
+                            },
+                            "rewindPostUri": {
+                                "type": "string"
+                            },
+                            "purgeHistoryDeleteUri": {
+                                "type": "string"
+                            },
+                            "restartPostUri": {
+                                "type": "string"
+                            },
+                            "suspendPostUri": {
+                                "type": "string"
+                            },
+                            "resumePostUri": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Condition": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Until": {
+                "type": "Until",
+                "expression": "@or(equals(variables('status'), 'Completed'),equals(variables('status'), 'Failed')) ",
+                "limit": {
+                    "count": 60,
+                    "timeout": "PT1H"
+                },
+                "actions": {
+                    "AzureFunctionShortClip-Status-Request": {
+                        "type": "Http",
+                        "inputs": {
+                            "uri": "@body('AzureFunctionShortClip-NewsTagExtraction-Response')?['statusQueryGetUri']",
+                            "method": "GET"
+                        },
+                        "runAfter": {
+                            "Delay": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "runtimeConfiguration": {
+                            "contentTransfer": {
+                                "transferMode": "Chunked"
+                            }
+                        }
+                    },
+                    "AzureFunctionShortClip-Status-Response": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@body('AzureFunctionShortClip-Status-Request')",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "instanceId": {
+                                        "type": "string"
+                                    },
+                                    "runtimeStatus": {
+                                        "type": "string"
+                                    },
+                                    "input": {
+                                        "type": "string"
+                                    },
+                                    "customStatus": {
+                                        "type": "object",
+                                        "properties": {}
+                                    },
+                                    "output": {
+                                        "type": "object",
+                                        "properties": {}
+                                    },
+                                    "createdTime": {
+                                        "type": "string"
+                                    },
+                                    "lastUpdatedTime": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "AzureFunctionShortClip-Status-Request": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "SetVariable-Status": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "status",
+                            "value": "@body('AzureFunctionShortClip-Status-Response')?['runtimeStatus']"
+                        },
+                        "runAfter": {
+                            "AzureFunctionShortClip-Status-Response": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Delay": {
+                        "type": "Wait",
+                        "inputs": {
+                            "interval": {
+                                "count": 30,
+                                "unit": "Second"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "InitializeVariable-Status": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "InitializeVariable-Status": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "status",
+                            "type": "string",
+                            "value": "unknown"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "AzureFunctionShortClip-NewsTagExtraction-Response": [
+                        "SUCCEEDED"
+                    ]
+                }
+            }
+        },
         "contentVersion": "1.0.0.0",
         "outputs": {},
         "triggers": {
@@ -9,7 +263,7 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "path": "@concat(parameters('NEWS_STORAGE_CONTAINER_NAME_CURATED'))"
+                        "path": "@concat(parameters('STORAGE_CONTAINER_NAME_CURATED'),'/{name}/config.json')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
