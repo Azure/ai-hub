@@ -66,7 +66,7 @@ module "function_shortclip" {
     STORAGE_DOMAIN_NAME           = replace(trimprefix(module.storage_account.storage_account_primary_blob_endpoint, "https://"), "/", "")
     STORAGE_CONTAINER_NAME        = local.container_name_shortclip
     AZURE_OPEN_AI_API_VERSION     = "2024-02-15-preview"
-    AZURE_OPEN_AI_DEPLOYMENT_NAME = "gpt-4"
+    AZURE_OPEN_AI_DEPLOYMENT_NAME = local.gpt_model_name
     AZURE_OPEN_AI_BASE_URL        = module.open_ai.cognitive_account_endpoint
   }
   function_always_on                                = false
