@@ -2180,7 +2180,7 @@
 					},
 					"sas_token": {
 						"type": "string",
-						"defaultValue": "sv=2022-11-02&ss=b&srt=sco&sp=rwdlaciytfx&se=2024-06-22T15:40:37Z&st=2024-04-22T07:40:37Z&spr=https&sig=ZqyCmNRBKGpoMBJD9SAXOlTUaPKCFtqdCwKSbmlOA5M%3D"
+						"defaultValue": "<sas-token>"
 					},
 					"storageaccounturl": {
 						"type": "string",
