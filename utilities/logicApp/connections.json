@@ -39,15 +39,15 @@
   "functionConnections": {
     "azureFunctionOperation": {
       "function": {
-        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{parameters('azureFunctionOperation-ResourceGroup')}/providers/Microsoft.Web/sites/@{parameters('azureFunctionOperation-SiteName')}/functions/StartWorkflow"
+        "id": "@{appsetting('FUNCTION_SHORTCLIP_ID')}/functions/@{appsetting('FUNCTION_SHORTCLIP_FUNCTION_NAME')}"
       },
-      "triggerUrl": "@parameters('azureFunctionOperation-TriggerUrl')",
+      "triggerUrl": "https://@{appsetting('FUNCTION_SHORTCLIP_HOSTNAME')}/api/@{appsetting('FUNCTION_SHORTCLIP_FUNCTION_NAME')}",
       "authentication": {
         "type": "QueryString",
         "name": "Code",
-        "value": "@appsetting('azureFunctionOperation_functionAppKey')"
+        "value": "@appsetting('FUNCTION_SHORTCLIP_KEY')"
       },
-      "displayName": "shrtclp-function"
+      "displayName": "function-shortclip"
     }
   }
 }
