@@ -63,7 +63,7 @@ module "logic_app_orchestration" {
     STORAGE_CONTAINER_NAME_RAW           = local.container_name_raw
     STORAGE_CONTAINER_NAME_CURATED       = local.container_name_curated
     AZURE_OPENAI_ENDPOINT                = module.open_ai.cognitive_account_endpoint
-    AZURE_OPENAI_DEPLOYMENT_NAME        = local.gpt_model_name
+    AZURE_OPENAI_DEPLOYMENT_NAME         = local.gpt_model_name
     VIDEO_INDEXER_ID                     = module.videoindexer.videoindexer_id
     VIDEO_INDEXER_ACCOUNT_ID             = module.videoindexer.videoindexer_account_id
     WORKFLOWS_SUBSCRIPTION_ID            = data.azurerm_subscription.current.subscription_id
