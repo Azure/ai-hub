@@ -94,8 +94,8 @@ module "logic_app_orchestration" {
       icon_uri     = "https://connectoricons-prod.azureedge.net/releases/v1.0.1654/1.0.1654.3410"
       brand_color  = "#127B66"
       category     = "Standard"
-      parameter_values = {
-        api_key = var.videoindexer_api_key
+      pparameter_values = {
+        api_key = "not_required_for_arm_bsaed_authentication"
       }
     }
   }
