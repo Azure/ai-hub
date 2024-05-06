@@ -95,7 +95,7 @@ module "logic_app_orchestration" {
       brand_color  = "#127B66"
       category     = "Standard"
       parameter_values = {
-        api_key = var.videoindexer_api_key
+        api_key = "not_required_for_arm_bsaed_authentication"
       }
     }
   }

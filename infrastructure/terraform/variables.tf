@@ -34,13 +34,6 @@ variable "tags" {
   default     = {}
 }
 
-# Service variables
-variable "videoindexer_api_key" {
-  description = "Specifies the API Key for Video Indexer."
-  type        = string
-  sensitive   = true
-}
-
 variable "logic_app_sku" {
   description = "Specifies the SKU for the logic app."
   type        = string
