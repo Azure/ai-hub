@@ -143,7 +143,7 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "path": "@parameters('STORAGE_CONTAINER_NAME_UPLOAD_MOVIES')"
+                        "path": "@parameters('STORAGE_CONTAINER_NAME_UPLOAD_NEWS')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
