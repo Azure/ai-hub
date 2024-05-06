@@ -7,6 +7,8 @@ module "storage_account" {
   storage_account_name = local.storage_account_name
   storage_account_container_names = [
     local.container_name_shortclip,
+    local.container_name_upload_news,
+    local.container_name_upload_movies,
     local.container_name_raw,
     local.container_name_curated
   ]
