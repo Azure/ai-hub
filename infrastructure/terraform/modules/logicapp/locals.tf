@@ -8,7 +8,11 @@ locals {
     for key, value in azapi_resource.api_connections :
     "${title(key)}ConnectionRuntimeUrl" => jsondecode(value.output).properties.connectionRuntimeUrl
   }
-  logic_app_application_settings = merge(local.logic_app_application_settings_default, local.logic_app_application_settings_connection_runtime_urls, var.logic_app_application_settings)
+  logic_app_application_settings_api_connection_names = {
+    for key, value in azapi_resource.api_connections :
+    "${title(key)}Name" => value.name
+  }
+  logic_app_application_settings = merge(local.logic_app_application_settings_default, local.logic_app_application_settings_connection_runtime_urls, local.logic_app_application_settings_api_connection_names, var.logic_app_application_settings)
 
   storage_account = {
     resource_group_name = split("/", var.logic_app_storage_account_id)[4]
