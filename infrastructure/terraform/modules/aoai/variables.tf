@@ -64,6 +64,26 @@ variable "log_analytics_workspace_id" {
   }
 }
 
+variable "gpt_model_name" {
+  description = "Specifies the name of the GPT model."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.gpt_model_name) >= 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "gpt_model_version" {
+  description = "Specifies the version of the GPT model."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.gpt_model_version) >= 2
+    error_message = "Please specify a valid version."
+  }
+}
+
 # Network variables
 variable "subnet_id" {
   description = "Specifies the subnet ID."

@@ -10,6 +10,9 @@ module "open_ai" {
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
   subnet_id                  = var.subnet_id
   customer_managed_key       = null
+  gpt_model_name             = local.gpt_model_name
+  gpt_model_version          = local.gpt_model_version
+
 }
 
 module "videoindexer" {
