@@ -347,7 +347,8 @@
                             "containerName": "@{parameters('STORAGE_CONTAINER_NAME_CURATED')}",
                             "promptContentBlobName": "@{body('UploadBlob-PromptContent')?['properties']?['blobPath']}",
                             "artifactBlobName": "@{body('UploadBlob-Artifact')?['properties']?['blobPath']}",
-                            "videoIndexName": "@{body('UploadBlob-VideoIndex')?['properties']?['blobPath']}"
+                            "videoIndexName": "@{body('UploadBlob-VideoIndex')?['properties']?['blobPath']}",
+                            "videoUrl": "@{concat(parameters('AZURE_BLOB_STORAGE_ENDPOINT'),body('ParseMetadata')?['videoFileContainerName'],'/',body('ParseMetadata')?['videoFileBlobName'])}"
                         },
                         "overrideIfExists": "true"
                     },
