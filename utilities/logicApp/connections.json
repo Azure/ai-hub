@@ -39,9 +39,9 @@
   "functionConnections": {
     "azureFunctionOperation": {
       "function": {
-        "id": "@{appsetting('FUNCTION_SHORTCLIP_ID')}/functions/@{appsetting('FUNCTION_SHORTCLIP_FUNCTION_NAME')}"
+        "id": "@{appsetting('FUNCTION_SHORTCLIP_ID')}/functions/@{parameters('FUNCTION_SHORTCLIP_FUNCTION_NAME')}"
       },
-      "triggerUrl": "https://@{appsetting('FUNCTION_SHORTCLIP_HOSTNAME')}/api/@{appsetting('FUNCTION_SHORTCLIP_FUNCTION_NAME')}",
+      "triggerUrl": "https://@{appsetting('FUNCTION_SHORTCLIP_HOSTNAME')}/api/@{parameters('FUNCTION_SHORTCLIP_FUNCTION_NAME')}",
       "authentication": {
         "type": "QueryString",
         "name": "Code",
