@@ -3,8 +3,12 @@
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
             "Compose-BlobContent": {
-                "inputs": "@base64ToString(triggerBody()?['content']['$content'])",
-                "runAfter": {},
+                "inputs": "@body('Read_blob_content')?['content']",
+                "runAfter": {
+                    "Read_blob_content": [
+                        "SUCCEEDED"
+                    ]
+                },
                 "type": "Compose"
             },
             "Compose-Transcript": {
@@ -69,12 +73,12 @@
                     "body": {
                         "orchestrator_workflow_name": "video_extraction_orchestrator",
                         "orchestrator_workflow_properties": {
-                            "content_url_openai": "@{concat(parameters('AZURE_BLOB_STORAGE_ENDPOINT'), body('UploadBlob-Assisstant')?['properties']?['blobFullPathWithContainer'])}",
-                            "content_url_video": "@{concat(parameters('AZURE_BLOB_STORAGE_ENDPOINT'), triggerBody()?['name'])}"
+                            "content_url_openai": "@{concat(\n    parameters('AZURE_BLOB_STORAGE_ENDPOINT'),\n    parameters('STORAGE_CONTAINER_NAME_CURATED'),\n    '/',\n    body('UploadBlob-Assisstant')?['properties']?['blobPath']\n)}",
+                            "content_url_video": "@{\nconcat(\n    parameters('AZURE_BLOB_STORAGE_ENDPOINT'),\n    parameters('STORAGE_CONTAINER_NAME_RAW'),\n    '/videos/',\n    body('HtmlToText-BlobContent-Response')?['name']\n)}"
                         }
                     },
                     "method": "POST",
-                    "uri": "@concat(parameters('FUNCTION_SHORTCLIP_HOSTNAME'), 'api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))"
+                    "uri": "@concat('https://', parameters('FUNCTION_SHORTCLIP_HOSTNAME'), '/api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))"
                 },
                 "runAfter": {
                     "UploadBlob-Assisstant": [
@@ -192,7 +196,7 @@
                         "type": "ManagedServiceIdentity"
                     },
                     "body": {
-                        "instructions": "@{parameters('META_PROMPT')}",
+                        "instructions": "@{variables('static_prompt')}",
                         "model": "@{parameters('AZURE_OPENAI_DEPLOYMENT_NAME')}",
                         "name": "@{concat(parameters('ASSISSTANT_NAME'), workflow()['id'])}"
                     },
@@ -200,7 +204,7 @@
                     "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')"
                 },
                 "runAfter": {
-                    "Compose-Transcript": [
+                    "static_prompt": [
                         "SUCCEEDED"
                     ]
                 },
@@ -493,6 +497,21 @@
                 },
                 "type": "ParseJson"
             },
+            "Read_blob_content": {
+                "inputs": {
+                    "parameters": {
+                        "blobName": "@triggerBody()?['name']",
+                        "containerName": "@triggerBody()?['containerInfo']?['name']"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "readBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {},
+                "type": "ServiceProvider"
+            },
             "Until": {
                 "actions": {
                     "Delay": {
@@ -503,7 +522,7 @@
                             }
                         },
                         "runAfter": {
-                            "SetVariable-RunStatus": [
+                            "OpenAi-GetRun-Response": [
                                 "SUCCEEDED"
                             ]
                         },
@@ -715,23 +734,11 @@
                             ]
                         },
                         "type": "ParseJson"
-                    },
-                    "SetVariable-RunStatus": {
-                        "inputs": {
-                            "name": "runStatus",
-                            "value": "@{body('OpenAi-GetRun-Response')?['properties']?['status']}"
-                        },
-                        "runAfter": {
-                            "OpenAi-GetRun-Response": [
-                                "SUCCEEDED"
-                            ]
-                        },
-                        "type": "SetVariable"
                     }
                 },
-                "expression": "@equals(variables('runStatus'),'completed')",
+                "expression": "@equals(body('OpenAi-CreateRun-Request')?['status'],'completed')",
                 "limit": {
-                    "count": 10,
+                    "count": 7,
                     "timeout": "PT1H"
                 },
                 "runAfter": {
@@ -744,9 +751,10 @@
             "UploadBlob-Assisstant": {
                 "inputs": {
                     "parameters": {
-                        "blobName": "assisstant.json",
-                        "containerName": "@concat(parameters('STORAGE_CONTAINER_NAME_RAW'), '/', workflow()['id'])",
-                        "content": "@body('OpenAi-GetMessages-Response')?['data'][0]['content'][0]['text']['value']"
+                        "blobName": "@replace(triggerBody()?['name'], 'promptcontent.json',\n'assistant.json'\n)",
+                        "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
+                        "content": "@replace(replace (body('OpenAi-GetMessages-Response')?['data'][0]?['content'][0]?['text'].value, '```json',''),'```','')",
+                        "overrideIfExists": "true"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
@@ -760,12 +768,34 @@
                     ]
                 },
                 "type": "ServiceProvider"
+            },
+            "static_prompt": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "static_prompt",
+                            "type": "string",
+                            "value": "You will be provided the text based transcript from the TV show with start time and end time of the scene.\n\nYour task is to extract the scene from the text transcript that can go viral on social media.\nYou have to rate them in probability of going viral 1 to 10, 10 being the most likely.\nPlease rate each scene independently but must in the context of the full transcript.\n\nHere are the steps and the ground rules you should follow:\n-------\nStep 1. Process all the scenes from the transcript to understand the overall context and summarize the transcript.\nStep 2. Process each scene in the context of the transcript from step 1 to find the relevance and probability of it going viral based on criteria/hints mentioned below.\nStep 3. Identify top 10 scene and rank them 1 to 10, 10 being the most likely. There should not be any duplicate ratings.\n\n------\nCriteria/Hints:\n\n- Something Unusual and unexpected in the context of the transcript\n- Sensational and controversial\n- Emotions\n- Celebrity affairs\n- Scandals\n- Gossip\n- Breaking news\n- Trending topics\n- Challenges and Trends\n- Shocking and surprising content\n- Educational and informative content\n- Inspirational and motivational content\n- Cute and adorable content\n- Action and adventure\n- Thrilling and suspenseful content\n- Romantic and love stories\n- Music and dance\n- Travel and adventure\n- Sports and fitness\n- Pets and animals\n- Fashion and beauty\n- Art and creativity\n- Technology and gadgets\n\n-----------\ninput:\n\nYour input will be a structured array containing one or more scenes. Each scene will have the following structure:\n    -id : scene id\n    -start: start time of the scene\n    -end: end time of the scene\n    -content: content of the section. You have to deep inspect the text here to find the suitable clips.\n            This is a single string however it will have multiple tags in square brackets.\n            You have to find the suitable clip based on the content and tags.\n            [transcript title] will be the title of the transcript\n            [Tags]  will be the tags of the transcript\n            [Detected Objects]  will be the objects detected in the transcript\n            [OCR] will be the text detected in the transcript\n            [Known people]  will be the known people in the transcript\n            [Transcript] will be the transcript of the scene\n\nYou have to combine all the information present in the content using all the different tags and then find the suitable clips based on that.\n\n-------------\nGround rules:\n- Your output must be in strict JSON format. Don't include any comments or other characters that are not part of the JSON format.\n- Translate the the output to English if the source transcript is not in English.\n- You identify top scenes based on the rating that are suitable for making short transcripts that can go viral and sort it by rating.\n- You are not allowed to add new line characters in the transcript.\n- Do not include information that is not part of the input provided.\n- Not all the content will have the suitable clips. If you cannot find it or determine the applicability of the scene, continue with processing the next scene.\n- You have to parse entire content to find the suitable clips and rank them based on probability of going viral.\n- You have to provide the rating of the probability of the clip going viral 1 to 10, 10 being the most likely. Please rate each clip independently.\n- you have to provide reasoning for the rating.\n- order your response based on ratings.\n\n\nOutput:\n-----------\n{\n    \"summary\": \"This is the summary of the transcript from step 1\",\n    \"scenes\": [\n        {\n            \"id\": \"scene id\",\n            \"title\": \"short title of the scene based on summary\",\n            \"rating\": 10,\n            \"reasoning\": \"This scene is suitable for making short transcripts that can go viral on social media because...\",\n            \"description\": \"brief description of what this scene is about\",\n            \"start_time\": \"start time of the scene\",\n            \"end_time\": \"end time of the scene\",\n            \"transcript\": \"text of the transcript for this scene id\",\n            \"translation\": \"content of transcript translated in English\"\n        }\n    ]\n}\n"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Compose-Transcript": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "InitializeVariable"
             }
         },
         "contentVersion": "1.0.0.0",
         "outputs": {},
         "triggers": {
             "BlobTrigger": {
+                "conditions": [
+                    {
+                        "expression": "@contains(triggerBody()?['Name'],'promptcontent.json')"
+                    }
+                ],
                 "inputs": {
                     "parameters": {
                         "path": "@parameters('STORAGE_CONTAINER_NAME_CURATED')"
