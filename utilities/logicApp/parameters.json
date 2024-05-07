@@ -79,6 +79,16 @@
       "type": "ManagedServiceIdentity"
     }
   },
+  "AzureeventgridConnectionRuntimeUrl": {
+    "type": "String",
+    "value": "@appsetting('AzureeventgridConnectionRuntimeUrl')"
+  },
+  "AzureeventgridAuthentication": {
+    "type": "Object",
+    "value": {
+      "type": "ManagedServiceIdentity"
+    }
+  },
   "AZURE_BLOB_STORAGE_ENDPOINT": {
     "type": "String",
     "value": "@appsetting('AZURE_BLOB_STORAGE_ENDPOINT')"
