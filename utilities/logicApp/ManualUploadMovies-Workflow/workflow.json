@@ -13,16 +13,20 @@
                         }
                     ]
                 },
-                "runAfter": {}
+                "runAfter": {
+                    "BlobMetadata-VideoRaw": [
+                        "SUCCEEDED"
+                    ]
+                }
             },
             "CopyBlob-VideosRaw": {
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "sourceContainerName": "@triggerBody()?['containerInfo']?['name']",
-                        "sourceBlobName": "@triggerBody()?['name']",
+                        "sourceContainerName": "@variables('containerName')",
+                        "sourceBlobName": "@variables('blobName')",
                         "destinationContainerName": "@parameters('STORAGE_CONTAINER_NAME_RAW')",
-                        "destinationBlobName": "@concat(variables('workflowId'),'/',triggerBody()?['properties']?['blobName'])",
+                        "destinationBlobName": "@concat(variables('workflowId'),'/',variables('blobName'))",
                         "overrideIfExists": true
                     },
                     "serviceProviderConfiguration": {
@@ -48,7 +52,7 @@
                             "shortclip": 1,
                             "newstags": 0,
                             "videoFileContainerName": "@{parameters('STORAGE_CONTAINER_NAME_RAW')}",
-                            "videoFileBlobName": "@{concat(variables('workflowId'),'/',triggerBody()?['properties']?['blobName'])}"
+                            "videoFileBlobName": "@{concat(variables('workflowId'),'/',variables('blobName'))}"
                         }
                     },
                     "serviceProviderConfiguration": {
@@ -69,13 +73,13 @@
                     "and": [
                         {
                             "equals": [
-                                "@not(empty(triggerBody()?['metadata']))",
+                                "@not(empty(body('BlobMetadata-VideoRaw')?['metadata']))",
                                 true
                             ]
                         },
                         {
                             "equals": [
-                                "@not(empty(triggerBody()?['metadata']['language']))",
+                                "@not(empty(body('BlobMetadata-VideoRaw')?['metadata']['language']))",
                                 true
                             ]
                         }
@@ -86,7 +90,7 @@
                         "type": "SetVariable",
                         "inputs": {
                             "name": "language",
-                            "value": "@{triggerBody()?['metadata']['language']}"
+                            "value": "@{body('BlobMetadata-VideoRaw')?['metadata']['language']}"
                         }
                     }
                 },
@@ -103,8 +107,8 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "containerName": "@triggerBody()?['containerInfo']?['name']",
-                        "blobName": "@triggerBody()?['name']"
+                        "containerName": "@variables('containerName')",
+                        "blobName": "@variables('blobName')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
@@ -134,23 +138,92 @@
                         "SUCCEEDED"
                     ]
                 }
+            },
+            "InitializeVariable-ContainerName": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "containerName",
+                            "type": "string",
+                            "value": "@{split(triggerBody()?['subject'], '/')[4]}"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "InitializeVariable-BlobName": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "blobName",
+                            "type": "string",
+                            "value": "@{replace(triggerBody()?['subject'],concat('/blobServices/default/containers/',variables('containerName'),'/blobs/'),'')}"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "InitializeVariable-ContainerName": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "BlobMetadata-VideoRaw": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@variables('containerName')",
+                        "blobName": "@variables('blobName')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "getBlobMetadata",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "InitializeVariable-BlobName": [
+                        "SUCCEEDED"
+                    ]
+                }
             }
         },
         "contentVersion": "1.0.0.0",
         "outputs": {},
         "triggers": {
-            "BlobTriggerMovies": {
-                "type": "ServiceProvider",
+            "EventGridTrigger": {
+                "type": "ApiConnectionWebhook",
                 "inputs": {
-                    "parameters": {
-                        "path": "@parameters('STORAGE_CONTAINER_NAME_UPLOAD_MOVIES')"
+                    "host": {
+                        "connection": {
+                            "referenceName": "azureeventgrid"
+                        }
                     },
-                    "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob",
-                        "operationId": "whenABlobIsAddedOrModified",
-                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    "body": {
+                        "properties": {
+                            "topic": "@{concat('/subscriptions/',parameters('STORAGE_ACCOUNT_SUBSCRIPTION_ID'),'/resourceGroups/',parameters('STORAGE_ACCOUNT_RESOURCE_GROUP_NAME'),'/providers/Microsoft.Storage/storageAccounts/',parameters('STORAGE_ACCOUNT_NAME'))}",
+                            "destination": {
+                                "endpointType": "webhook",
+                                "properties": {
+                                    "endpointUrl": "@{listCallbackUrl()}"
+                                }
+                            },
+                            "filter": {
+                                "includedEventTypes": [
+                                    "Microsoft.Storage.BlobCreated"
+                                ],
+                                "subjectBeginsWith": "@{concat('/blobServices/default/containers/',parameters('STORAGE_CONTAINER_NAME_UPLOAD_MOVIES'),'/blobs/')}"
+                            }
+                        }
+                    },
+                    "path": "/subscriptions/@{encodeURIComponent(parameters('STORAGE_ACCOUNT_SUBSCRIPTION_ID'))}/providers/@{encodeURIComponent('Microsoft.Storage.StorageAccounts')}/resource/eventSubscriptions",
+                    "queries": {
+                        "x-ms-api-version": "2017-09-15-preview",
+                        "subscriptionName": "movieSubscription"
                     }
-                }
+                },
+                "splitOn": "@triggerBody()"
             }
         }
     },
