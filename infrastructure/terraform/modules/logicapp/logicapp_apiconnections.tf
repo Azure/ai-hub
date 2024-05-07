@@ -30,7 +30,7 @@ resource "azapi_resource" "api_connections" {
       customParameterValues = {},
       displayName           = each.value.display_name
       parameterValues       = each.value.parameter_values
-      parameterValueType    = null
+      parameterValueType    = each.value.parameter_value_type
       testLinks             = []
       testRequests          = []
     }
