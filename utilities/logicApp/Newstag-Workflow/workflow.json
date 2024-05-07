@@ -21,7 +21,7 @@
             "ParseBlob-Config": {
                 "type": "ParseJson",
                 "inputs": {
-                    "content": "@body('AzureFunctionShortClip-NewsTagExtraction-Request')",
+                    "content": "@body('ReadBlob-Config')?['content']",
                     "schema": {
                         "type": "object",
                         "properties": {
@@ -263,7 +263,7 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "path": "@concat(parameters('STORAGE_CONTAINER_NAME_CURATED'),'/{name}config.json')"
+                        "path": "@concat(parameters('STORAGE_CONTAINER_NAME_CURATED'), '/{name}config.json')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
