@@ -768,7 +768,7 @@
             "BlobTrigger": {
                 "inputs": {
                     "parameters": {
-                        "path": "@parameters('STORAGE_CONTAINER_NAME_RAW')"
+                        "path": "@parameters('STORAGE_CONTAINER_NAME_CURATED')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
@@ -776,7 +776,12 @@
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
                 },
-                "type": "ServiceProvider"
+                "type": "ServiceProvider",
+                "conditions": [
+                    {
+                      "expression": "@contains(triggerBody()?['Name'],'promptcontent.json')"
+                    }
+                  ]
             }
         }
     },
