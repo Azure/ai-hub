@@ -116,13 +116,14 @@ variable "logic_app_application_insights_connection_string" {
 variable "logic_app_api_connections" {
   description = "Specifies the web connections of teh logic app."
   type = map(object({
-    kind             = string
-    display_name     = string
-    description      = string
-    icon_uri         = string
-    brand_color      = string
-    category         = string
-    parameter_values = optional(map(string), {})
+    kind                 = string
+    display_name         = string
+    description          = string
+    icon_uri             = string
+    brand_color          = string
+    category             = string
+    parameter_values     = optional(map(string), {})
+    parameter_value_type = optional(string, null)
   }))
   sensitive = false
   default   = {}

@@ -83,13 +83,14 @@ module "logic_app_orchestration" {
   logic_app_application_insights_connection_string   = module.application_insights_orchestration.application_insights_connection_string
   logic_app_api_connections = {
     conversionservice = {
-      kind             = "V2"
-      display_name     = "Content Conversion"
-      description      = "A service that allows content to be converted from one format to another."
-      icon_uri         = "https://connectoricons-prod.azureedge.net/releases/v1.0.1677/1.0.1677.3637"
-      brand_color      = "#4f6bed"
-      category         = "Standard"
-      parameter_values = {}
+      kind                 = "V2"
+      display_name         = "Content Conversion"
+      description          = "A service that allows content to be converted from one format to another."
+      icon_uri             = "https://connectoricons-prod.azureedge.net/releases/v1.0.1686/1.0.1686.3706"
+      brand_color          = "#4f6bed"
+      category             = "Standard"
+      parameter_values     = {}
+      parameter_value_type = null
     }
     videoindexer-v2 = {
       kind         = "V2"
@@ -101,6 +102,17 @@ module "logic_app_orchestration" {
       parameter_values = {
         api_key = "not_required_for_arm_bsaed_authentication"
       }
+      parameter_value_type = null
+    }
+    azureeventgrid = {
+      kind                 = "V2"
+      display_name         = "Azure Event Grid"
+      description          = "Azure Event Grid is an eventing backplane that enables event based programing with pub/sub semantics and reliable distribution & delivery for all services in Azure as well as third parties."
+      icon_uri             = "https://connectoricons-prod.azureedge.net/releases/v1.0.1680/1.0.1680.3652"
+      brand_color          = "#0072c6"
+      category             = "Standard"
+      parameter_values     = {}
+      parameter_value_type = "Alternative"
     }
   }
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
@@ -110,7 +122,7 @@ module "logic_app_orchestration" {
 
 # Role assignments logic app
 resource "azurerm_role_assignment" "logic_app_role_assignment_storage_blob_data_owner" {
-  description          = "Role Assignment for Data Factory to read and write data"
+  description          = "Role Assignment for Logic App to read and write data"
   scope                = module.storage_account.storage_account_id
   role_definition_name = "Storage Blob Data Owner"
   principal_id         = module.logic_app_orchestration.logic_app_principal_id
@@ -126,15 +138,23 @@ resource "azurerm_role_assignment" "logic_app_role_assignment_logic_apps_standar
 }
 
 resource "azurerm_role_assignment" "logic_app_role_assignment_storage_account_contributor" {
-  description          = "Role Assignment for Data Factory to generate SAS tokens."
+  description          = "Role Assignment for Logic App to generate SAS tokens."
   scope                = module.storage_account.storage_account_id
   role_definition_name = "Storage Account Contributor"
   principal_id         = module.logic_app_orchestration.logic_app_principal_id
   principal_type       = "ServicePrincipal"
 }
 
+resource "azurerm_role_assignment" "logic_app_role_assignment_storage_eventgrid_eventsubscription_contributor" {
+  description          = "Role Assignment for Logic App to generate SAS tokens."
+  scope                = module.storage_account.storage_account_id
+  role_definition_name = "EventGrid EventSubscription Contributor"
+  principal_id         = module.logic_app_orchestration.logic_app_principal_id
+  principal_type       = "ServicePrincipal"
+}
+
 resource "azurerm_role_assignment" "logic_app_role_assignment_open_ai" {
-  description          = "Role Assignment for Data Factory to interact with Open AI models"
+  description          = "Role Assignment for Logic App to interact with Open AI models"
   scope                = module.open_ai.cognitive_account_id
   role_definition_name = "Cognitive Services OpenAI Contributor"
   principal_id         = module.logic_app_orchestration.logic_app_principal_id
@@ -142,7 +162,7 @@ resource "azurerm_role_assignment" "logic_app_role_assignment_open_ai" {
 }
 
 resource "azurerm_role_assignment" "logic_app_role_assignment_videoindexer" {
-  description          = "Role Assignment for Data Factory to interact with Video Indexer"
+  description          = "Role Assignment for Logic App to interact with Video Indexer"
   scope                = module.videoindexer.videoindexer_id
   role_definition_name = "Contributor"
   principal_id         = module.logic_app_orchestration.logic_app_principal_id

@@ -19,6 +19,22 @@
       },
       "connectionRuntimeUrl": "@parameters('Videoindexer-V2ConnectionRuntimeUrl')",
       "authentication": "@parameters('Videoindexer-V2Authentication')"
+    },
+    "azureeventgrid": {
+      "api": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/providers/Microsoft.Web/locations/@{appsetting('WORKFLOWS_LOCATION_NAME')}/managedApis/azureeventgrid"
+      },
+      "connection": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')}/providers/Microsoft.Web/connections/@{appsetting('WEBSITE_CONTENTSHARE')}-api-azureeventgrid"
+      },
+      "connectionRuntimeUrl": "@parameters('AzureeventgridConnectionRuntimeUrl')",
+      "authentication": "@parameters('AzureeventgridAuthentication')",
+      "connectionProperties": {
+        "authentication": {
+          "type": "ManagedServiceIdentity",
+          "audience": "https://management.core.windows.net/"
+        }
+      }
     }
   },
   "serviceProviderConnections": {
