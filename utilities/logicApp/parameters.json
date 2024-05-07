@@ -11,6 +11,14 @@
     "type": "String",
     "value": "@appsetting('STORAGE_ACCOUNT_NAME')"
   },
+  "STORAGE_CONTAINER_NAME_UPLOAD_MOVIES": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_CONTAINER_NAME_UPLOAD_MOVIES')"
+  },
+  "STORAGE_CONTAINER_NAME_UPLOAD_NEWS": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_CONTAINER_NAME_UPLOAD_NEWS')"
+  },
   "STORAGE_CONTAINER_NAME_RAW": {
     "type": "String",
     "value": "@appsetting('STORAGE_CONTAINER_NAME_RAW')"
@@ -75,6 +83,10 @@
     "type": "String",
     "value": "@appsetting('AZURE_BLOB_STORAGE_ENDPOINT')"
   },
+  "FUNCTION_SHORTCLIP_ID": {
+    "type": "String",
+    "value": "@appsetting('FUNCTION_SHORTCLIP_ID')"
+  },
   "FUNCTION_SHORTCLIP_HOSTNAME": {
     "type": "String",
     "value": "@appsetting('FUNCTION_SHORTCLIP_HOSTNAME')"
@@ -82,6 +94,10 @@
   "FUNCTION_SHORTCLIP_KEY": {
     "type": "String",
     "value": "@appsetting('FUNCTION_SHORTCLIP_KEY')"
+  },
+  "FUNCTION_SHORTCLIP_FUNCTION_NAME": {
+    "type": "String",
+    "value": "StartWorkflow"
   },
   "LOGIC_APP_ID": {
     "type": "String",

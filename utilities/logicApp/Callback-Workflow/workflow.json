@@ -72,7 +72,7 @@
                 "type": "Compose",
                 "inputs": "@body('Videoindexer-GetVideoIndex')",
                 "runAfter": {
-                    "Videoindexer-GetVideoIndex": [
+                    "ParseMetadata": [
                         "SUCCEEDED"
                     ]
                 }
@@ -108,7 +108,7 @@
                     }
                 },
                 "runAfter": {
-                    "Videoindexer-GetVideoIndex": [
+                    "ParseMetadata": [
                         "SUCCEEDED"
                     ]
                 },
@@ -271,7 +271,7 @@
                     }
                 },
                 "runAfter": {
-                    "Videoindexer-GetVideoIndex": [
+                    "ParseMetadata": [
                         "SUCCEEDED"
                     ]
                 },
@@ -333,6 +333,72 @@
                     ]
                 },
                 "runAfter": {}
+            },
+            "UploadBlob-Config": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
+                        "blobName": "@concat(body('Videoindexer-GetVideoIndex')?['name'], '/config.json')",
+                        "content": {
+                            "language": "@{body('ParseMetadata')?['language']}",
+                            "shortclip": "@body('ParseMetadata')?['shortclip']",
+                            "newstags": "@body('ParseMetadata')?['newstags']",
+                            "containerName": "@{parameters('STORAGE_CONTAINER_NAME_CURATED')}",
+                            "promptContentBlobName": "@{body('UploadBlob-PromptContent')?['properties']?['blobPath']}",
+                            "artifactBlobName": "@{body('UploadBlob-Artifact')?['properties']?['blobPath']}",
+                            "videoIndexName": "@{body('UploadBlob-VideoIndex')?['properties']?['blobPath']}"
+                        },
+                        "overrideIfExists": "true"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "uploadBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "UploadBlob-VideoIndex": [
+                        "SUCCEEDED"
+                    ],
+                    "UploadBlob-PromptContent": [
+                        "SUCCEEDED"
+                    ],
+                    "UploadBlob-Artifact": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "ParseMetadata": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('Videoindexer-GetVideoIndex')?['description']",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "language": {
+                                "type": "string"
+                            },
+                            "shortclip": {
+                                "type": "integer"
+                            },
+                            "newstags": {
+                                "type": "integer"
+                            },
+                            "videoFileContainerName": {
+                                "type": "string"
+                            },
+                            "videoFileBlobName": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Videoindexer-GetVideoIndex": [
+                        "SUCCEEDED"
+                    ]
+                }
             }
         },
         "contentVersion": "1.0.0.0",

@@ -1,0 +1,158 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "InitializeVariable-Language": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "language",
+                            "type": "string",
+                            "value": "en-US"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "CopyBlob-VideosRaw": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "sourceContainerName": "@triggerBody()?['containerInfo']?['name']",
+                        "sourceBlobName": "@triggerBody()?['name']",
+                        "destinationContainerName": "@parameters('STORAGE_CONTAINER_NAME_RAW')",
+                        "destinationBlobName": "@concat(variables('workflowId'),'/',triggerBody()?['properties']?['blobName'])",
+                        "overrideIfExists": true
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "copyBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "Condition": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "UploadBlob-ConfigJson": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@parameters('STORAGE_CONTAINER_NAME_RAW')",
+                        "blobName": "@concat(variables('workflowId'),'/config.json')",
+                        "content": {
+                            "language": "@{variables('language')}",
+                            "shortclip": 1,
+                            "newstags": 0,
+                            "videoFileContainerName": "@{parameters('STORAGE_CONTAINER_NAME_RAW')}",
+                            "videoFileBlobName": "@{concat(variables('workflowId'),'/',triggerBody()?['properties']?['blobName'])}"
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "uploadBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "CopyBlob-VideosRaw": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Condition": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@not(empty(triggerBody()?['metadata']))",
+                                true
+                            ]
+                        },
+                        {
+                            "equals": [
+                                "@not(empty(triggerBody()?['metadata']['language']))",
+                                true
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "SetVariable-Language": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "language",
+                            "value": "@{triggerBody()?['metadata']['language']}"
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {}
+                },
+                "runAfter": {
+                    "InitializeVariable-WorkflowId": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "DeleteBlob": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@triggerBody()?['containerInfo']?['name']",
+                        "blobName": "@triggerBody()?['name']"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "deleteBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "UploadBlob-ConfigJson": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "InitializeVariable-WorkflowId": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "workflowId",
+                            "type": "string",
+                            "value": "@{last(split(workflow()['run']['id'],'/'))}"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "InitializeVariable-Language": [
+                        "SUCCEEDED"
+                    ]
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "BlobTriggerMovies": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "path": "@parameters('STORAGE_CONTAINER_NAME_UPLOAD_MOVIES')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "whenABlobIsAddedOrModified",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                }
+            }
+        }
+    },
+    "kind": "Stateful"
+}

@@ -58,9 +58,12 @@
                     "path": "/@{encodeURIComponent(parameters('WORKFLOWS_LOCATION_NAME'))}/Accounts/@{encodeURIComponent(parameters('VIDEO_INDEXER_ACCOUNT_ID'))}/Videos",
                     "queries": {
                         "accessToken": "@body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']",
-                        "name": "@{triggerBody()?['properties']?['blobName']}",
-                        "videoUrl": "@{concat('https://',parameters('STORAGE_ACCOUNT_NAME'),'.blob.core.windows.net',triggerBody()?['properties']?['blobFullPathWithContainer'],'?',body('Arm-StorageListServiceSas-Response')?['serviceSasToken'])}",
-                        "callbackUrl": "@body('Arm-LogicAppListCallbackUri-Response')?['value']"
+                        "name": "@{last(split(body('ParseBlob-Config')?['videoFileBlobName'], '/'))}",
+                        "videoUrl": "@{concat('https://',parameters('STORAGE_ACCOUNT_NAME'),'.blob.core.windows.net/',body('ParseBlob-Config')?['videoFileContainerName'],'/',body('ParseBlob-Config')?['videoFileBlobName'],'?',body('Arm-StorageListServiceSas-Response')?['serviceSasToken'])}",
+                        "description": "@{string(body('ParseBlob-Config'))}",
+                        "callbackUrl": "@body('Arm-LogicAppListCallbackUri-Response')?['value']",
+                        "metadata": "@{string(body('ParseBlob-Config'))}",
+                        "language": "@body('ParseBlob-Config')?['language']"
                     }
                 },
                 "runAfter": {
@@ -75,7 +78,7 @@
                     "uri": "@concat('https://management.azure.com/subscriptions/',parameters('STORAGE_ACCOUNT_SUBSCRIPTION_ID'),'/resourceGroups/',parameters('STORAGE_ACCOUNT_RESOURCE_GROUP_NAME'),'/providers/Microsoft.Storage/storageAccounts/',parameters('STORAGE_ACCOUNT_NAME'), '/ListServiceSas?api-version=2023-01-01')",
                     "method": "POST",
                     "body": {
-                        "canonicalizedResource": "/blob/@{parameters('STORAGE_ACCOUNT_NAME')}@{triggerBody()?['properties']?['blobFullPathWithContainer']}",
+                        "canonicalizedResource": "/blob/@{parameters('STORAGE_ACCOUNT_NAME')}/@{body('ParseBlob-Config')?['videoFileContainerName']}/@{body('ParseBlob-Config')?['videoFileBlobName']}",
                         "signedResource": "b",
                         "signedPermission": "r",
                         "signedProtocol": "https",
@@ -86,7 +89,11 @@
                         "audience": "https://management.core.windows.net"
                     }
                 },
-                "runAfter": {},
+                "runAfter": {
+                    "ParseBlob-Config": [
+                        "SUCCEEDED"
+                    ]
+                },
                 "runtimeConfiguration": {
                     "contentTransfer": {
                         "transferMode": "Chunked"
@@ -174,6 +181,53 @@
                         "SUCCEEDED"
                     ]
                 }
+            },
+            "ReadBlob-Config": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@triggerBody()?['containerInfo']?['name']",
+                        "blobName": "@triggerBody()?['name']",
+                        "inferContentType": true
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "readBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {}
+            },
+            "ParseBlob-Config": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('ReadBlob-Config')?['content']",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "language": {
+                                "type": "string"
+                            },
+                            "shortclip": {
+                                "type": "integer"
+                            },
+                            "newstags": {
+                                "type": "integer"
+                            },
+                            "videoFileContainerName": {
+                                "type": "string"
+                            },
+                            "videoFileBlobName": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "ReadBlob-Config": [
+                        "SUCCEEDED"
+                    ]
+                }
             }
         },
         "contentVersion": "1.0.0.0",
@@ -183,7 +237,7 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "path": "@concat(parameters('STORAGE_CONTAINER_NAME_RAW'),'/videos/{blobname}.{blobextension}')"
+                        "path": "@concat(parameters('STORAGE_CONTAINER_NAME_RAW'),'/{name}config.json')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",

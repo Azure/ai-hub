@@ -35,5 +35,19 @@
       },
       "displayName": "datalake001"
     }
+  },
+  "functionConnections": {
+    "azureFunctionOperation": {
+      "function": {
+        "id": "@{appsetting('FUNCTION_SHORTCLIP_ID')}/functions/@{appsetting('FUNCTION_SHORTCLIP_FUNCTION_NAME')}"
+      },
+      "triggerUrl": "https://@{appsetting('FUNCTION_SHORTCLIP_HOSTNAME')}/api/@{appsetting('FUNCTION_SHORTCLIP_FUNCTION_NAME')}",
+      "authentication": {
+        "type": "QueryString",
+        "name": "Code",
+        "value": "@appsetting('FUNCTION_SHORTCLIP_KEY')"
+      },
+      "displayName": "function-shortclip"
+    }
   }
 }
