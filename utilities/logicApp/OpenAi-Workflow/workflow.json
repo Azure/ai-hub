@@ -1,971 +1,833 @@
 {
-    "definition": {
-      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
-      "actions": {
-        "Compose-BlobContent": {
-          "type": "Compose",
-          "inputs": "@body('Read_blob_content')?['content']",
-          "runAfter": {
-            "Read_config_file": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "Compose-Transcript": {
-          "type": "Compose",
-          "inputs": "@variables('transcript')",
-          "runAfter": {
-            "ForEach-Section": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "ForEach-Section": {
-          "type": "Foreach",
-          "foreach": "@body('HtmlToText-BlobContent-Response')?['sections']",
-          "actions": {
-            "AppendToArrayVariable-Transcript": {
-              "type": "AppendToArrayVariable",
-              "inputs": {
-                "name": "transcript",
-                "value": "@outputs('Compose-Scene')"
-              },
-              "runAfter": {
-                "Compose-Scene": [
-                  "SUCCEEDED"
-                ]
-              }
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Compose-BlobContent": {
+        "type": "Compose",
+        "inputs": "@body('Read_blob_content')?['content']",
+        "runAfter": {
+          "Read_config_file": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "Compose-Transcript": {
+        "type": "Compose",
+        "inputs": "@variables('transcript')",
+        "runAfter": {
+          "ForEach-Section": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "ForEach-Section": {
+        "type": "Foreach",
+        "foreach": "@body('HtmlToText-BlobContent-Response')?['sections']",
+        "actions": {
+          "AppendToArrayVariable-Transcript": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "transcript",
+              "value": "@outputs('Compose-Scene')"
             },
-            "Compose-Scene": {
-              "type": "Compose",
-              "inputs": {
-                "content": "@{body('HtmlToText-Scene')}",
-                "role": "user"
-              },
-              "runAfter": {
-                "HtmlToText-Scene": [
-                  "SUCCEEDED"
-                ]
-              }
-            },
-            "HtmlToText-Scene": {
-              "type": "ApiConnection",
-              "inputs": {
-                "host": {
-                  "connection": {
-                    "referenceName": "conversionservice"
-                  }
-                },
-                "method": "post",
-                "body": "<p>@{items('ForEach-Section')}</p>",
-                "path": "/html2text"
-              }
+            "runAfter": {
+              "Compose-Scene": [
+                "SUCCEEDED"
+              ]
             }
           },
-          "runAfter": {
-            "InitializeVariable-Transcript": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "FunctionShortClip-VideoExtraction-Request": {
-          "type": "Http",
-          "inputs": {
-            "uri": "@concat('https://', parameters('FUNCTION_SHORTCLIP_HOSTNAME'), '/api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))",
-            "method": "POST",
-            "body": {
-              "orchestrator_workflow_name": "video_extraction_orchestrator",
-              "orchestrator_workflow_properties": {
-                "content_url_openai": "@{concat(\n    parameters('AZURE_BLOB_STORAGE_ENDPOINT'),\n    parameters('STORAGE_CONTAINER_NAME_CURATED'),\n    '/',\n    body('UploadBlob-Assisstant')?['properties']?['blobPath']\n)}",
-                "content_url_video": "@{body('Read_config_file')?['content']?['videoUrl']}"
-              }
-            }
-          },
-          "runAfter": {
-            "UploadBlob-Assisstant": [
-              "SUCCEEDED"
-            ]
-          },
-          "runtimeConfiguration": {
-            "contentTransfer": {
-              "transferMode": "Chunked"
-            }
-          }
-        },
-        "HtmlToText-BlobContent": {
-          "type": "ApiConnection",
-          "inputs": {
-            "host": {
-              "connection": {
-                "referenceName": "conversionservice"
-              }
+          "Compose-Scene": {
+            "type": "Compose",
+            "inputs": {
+              "content": "@{body('HtmlToText-Scene')}",
+              "role": "user"
             },
-            "method": "post",
-            "body": "<p>@{outputs('Compose-BlobContent')}</p>",
-            "path": "/html2text"
+            "runAfter": {
+              "HtmlToText-Scene": [
+                "SUCCEEDED"
+              ]
+            }
           },
-          "runAfter": {
-            "Compose-BlobContent": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "HtmlToText-BlobContent-Response": {
-          "type": "ParseJson",
-          "inputs": {
-            "content": "@body('HtmlToText-BlobContent')",
-            "schema": {
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "partition": {},
-                "sections": {
-                  "items": {
-                    "properties": {
-                      "content": {
-                        "type": "string"
-                      },
-                      "end": {
-                        "type": "string"
-                      },
-                      "id": {
-                        "type": "integer"
-                      },
-                      "start": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "start",
-                      "end",
-                      "content"
-                    ],
-                    "type": "object"
-                  },
-                  "type": "array"
+          "HtmlToText-Scene": {
+            "type": "ApiConnection",
+            "inputs": {
+              "host": {
+                "connection": {
+                  "referenceName": "conversionservice"
                 }
               },
-              "type": "object"
+              "method": "post",
+              "body": "<p>@{items('ForEach-Section')}</p>",
+              "path": "/html2text"
+            }
+          }
+        },
+        "runAfter": {
+          "InitializeVariable-Transcript": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "FunctionShortClip-VideoExtraction-Request": {
+        "type": "Http",
+        "inputs": {
+          "uri": "@concat('https://', parameters('FUNCTION_SHORTCLIP_HOSTNAME'), '/api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))",
+          "method": "POST",
+          "body": {
+            "orchestrator_workflow_name": "video_extraction_orchestrator",
+            "orchestrator_workflow_properties": {
+              "content_url_openai": "@{concat(\n    parameters('AZURE_BLOB_STORAGE_ENDPOINT'),\n    parameters('STORAGE_CONTAINER_NAME_CURATED'),\n    '/',\n    body('UploadBlob-Assisstant')?['properties']?['blobPath']\n)}",
+              "content_url_video": "@{body('Read_config_file')?['content']?['videoUrl']}"
+            }
+          }
+        },
+        "runAfter": {
+          "UploadBlob-Assisstant": [
+            "SUCCEEDED"
+          ]
+        },
+        "runtimeConfiguration": {
+          "contentTransfer": {
+            "transferMode": "Chunked"
+          }
+        }
+      },
+      "HtmlToText-BlobContent": {
+        "type": "ApiConnection",
+        "inputs": {
+          "host": {
+            "connection": {
+              "referenceName": "conversionservice"
             }
           },
-          "runAfter": {
-            "HtmlToText-BlobContent": [
-              "SUCCEEDED"
-            ]
-          }
+          "method": "post",
+          "body": "<p>@{outputs('Compose-BlobContent')}</p>",
+          "path": "/html2text"
         },
-        "InitializeVariable-RunStatus": {
-          "type": "InitializeVariable",
-          "inputs": {
-            "variables": [
-              {
-                "name": "runStatus",
-                "type": "string",
-                "value": "Unknown"
-              }
-            ]
-          },
-          "runAfter": {
-            "OpenAi-CreateRun-Response": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "InitializeVariable-Transcript": {
-          "type": "InitializeVariable",
-          "inputs": {
-            "variables": [
-              {
-                "name": "transcript",
+        "runAfter": {
+          "Compose-BlobContent": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "HtmlToText-BlobContent-Response": {
+        "type": "ParseJson",
+        "inputs": {
+          "content": "@body('HtmlToText-BlobContent')",
+          "schema": {
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "partition": {},
+              "sections": {
+                "items": {
+                  "properties": {
+                    "content": {
+                      "type": "string"
+                    },
+                    "end": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "start": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "start",
+                    "end",
+                    "content"
+                  ],
+                  "type": "object"
+                },
                 "type": "array"
               }
-            ]
-          },
-          "runAfter": {
-            "HtmlToText-BlobContent-Response": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "OpenAi-CreateAssisstant-Request": {
-          "type": "Http",
-          "inputs": {
-            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')",
-            "method": "POST",
-            "body": {
-              "instructions": "@{variables('static_prompt')}",
-              "model": "@{parameters('AZURE_OPENAI_DEPLOYMENT_NAME')}",
-              "name": "@{concat(parameters('ASSISSTANT_NAME'), workflow()['id'])}"
             },
-            "authentication": {
-              "audience": "https://cognitiveservices.azure.com",
-              "type": "ManagedServiceIdentity"
-            }
-          },
-          "runAfter": {
-            "static_prompt": [
-              "SUCCEEDED"
-            ]
-          },
-          "runtimeConfiguration": {
-            "contentTransfer": {
-              "transferMode": "Chunked"
-            }
+            "type": "object"
           }
         },
-        "OpenAi-CreateAssisstant-Response": {
-          "type": "ParseJson",
-          "inputs": {
-            "content": "@body('OpenAi-CreateAssisstant-Request')",
-            "schema": {
-              "properties": {
-                "created_at": {
-                  "type": "integer"
-                },
-                "description": {},
-                "file_ids": {
-                  "items": {
-                    "type": "string"
-                  },
-                  "type": "array"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "instructions": {
-                  "type": "string"
-                },
-                "metadata": {
-                  "properties": {},
-                  "type": "object"
-                },
-                "model": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "object": {
-                  "type": "string"
-                },
-                "tools": {
-                  "items": {
-                    "properties": {
-                      "type": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "type": "object"
-                  },
-                  "type": "array"
-                }
+        "runAfter": {
+          "HtmlToText-BlobContent": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "InitializeVariable-RunStatus": {
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "runStatus",
+              "type": "string",
+              "value": "Unknown"
+            }
+          ]
+        },
+        "runAfter": {
+          "OpenAi-CreateRun-Response": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "InitializeVariable-Transcript": {
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "transcript",
+              "type": "array"
+            }
+          ]
+        },
+        "runAfter": {
+          "HtmlToText-BlobContent-Response": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "OpenAi-CreateAssisstant-Request": {
+        "type": "Http",
+        "inputs": {
+          "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')",
+          "method": "POST",
+          "body": {
+            "instructions": "@{variables('static_prompt')}",
+            "model": "@{parameters('AZURE_OPENAI_DEPLOYMENT_NAME')}",
+            "name": "@{concat(parameters('ASSISSTANT_NAME'), workflow()['id'])}"
+          },
+          "authentication": {
+            "audience": "https://cognitiveservices.azure.com",
+            "type": "ManagedServiceIdentity"
+          }
+        },
+        "runAfter": {
+          "static_prompt": [
+            "SUCCEEDED"
+          ]
+        },
+        "runtimeConfiguration": {
+          "contentTransfer": {
+            "transferMode": "Chunked"
+          }
+        }
+      },
+      "OpenAi-CreateAssisstant-Response": {
+        "type": "ParseJson",
+        "inputs": {
+          "content": "@body('OpenAi-CreateAssisstant-Request')",
+          "schema": {
+            "properties": {
+              "created_at": {
+                "type": "integer"
               },
-              "type": "object"
-            }
-          },
-          "runAfter": {
-            "OpenAi-CreateAssisstant-Request": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "OpenAi-CreateRun-Request": {
-          "type": "Http",
-          "inputs": {
-            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/runs?api-version=2024-03-01-preview')",
-            "method": "POST",
-            "body": {
-              "assistant_id": "@{body('OpenAi-CreateAssisstant-Response')?['id']}",
-              "thread": {
-                "messages": "@outputs('Compose-Transcript')"
-              }
-            },
-            "authentication": {
-              "audience": "https://cognitiveservices.azure.com",
-              "type": "ManagedServiceIdentity"
-            }
-          },
-          "runAfter": {
-            "OpenAi-CreateAssisstant-Response": [
-              "SUCCEEDED"
-            ]
-          },
-          "runtimeConfiguration": {
-            "contentTransfer": {
-              "transferMode": "Chunked"
-            }
-          }
-        },
-        "OpenAi-CreateRun-Response": {
-          "type": "ParseJson",
-          "inputs": {
-            "content": "@body('OpenAi-CreateRun-Request')",
-            "schema": {
-              "properties": {
-                "assistant_id": {
+              "description": {},
+              "file_ids": {
+                "items": {
                   "type": "string"
                 },
-                "cancelled_at": {},
-                "completed_at": {},
-                "created_at": {
-                  "type": "integer"
-                },
-                "expires_at": {
-                  "type": "integer"
-                },
-                "failed_at": {},
-                "file_ids": {
-                  "items": {
-                    "type": "string"
-                  },
-                  "type": "array"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "instructions": {
-                  "type": "string"
-                },
-                "last_error": {},
-                "metadata": {
-                  "properties": {},
-                  "type": "object"
-                },
-                "model": {
-                  "type": "string"
-                },
-                "object": {
-                  "type": "string"
-                },
-                "required_action": {},
-                "started_at": {},
-                "status": {
-                  "type": "string"
-                },
-                "temperature": {
-                  "type": "integer"
-                },
-                "thread_id": {
-                  "type": "string"
-                },
-                "tools": {
-                  "items": {
-                    "properties": {
-                      "type": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "type": "object"
-                  },
-                  "type": "array"
-                },
-                "usage": {}
+                "type": "array"
               },
-              "type": "object"
-            }
-          },
-          "runAfter": {
-            "OpenAi-CreateRun-Request": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "OpenAi-GetMessages-Request": {
-          "type": "Http",
-          "inputs": {
-            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/messages?api-version=2024-02-15-preview')",
-            "method": "GET",
-            "authentication": {
-              "audience": "https://cognitiveservices.azure.com",
-              "type": "ManagedServiceIdentity"
-            }
-          },
-          "runAfter": {
-            "Until": [
-              "SUCCEEDED"
-            ]
-          },
-          "runtimeConfiguration": {
-            "contentTransfer": {
-              "transferMode": "Chunked"
-            }
-          }
-        },
-        "OpenAi-GetMessages-Response": {
-          "type": "ParseJson",
-          "inputs": {
-            "content": "@body('OpenAi-GetMessages-Request')",
-            "schema": {
-              "properties": {
-                "data": {
-                  "items": {
-                    "properties": {
-                      "assistant_id": {},
-                      "content": {
-                        "items": {
-                          "properties": {
-                            "text": {
-                              "properties": {
-                                "annotations": {
-                                  "type": "array"
-                                },
-                                "value": {
-                                  "type": "string"
-                                }
-                              },
-                              "type": "object"
-                            },
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "required": [
-                            "type",
-                            "text"
-                          ],
-                          "type": "object"
-                        },
-                        "type": "array"
-                      },
-                      "created_at": {
-                        "type": "integer"
-                      },
-                      "file_ids": {
-                        "type": "array"
-                      },
-                      "id": {
-                        "type": "string"
-                      },
-                      "metadata": {
-                        "properties": {},
-                        "type": "object"
-                      },
-                      "object": {
-                        "type": "string"
-                      },
-                      "role": {
-                        "type": "string"
-                      },
-                      "run_id": {},
-                      "thread_id": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "object",
-                      "created_at",
-                      "assistant_id",
-                      "thread_id",
-                      "run_id",
-                      "role",
-                      "content",
-                      "file_ids",
-                      "metadata"
-                    ],
-                    "type": "object"
-                  },
-                  "type": "array"
-                },
-                "first_id": {
-                  "type": "string"
-                },
-                "has_more": {
-                  "type": "boolean"
-                },
-                "last_id": {
-                  "type": "string"
-                },
-                "object": {
-                  "type": "string"
-                }
+              "id": {
+                "type": "string"
               },
-              "type": "object"
-            }
-          },
-          "runAfter": {
-            "OpenAi-GetMessages-Request": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "Read_blob_content": {
-          "type": "ServiceProvider",
-          "inputs": {
-            "parameters": {
-              "containerName": "@triggerBody()?['containerInfo']?['name']",
-              "blobName": "@triggerBody()?['name']"
-            },
-            "serviceProviderConfiguration": {
-              "connectionName": "AzureBlob",
-              "operationId": "readBlob",
-              "serviceProviderId": "/serviceProviders/AzureBlob"
-            }
-          },
-          "runAfter": {}
-        },
-        "Until": {
-          "type": "Until",
-          "expression": "@equals(body('OpenAi-CreateRun-Request')?['status'],'completed')",
-          "limit": {
-            "count": 7,
-            "timeout": "PT1H"
-          },
-          "actions": {
-            "Delay": {
-              "type": "Wait",
-              "inputs": {
-                "interval": {
-                  "count": 30,
-                  "unit": "Second"
-                }
+              "instructions": {
+                "type": "string"
               },
-              "runAfter": {
-                "OpenAi-GetRun-Response": [
-                  "SUCCEEDED"
-                ]
-              }
-            },
-            "OpenAi-GetRun-Request": {
-              "type": "Http",
-              "inputs": {
-                "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/runs/',body('OpenAi-CreateRun-Response')?['id'],'?api-version=2024-02-15-preview')",
-                "method": "GET",
-                "authentication": {
-                  "audience": "https://cognitiveservices.azure.com",
-                  "type": "ManagedServiceIdentity"
-                }
+              "metadata": {
+                "properties": {},
+                "type": "object"
               },
-              "runtimeConfiguration": {
-                "contentTransfer": {
-                  "transferMode": "Chunked"
-                }
-              }
-            },
-            "OpenAi-GetRun-Response": {
-              "type": "ParseJson",
-              "inputs": {
-                "content": "@body('OpenAi-GetRun-Request')",
-                "schema": {
+              "model": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "object": {
+                "type": "string"
+              },
+              "tools": {
+                "items": {
                   "properties": {
-                    "properties": {
-                      "properties": {
-                        "assistant_id": {
-                          "properties": {
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "cancelled_at": {
-                          "properties": {},
-                          "type": "object"
-                        },
-                        "completed_at": {
-                          "properties": {},
-                          "type": "object"
-                        },
-                        "created_at": {
-                          "properties": {
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "expires_at": {
-                          "properties": {
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "failed_at": {
-                          "properties": {},
-                          "type": "object"
-                        },
-                        "file_ids": {
-                          "properties": {
-                            "items": {
-                              "properties": {
-                                "type": {
-                                  "type": "string"
-                                }
-                              },
-                              "type": "object"
-                            },
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "id": {
-                          "properties": {
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "instructions": {
-                          "properties": {
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "last_error": {
-                          "properties": {},
-                          "type": "object"
-                        },
-                        "metadata": {
-                          "properties": {
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "model": {
-                          "properties": {
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "object": {
-                          "properties": {
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "required_action": {
-                          "properties": {},
-                          "type": "object"
-                        },
-                        "started_at": {
-                          "properties": {},
-                          "type": "object"
-                        },
-                        "status": {
-                          "properties": {
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "temperature": {
-                          "properties": {
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "thread_id": {
-                          "properties": {
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "tools": {
-                          "properties": {
-                            "items": {
-                              "properties": {
-                                "properties": {
-                                  "properties": {
-                                    "type": {
-                                      "properties": {
-                                        "type": {
-                                          "type": "string"
-                                        }
-                                      },
-                                      "type": "object"
-                                    }
-                                  },
-                                  "type": "object"
-                                },
-                                "required": {
-                                  "items": {
-                                    "type": "string"
-                                  },
-                                  "type": "array"
-                                },
-                                "type": {
-                                  "type": "string"
-                                }
-                              },
-                              "type": "object"
-                            },
-                            "type": {
-                              "type": "string"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "usage": {
-                          "properties": {},
-                          "type": "object"
-                        }
-                      },
-                      "type": "object"
-                    },
                     "type": {
                       "type": "string"
                     }
                   },
+                  "required": [
+                    "type"
+                  ],
                   "type": "object"
-                }
-              },
-              "runAfter": {
-                "OpenAi-GetRun-Request": [
-                  "SUCCEEDED"
-                ]
+                },
+                "type": "array"
               }
-            }
-          },
-          "runAfter": {
-            "InitializeVariable-RunStatus": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "UploadBlob-Assisstant": {
-          "type": "ServiceProvider",
-          "inputs": {
-            "parameters": {
-              "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
-              "blobName": "@replace(triggerBody()?['name'], 'promptcontent.json',\n'assistant.json'\n)",
-              "content": "@replace(replace (body('OpenAi-GetMessages-Response')?['data'][0]?['content'][0]?['text'].value, '```json',''),'```','')",
-              "overrideIfExists": "true"
             },
-            "serviceProviderConfiguration": {
-              "connectionName": "AzureBlob",
-              "operationId": "uploadBlob",
-              "serviceProviderId": "/serviceProviders/AzureBlob"
-            }
-          },
-          "runAfter": {
-            "OpenAi-GetMessages-Response": [
-              "SUCCEEDED"
-            ]
+            "type": "object"
           }
         },
-        "static_prompt": {
-          "type": "InitializeVariable",
-          "inputs": {
-            "variables": [
-              {
-                "name": "static_prompt",
-                "type": "string",
-                "value": "You will be provided the text based transcript from the TV show with start time and end time of the scene.\n\nYour task is to extract the scene from the text transcript that can go viral on social media.\nYou have to rate them in probability of going viral 1 to 10, 10 being the most likely.\nPlease rate each scene independently but must in the context of the full transcript.\n\nHere are the steps and the ground rules you should follow:\n-------\nStep 1. Process all the scenes from the transcript to understand the overall context and summarize the transcript.\nStep 2. Process each scene in the context of the transcript from step 1 to find the relevance and probability of it going viral based on criteria/hints mentioned below.\nStep 3. Identify top 10 scene and rank them 1 to 10, 10 being the most likely. There should not be any duplicate ratings.\n\n------\nCriteria/Hints:\n\n- Something Unusual and unexpected in the context of the transcript\n- Sensational and controversial\n- Emotions\n- Celebrity affairs\n- Scandals\n- Gossip\n- Breaking news\n- Trending topics\n- Challenges and Trends\n- Shocking and surprising content\n- Educational and informative content\n- Inspirational and motivational content\n- Cute and adorable content\n- Action and adventure\n- Thrilling and suspenseful content\n- Romantic and love stories\n- Music and dance\n- Travel and adventure\n- Sports and fitness\n- Pets and animals\n- Fashion and beauty\n- Art and creativity\n- Technology and gadgets\n\n-----------\ninput:\n\nYour input will be a structured array containing one or more scenes. Each scene will have the following structure:\n    -id : scene id\n    -start: start time of the scene\n    -end: end time of the scene\n    -content: content of the section. You have to deep inspect the text here to find the suitable clips.\n            This is a single string however it will have multiple tags in square brackets.\n            You have to find the suitable clip based on the content and tags.\n            [transcript title] will be the title of the transcript\n            [Tags]  will be the tags of the transcript\n            [Detected Objects]  will be the objects detected in the transcript\n            [OCR] will be the text detected in the transcript\n            [Known people]  will be the known people in the transcript\n            [Transcript] will be the transcript of the scene\n\nYou have to combine all the information present in the content using all the different tags and then find the suitable clips based on that.\n\n-------------\nGround rules:\n- Your output must be in strict JSON format. Don't include any comments or other characters that are not part of the JSON format.\n- Translate the the output to English if the source transcript is not in English.\n- You identify top scenes based on the rating that are suitable for making short transcripts that can go viral and sort it by rating.\n- You are not allowed to add new line characters in the transcript.\n- Do not include information that is not part of the input provided.\n- Not all the content will have the suitable clips. If you cannot find it or determine the applicability of the scene, continue with processing the next scene.\n- You have to parse entire content to find the suitable clips and rank them based on probability of going viral.\n- You have to provide the rating of the probability of the clip going viral 1 to 10, 10 being the most likely. Please rate each clip independently.\n- you have to provide reasoning for the rating.\n- order your response based on ratings.\n\n\nOutput:\n-----------\n{\n    \"summary\": \"This is the summary of the transcript from step 1\",\n    \"scenes\": [\n        {\n            \"id\": \"scene id\",\n            \"title\": \"short title of the scene based on summary\",\n            \"rating\": 10,\n            \"reasoning\": \"This scene is suitable for making short transcripts that can go viral on social media because...\",\n            \"description\": \"brief description of what this scene is about\",\n            \"start_time\": \"start time of the scene\",\n            \"end_time\": \"end time of the scene\",\n            \"transcript\": \"text of the transcript for this scene id\",\n            \"translation\": \"content of transcript translated in English\"\n        }\n    ]\n}\n"
-              }
-            ]
-          },
-          "runAfter": {
-            "Compose-Transcript": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "Read_config_file": {
-          "type": "ServiceProvider",
-          "inputs": {
-            "parameters": {
-              "containerName": "@triggerBody()?['containerInfo']?['name']",
-              "blobName": "@replace(triggerBody()?['name'], 'promptcontent.json' , 'config.json')"
-            },
-            "serviceProviderConfiguration": {
-              "connectionName": "AzureBlob",
-              "operationId": "readBlob",
-              "serviceProviderId": "/serviceProviders/AzureBlob"
+        "runAfter": {
+          "OpenAi-CreateAssisstant-Request": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "OpenAi-CreateRun-Request": {
+        "type": "Http",
+        "inputs": {
+          "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/runs?api-version=2024-03-01-preview')",
+          "method": "POST",
+          "body": {
+            "assistant_id": "@{body('OpenAi-CreateAssisstant-Response')?['id']}",
+            "thread": {
+              "messages": "@outputs('Compose-Transcript')"
             }
           },
-          "runAfter": {
-            "Read_blob_content": [
-              "SUCCEEDED"
-            ]
+          "authentication": {
+            "audience": "https://cognitiveservices.azure.com",
+            "type": "ManagedServiceIdentity"
+          }
+        },
+        "runAfter": {
+          "OpenAi-CreateAssisstant-Response": [
+            "SUCCEEDED"
+          ]
+        },
+        "runtimeConfiguration": {
+          "contentTransfer": {
+            "transferMode": "Chunked"
           }
         }
       },
-      "contentVersion": "1.0.0.0",
-      "outputs": {},
-      "triggers": {
-        "BlobTrigger": {
-          "type": "ServiceProvider",
-          "inputs": {
-            "parameters": {
-              "path": "@parameters('STORAGE_CONTAINER_NAME_CURATED')"
+      "OpenAi-CreateRun-Response": {
+        "type": "ParseJson",
+        "inputs": {
+          "content": "@body('OpenAi-CreateRun-Request')",
+          "schema": {
+            "properties": {
+              "assistant_id": {
+                "type": "string"
+              },
+              "cancelled_at": {},
+              "completed_at": {},
+              "created_at": {
+                "type": "integer"
+              },
+              "expires_at": {
+                "type": "integer"
+              },
+              "failed_at": {},
+              "file_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "id": {
+                "type": "string"
+              },
+              "instructions": {
+                "type": "string"
+              },
+              "last_error": {},
+              "metadata": {
+                "properties": {},
+                "type": "object"
+              },
+              "model": {
+                "type": "string"
+              },
+              "object": {
+                "type": "string"
+              },
+              "required_action": {},
+              "started_at": {},
+              "status": {
+                "type": "string"
+              },
+              "temperature": {
+                "type": "integer"
+              },
+              "thread_id": {
+                "type": "string"
+              },
+              "tools": {
+                "items": {
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "usage": {}
             },
-            "serviceProviderConfiguration": {
-              "connectionName": "AzureBlob",
-              "operationId": "whenABlobIsAddedOrModified",
-              "serviceProviderId": "/serviceProviders/AzureBlob"
+            "type": "object"
+          }
+        },
+        "runAfter": {
+          "OpenAi-CreateRun-Request": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "OpenAi-GetMessages-Request": {
+        "type": "Http",
+        "inputs": {
+          "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/messages?api-version=2024-02-15-preview')",
+          "method": "GET",
+          "authentication": {
+            "audience": "https://cognitiveservices.azure.com",
+            "type": "ManagedServiceIdentity"
+          }
+        },
+        "runAfter": {
+          "Until": [
+            "SUCCEEDED"
+          ]
+        },
+        "runtimeConfiguration": {
+          "contentTransfer": {
+            "transferMode": "Chunked"
+          }
+        }
+      },
+      "OpenAi-GetMessages-Response": {
+        "type": "ParseJson",
+        "inputs": {
+          "content": "@body('OpenAi-GetMessages-Request')",
+          "schema": {
+            "properties": {
+              "data": {
+                "items": {
+                  "properties": {
+                    "assistant_id": {},
+                    "content": {
+                      "items": {
+                        "properties": {
+                          "text": {
+                            "properties": {
+                              "annotations": {
+                                "type": "array"
+                              },
+                              "value": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "text"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "file_ids": {
+                      "type": "array"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "properties": {},
+                      "type": "object"
+                    },
+                    "object": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    },
+                    "run_id": {},
+                    "thread_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "object",
+                    "created_at",
+                    "assistant_id",
+                    "thread_id",
+                    "run_id",
+                    "role",
+                    "content",
+                    "file_ids",
+                    "metadata"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "first_id": {
+                "type": "string"
+              },
+              "has_more": {
+                "type": "boolean"
+              },
+              "last_id": {
+                "type": "string"
+              },
+              "object": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "runAfter": {
+          "OpenAi-GetMessages-Request": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "Read_blob_content": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "containerName": "@triggerBody()?['containerInfo']?['name']",
+            "blobName": "@triggerBody()?['name']"
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "AzureBlob",
+            "operationId": "readBlob",
+            "serviceProviderId": "/serviceProviders/AzureBlob"
+          }
+        },
+        "runAfter": {}
+      },
+      "Until": {
+        "type": "Until",
+        "expression": "@equals(body('OpenAi-CreateRun-Request')?['status'],'completed')",
+        "limit": {
+          "count": 7,
+          "timeout": "PT1H"
+        },
+        "actions": {
+          "Delay": {
+            "type": "Wait",
+            "inputs": {
+              "interval": {
+                "count": 30,
+                "unit": "Second"
+              }
+            },
+            "runAfter": {
+              "OpenAi-GetRun-Response": [
+                "SUCCEEDED"
+              ]
             }
           },
-          "conditions": [
-            {
-              "expression": "@contains(triggerBody()?['Name'],'promptcontent.json')"
+          "OpenAi-GetRun-Request": {
+            "type": "Http",
+            "inputs": {
+              "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/runs/',body('OpenAi-CreateRun-Response')?['id'],'?api-version=2024-02-15-preview')",
+              "method": "GET",
+              "authentication": {
+                "audience": "https://cognitiveservices.azure.com",
+                "type": "ManagedServiceIdentity"
+              }
+            },
+            "runtimeConfiguration": {
+              "contentTransfer": {
+                "transferMode": "Chunked"
+              }
             }
+          },
+          "OpenAi-GetRun-Response": {
+            "type": "ParseJson",
+            "inputs": {
+              "content": "@body('OpenAi-GetRun-Request')",
+              "schema": {
+                "properties": {
+                  "properties": {
+                    "properties": {
+                      "assistant_id": {
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "cancelled_at": {
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "completed_at": {
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "created_at": {
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "expires_at": {
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "failed_at": {
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "file_ids": {
+                        "properties": {
+                          "items": {
+                            "properties": {
+                              "type": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "id": {
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "instructions": {
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "last_error": {
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "metadata": {
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "model": {
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "object": {
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "required_action": {
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "started_at": {
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "status": {
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "temperature": {
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "thread_id": {
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "tools": {
+                        "properties": {
+                          "items": {
+                            "properties": {
+                              "properties": {
+                                "properties": {
+                                  "type": {
+                                    "properties": {
+                                      "type": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "required": {
+                                "items": {
+                                  "type": "string"
+                                },
+                                "type": "array"
+                              },
+                              "type": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "usage": {
+                        "properties": {},
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "runAfter": {
+              "OpenAi-GetRun-Request": [
+                "SUCCEEDED"
+              ]
+            }
+          }
+        },
+        "runAfter": {
+          "InitializeVariable-RunStatus": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "UploadBlob-Assisstant": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
+            "blobName": "@replace(triggerBody()?['name'], 'promptcontent.json',\n'assistant.json'\n)",
+            "content": "@replace(replace (body('OpenAi-GetMessages-Response')?['data'][0]?['content'][0]?['text'].value, '```json',''),'```','')",
+            "overrideIfExists": "true"
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "AzureBlob",
+            "operationId": "uploadBlob",
+            "serviceProviderId": "/serviceProviders/AzureBlob"
+          }
+        },
+        "runAfter": {
+          "OpenAi-GetMessages-Response": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "static_prompt": {
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "static_prompt",
+              "type": "string",
+              "value": "You will be provided the text based transcript from the TV show with start time and end time of the scene.\n\nYour task is to extract the scene from the text transcript that can go viral on social media.\nYou have to rate them in probability of going viral 1 to 10, 10 being the most likely.\nPlease rate each scene independently but must in the context of the full transcript.\n\nHere are the steps and the ground rules you should follow:\n-------\nStep 1. Process all the scenes from the transcript to understand the overall context and summarize the transcript.\nStep 2. Process each scene in the context of the transcript from step 1 to find the relevance and probability of it going viral based on criteria/hints mentioned below.\nStep 3. Identify top 10 scene and rank them 1 to 10, 10 being the most likely. There should not be any duplicate ratings.\n\n------\nCriteria/Hints:\n\n- Something Unusual and unexpected in the context of the transcript\n- Sensational and controversial\n- Emotions\n- Celebrity affairs\n- Scandals\n- Gossip\n- Breaking news\n- Trending topics\n- Challenges and Trends\n- Shocking and surprising content\n- Educational and informative content\n- Inspirational and motivational content\n- Cute and adorable content\n- Action and adventure\n- Thrilling and suspenseful content\n- Romantic and love stories\n- Music and dance\n- Travel and adventure\n- Sports and fitness\n- Pets and animals\n- Fashion and beauty\n- Art and creativity\n- Technology and gadgets\n\n-----------\ninput:\n\nYour input will be a structured array containing one or more scenes. Each scene will have the following structure:\n    -id : scene id\n    -start: start time of the scene\n    -end: end time of the scene\n    -content: content of the section. You have to deep inspect the text here to find the suitable clips.\n            This is a single string however it will have multiple tags in square brackets.\n            You have to find the suitable clip based on the content and tags.\n            [transcript title] will be the title of the transcript\n            [Tags]  will be the tags of the transcript\n            [Detected Objects]  will be the objects detected in the transcript\n            [OCR] will be the text detected in the transcript\n            [Known people]  will be the known people in the transcript\n            [Transcript] will be the transcript of the scene\n\nYou have to combine all the information present in the content using all the different tags and then find the suitable clips based on that.\n\n-------------\nGround rules:\n- Your output must be in strict JSON format. Don't include any comments or other characters that are not part of the JSON format.\n- Translate the the output to English if the source transcript is not in English.\n- You identify top scenes based on the rating that are suitable for making short transcripts that can go viral and sort it by rating.\n- You are not allowed to add new line characters in the transcript.\n- Do not include information that is not part of the input provided.\n- Not all the content will have the suitable clips. If you cannot find it or determine the applicability of the scene, continue with processing the next scene.\n- You have to parse entire content to find the suitable clips and rank them based on probability of going viral.\n- You have to provide the rating of the probability of the clip going viral 1 to 10, 10 being the most likely. Please rate each clip independently.\n- you have to provide reasoning for the rating.\n- order your response based on ratings.\n\n\nOutput:\n-----------\n{\n    \"summary\": \"This is the summary of the transcript from step 1\",\n    \"scenes\": [\n        {\n            \"id\": \"scene id\",\n            \"title\": \"short title of the scene based on summary\",\n            \"rating\": 10,\n            \"reasoning\": \"This scene is suitable for making short transcripts that can go viral on social media because...\",\n            \"description\": \"brief description of what this scene is about\",\n            \"start_time\": \"start time of the scene\",\n            \"end_time\": \"end time of the scene\",\n            \"transcript\": \"text of the transcript for this scene id\",\n            \"translation\": \"content of transcript translated in English\"\n        }\n    ]\n}\n"
+            }
+          ]
+        },
+        "runAfter": {
+          "Compose-Transcript": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "Read_config_file": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "containerName": "@triggerBody()?['containerInfo']?['name']",
+            "blobName": "@replace(triggerBody()?['name'], 'promptcontent.json' , 'config.json')"
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "AzureBlob",
+            "operationId": "readBlob",
+            "serviceProviderId": "/serviceProviders/AzureBlob"
+          }
+        },
+        "runAfter": {
+          "Read_blob_content": [
+            "SUCCEEDED"
           ]
         }
       }
     },
-    "connectionReferences": {
-      "AzureBlob": {
-        "connection": {
-          "id": "/serviceProviders/AzureBlob/connections/AzureBlob"
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "BlobTrigger": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "path": "@parameters('STORAGE_CONTAINER_NAME_CURATED')"
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "AzureBlob",
+            "operationId": "whenABlobIsAddedOrModified",
+            "serviceProviderId": "/serviceProviders/AzureBlob"
+          }
         },
-        "connectionName": "datalake001",
-        "api": {
-          "id": "/serviceProviders/AzureBlob"
-        }
-      },
-      "conversionservice": {
-        "connection": {
-          "id": "/subscriptions/861380f2-9c49-47fe-9f42-b44759424e66/resourceGroups/up-mmai-2-dev-orchstrtn/providers/Microsoft.Web/connections/up-mmai-2-dev-orch-logic-api-conversionservice"
-        },
-        "connectionName": "up-mmai-2-dev-orch-logic-api-conversionservice",
-        "api": {
-          "id": "/subscriptions/861380f2-9c49-47fe-9f42-b44759424e66/providers/Microsoft.Web/locations/swedencentral/managedApis/conversionservice"
-        },
-        "authentication": {
-          "type": "ManagedServiceIdentity"
-        }
-      }
-    },
-    "parameters": {
-      "STORAGE_ACCOUNT_SUBSCRIPTION_ID": {
-        "type": "String",
-        "value": "@appsetting('STORAGE_ACCOUNT_SUBSCRIPTION_ID')"
-      },
-      "STORAGE_ACCOUNT_RESOURCE_GROUP_NAME": {
-        "type": "String",
-        "value": "@appsetting('STORAGE_ACCOUNT_RESOURCE_GROUP_NAME')"
-      },
-      "STORAGE_ACCOUNT_NAME": {
-        "type": "String",
-        "value": "@appsetting('STORAGE_ACCOUNT_NAME')"
-      },
-      "STORAGE_CONTAINER_NAME_UPLOAD_MOVIES": {
-        "type": "String",
-        "value": "@appsetting('STORAGE_CONTAINER_NAME_UPLOAD_MOVIES')"
-      },
-      "STORAGE_CONTAINER_NAME_UPLOAD_NEWS": {
-        "type": "String",
-        "value": "@appsetting('STORAGE_CONTAINER_NAME_UPLOAD_NEWS')"
-      },
-      "STORAGE_CONTAINER_NAME_RAW": {
-        "type": "String",
-        "value": "@appsetting('STORAGE_CONTAINER_NAME_RAW')"
-      },
-      "STORAGE_CONTAINER_NAME_CURATED": {
-        "type": "String",
-        "value": "@appsetting('STORAGE_CONTAINER_NAME_CURATED')"
-      },
-      "AZURE_OPENAI_ENDPOINT": {
-        "type": "String",
-        "value": "@appsetting('AZURE_OPENAI_ENDPOINT')"
-      },
-      "META_PROMPT": {
-        "type": "String",
-        "value": "You will be provided the text based transcript from the TV show with start time and end time of the scene.\n\nYour task is to extract the scene from the text transcript that can go viral on social media.\nYou have to rate them in probability of going viral 1 to 10, 10 being the most likely.\nPlease rate each scene independently but must in the context of the full transcript.\n\nHere are the steps and the ground rules you should follow:\n-------\nStep 1. Process all the scenes from the transcript to understand the overall context and summarize the transcript.\nStep 2. Process each scene in the context of the transcript from step 1 to find the relevance and probability of it going viral based on criteria/hints mentioned below.\nStep 3. Identify top 10 scene and rank them 1 to 10, 10 being the most likely. There should not be any duplicate ratings.\n\n------\nCriteria/Hints:\n\n- Something Unusual and unexpected in the context of the transcript\n- Sensational and controversial\n- Emotions\n- Celebrity affairs\n- Scandals\n- Gossip\n- Breaking news\n- Trending topics\n- Challenges and Trends\n- Shocking and surprising content\n- Educational and informative content\n- Inspirational and motivational content\n- Cute and adorable content\n- Action and adventure\n- Thrilling and suspenseful content\n- Romantic and love stories\n- Music and dance\n- Travel and adventure\n- Sports and fitness\n- Pets and animals\n- Fashion and beauty\n- Art and creativity\n- Technology and gadgets\n\n-----------\ninput:\n\nYour input will be a structured array containing one or more scenes. Each scene will have the following structure:\n    -id : scene id\n    -start: start time of the scene\n    -end: end time of the scene\n    -content: content of the section. You have to deep inspect the text here to find the suitable clips.\n            This is a single string however it will have multiple tags in square brackets.\n            You have to find the suitable clip based on the content and tags.\n            [transcript title] will be the title of the transcript\n            [Tags]  will be the tags of the transcript\n            [Detected Objects]  will be the objects detected in the transcript\n            [OCR] will be the text detected in the transcript\n            [Known people]  will be the known people in the transcript\n            [Transcript] will be the transcript of the scene\n\nYou have to combine all the information present in the content using all the different tags and then find the suitable clips based on that.\n\n-------------\nGround rules:\n- Your output must be in strict JSON format. Don't include any comments or other characters that are not part of the JSON format.\n- Translate the the output to English if the source transcript is not in English.\n- You identify top scenes based on the rating that are suitable for making short transcripts that can go viral and sort it by rating.\n- You are not allowed to add new line characters in the transcript.\n- Do not include information that is not part of the input provided.\n- Not all the content will have the suitable clips. If you cannot find it or determine the applicability of the scene, continue with processing the next scene.\n- You have to parse entire content to find the suitable clips and rank them based on probability of going viral.\n- You have to provide the rating of the probability of the clip going viral 1 to 10, 10 being the most likely. Please rate each clip independently.\n- you have to provide reasoning for the rating.\n- order your response based on ratings.\n\n\nOutput:\n-----------\n{\n    \\\"summary\\\": \\\"This is the summary of the transcript from step 1\\\",\n    \\\"scenes\\\": [\n        {\n            \\\"id\\\": \\\"scene id\\\",\n            \\\"title\\\": \\\"short title of the scene based on summary\\\",\n            \\\"rating\\\": 10,\n            \\\"reasoning\\\": \\\"This scene is suitable for making short transcripts that can go viral on social media because...\\\",\n            \\\"description\\\": \\\"brief description of what this scene is about\\\",\n            \\\"start_time\\\": \\\"start time of the scene\\\",\n            \\\"end_time\\\": \\\"end time of the scene\\\",\n            \\\"transcript\\\": \\\"text of the transcript for this scene id\\\",\n            \\\"translation\\\": \\\"content of transcript translated in English\\\"\n        }\n    ]\n}\n\n"
-      },
-      "USER_MESSAGE": {
-        "type": "String",
-        "value": "Please summarize the content in the provided file, and create the required JSON file for me to download as a result with the file named as response."
-      },
-      "ASSISSTANT_NAME": {
-        "type": "String",
-        "value": "videoAssistant"
-      },
-      "AZURE_OPENAI_DEPLOYMENT_NAME": {
-        "type": "String",
-        "value": "@appsetting('AZURE_OPENAI_DEPLOYMENT_NAME')"
-      },
-      "VIDEO_INDEXER_ID": {
-        "type": "String",
-        "value": "@appsetting('VIDEO_INDEXER_ID')"
-      },
-      "VIDEO_INDEXER_ACCOUNT_ID": {
-        "type": "String",
-        "value": "@appsetting('VIDEO_INDEXER_ACCOUNT_ID')"
-      },
-      "WORKFLOWS_LOCATION_NAME": {
-        "type": "String",
-        "value": "@appsetting('WORKFLOWS_LOCATION_NAME')"
-      },
-      "ConversionserviceConnectionRuntimeUrl": {
-        "type": "String",
-        "value": "@appsetting('ConversionserviceConnectionRuntimeUrl')"
-      },
-      "ConversionserviceAuthentication": {
-        "type": "Object",
-        "value": {
-          "type": "ManagedServiceIdentity"
-        }
-      },
-      "Videoindexer-V2ConnectionRuntimeUrl": {
-        "type": "String",
-        "value": "@appsetting('Videoindexer-V2ConnectionRuntimeUrl')"
-      },
-      "Videoindexer-V2Authentication": {
-        "type": "Object",
-        "value": {
-          "type": "ManagedServiceIdentity"
-        }
-      },
-      "AzureeventgridConnectionRuntimeUrl": {
-        "type": "String",
-        "value": "@appsetting('AzureeventgridConnectionRuntimeUrl')"
-      },
-      "AzureeventgridAuthentication": {
-        "type": "Object",
-        "value": {
-          "type": "ManagedServiceIdentity"
-        }
-      },
-      "AZURE_BLOB_STORAGE_ENDPOINT": {
-        "type": "String",
-        "value": "@appsetting('AZURE_BLOB_STORAGE_ENDPOINT')"
-      },
-      "FUNCTION_SHORTCLIP_ID": {
-        "type": "String",
-        "value": "@appsetting('FUNCTION_SHORTCLIP_ID')"
-      },
-      "FUNCTION_SHORTCLIP_HOSTNAME": {
-        "type": "String",
-        "value": "@appsetting('FUNCTION_SHORTCLIP_HOSTNAME')"
-      },
-      "FUNCTION_SHORTCLIP_KEY": {
-        "type": "String",
-        "value": "@appsetting('FUNCTION_SHORTCLIP_KEY')"
-      },
-      "FUNCTION_SHORTCLIP_FUNCTION_NAME": {
-        "type": "String",
-        "value": "StartWorkflow"
-      },
-      "LOGIC_APP_ID": {
-        "type": "String",
-        "value": "@appsetting('LOGIC_APP_ID')"
+        "conditions": [
+          {
+            "expression": "@contains(triggerBody()?['Name'],'promptcontent.json')"
+          }
+        ]
       }
     }
-  }
+  },
+  "kind": "Stateful"
+}
