@@ -49,4 +49,9 @@ locals {
     virtual_network_name = split("/", var.subnet_id)[8]
     name                 = split("/", var.subnet_id)[10]
   }
+
+  # File references
+  logic_app_orchestration_code_path = "${path.module}/../../utilities/logicApp"
+  function_shortclip_code_path      = "${path.module}/modules/functions/rag-video-tagging/code/durablefunction"
+  meta_prompt_code_path             = "${path.module}/../../utilities/AssistantMetaPrompt.txt"
 }
