@@ -1,3 +1,3 @@
 location    = "swedencentral"
-prefix      = "uc1a2"
+prefix      = "ch01"
 environment = "dev"

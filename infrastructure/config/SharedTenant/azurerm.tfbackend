@@ -3,5 +3,5 @@ subscription_id      = "be25820a-df86-4794-9e95-6a45cd5c0941"
 resource_group_name  = "terraform-state-rg"
 storage_account_name = "tfstatefilesstg001"
 container_name       = "tfstates"
-key                  = "terraform.uc1.tfstate"
+key                  = "terraform.ch01.tfstate"
 use_azuread_auth     = true
