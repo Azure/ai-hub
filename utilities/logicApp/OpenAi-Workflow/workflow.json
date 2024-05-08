@@ -3,26 +3,29 @@
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
             "Compose-BlobContent": {
+                "type": "Compose",
                 "inputs": "@body('Read_blob_content')?['content']",
                 "runAfter": {
-                    "Read_blob_content": [
+                    "Read_config_file": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "Compose"
+                }
             },
             "Compose-Transcript": {
+                "type": "Compose",
                 "inputs": "@variables('transcript')",
                 "runAfter": {
                     "ForEach-Section": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "Compose"
+                }
             },
             "ForEach-Section": {
+                "type": "Foreach",
+                "foreach": "@body('HtmlToText-BlobContent-Response')?['sections']",
                 "actions": {
                     "AppendToArrayVariable-Transcript": {
+                        "type": "AppendToArrayVariable",
                         "inputs": {
                             "name": "transcript",
                             "value": "@outputs('Compose-Scene')"
@@ -31,10 +34,10 @@
                             "Compose-Scene": [
                                 "SUCCEEDED"
                             ]
-                        },
-                        "type": "AppendToArrayVariable"
+                        }
                     },
                     "Compose-Scene": {
+                        "type": "Compose",
                         "inputs": {
                             "content": "@{body('HtmlToText-Scene')}",
                             "role": "user"
@@ -43,42 +46,40 @@
                             "HtmlToText-Scene": [
                                 "SUCCEEDED"
                             ]
-                        },
-                        "type": "Compose"
+                        }
                     },
                     "HtmlToText-Scene": {
+                        "type": "ApiConnection",
                         "inputs": {
-                            "body": "<p>@{items('ForEach-Section')}</p>",
                             "host": {
                                 "connection": {
                                     "referenceName": "conversionservice"
                                 }
                             },
                             "method": "post",
+                            "body": "<p>@{items('ForEach-Section')}</p>",
                             "path": "/html2text"
-                        },
-                        "type": "ApiConnection"
+                        }
                     }
                 },
-                "foreach": "@body('HtmlToText-BlobContent-Response')?['sections']",
                 "runAfter": {
                     "InitializeVariable-Transcipt": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "Foreach"
+                }
             },
             "FunctionShortClip-VideoExtraction-Request": {
+                "type": "Http",
                 "inputs": {
+                    "uri": "@concat('https://', parameters('FUNCTION_SHORTCLIP_HOSTNAME'), '/api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))",
+                    "method": "POST",
                     "body": {
                         "orchestrator_workflow_name": "video_extraction_orchestrator",
                         "orchestrator_workflow_properties": {
                             "content_url_openai": "@{concat(\n    parameters('AZURE_BLOB_STORAGE_ENDPOINT'),\n    parameters('STORAGE_CONTAINER_NAME_CURATED'),\n    '/',\n    body('UploadBlob-Assisstant')?['properties']?['blobPath']\n)}",
-                            "content_url_video": "@{\nconcat(\n    parameters('AZURE_BLOB_STORAGE_ENDPOINT'),\n    parameters('STORAGE_CONTAINER_NAME_RAW'),\n    '/videos/',\n    body('HtmlToText-BlobContent-Response')?['name']\n)}"
+                            "content_url_video": "@{body('Read_config_file')['videoUrl']}"
                         }
-                    },
-                    "method": "POST",
-                    "uri": "@concat('https://', parameters('FUNCTION_SHORTCLIP_HOSTNAME'), '/api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))"
+                    }
                 },
                 "runAfter": {
                     "UploadBlob-Assisstant": [
@@ -89,28 +90,28 @@
                     "contentTransfer": {
                         "transferMode": "Chunked"
                     }
-                },
-                "type": "Http"
+                }
             },
             "HtmlToText-BlobContent": {
+                "type": "ApiConnection",
                 "inputs": {
-                    "body": "<p>@{outputs('Compose-BlobContent')}</p>",
                     "host": {
                         "connection": {
                             "referenceName": "conversionservice"
                         }
                     },
                     "method": "post",
+                    "body": "<p>@{outputs('Compose-BlobContent')}</p>",
                     "path": "/html2text"
                 },
                 "runAfter": {
                     "Compose-BlobContent": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "ApiConnection"
+                }
             },
             "HtmlToText-BlobContent-Response": {
+                "type": "ParseJson",
                 "inputs": {
                     "content": "@body('HtmlToText-BlobContent')",
                     "schema": {
@@ -153,10 +154,10 @@
                     "HtmlToText-BlobContent": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "ParseJson"
+                }
             },
             "InitializeVariable-RunStatus": {
+                "type": "InitializeVariable",
                 "inputs": {
                     "variables": [
                         {
@@ -170,10 +171,10 @@
                     "OpenAi-CreateRun-Response": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "InitializeVariable"
+                }
             },
             "InitializeVariable-Transcipt": {
+                "type": "InitializeVariable",
                 "inputs": {
                     "variables": [
                         {
@@ -186,22 +187,22 @@
                     "HtmlToText-BlobContent-Response": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "InitializeVariable"
+                }
             },
             "OpenAi-CreateAssisstant-Request": {
+                "type": "Http",
                 "inputs": {
-                    "authentication": {
-                        "audience": "https://cognitiveservices.azure.com",
-                        "type": "ManagedServiceIdentity"
-                    },
+                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')",
+                    "method": "POST",
                     "body": {
                         "instructions": "@{variables('static_prompt')}",
                         "model": "@{parameters('AZURE_OPENAI_DEPLOYMENT_NAME')}",
                         "name": "@{concat(parameters('ASSISSTANT_NAME'), workflow()['id'])}"
                     },
-                    "method": "POST",
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')"
+                    "authentication": {
+                        "audience": "https://cognitiveservices.azure.com",
+                        "type": "ManagedServiceIdentity"
+                    }
                 },
                 "runAfter": {
                     "static_prompt": [
@@ -212,10 +213,10 @@
                     "contentTransfer": {
                         "transferMode": "Chunked"
                     }
-                },
-                "type": "Http"
+                }
             },
             "OpenAi-CreateAssisstant-Response": {
+                "type": "ParseJson",
                 "inputs": {
                     "content": "@body('OpenAi-CreateAssisstant-Request')",
                     "schema": {
@@ -271,23 +272,23 @@
                     "OpenAi-CreateAssisstant-Request": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "ParseJson"
+                }
             },
             "OpenAi-CreateRun-Request": {
+                "type": "Http",
                 "inputs": {
-                    "authentication": {
-                        "audience": "https://cognitiveservices.azure.com",
-                        "type": "ManagedServiceIdentity"
-                    },
+                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/runs?api-version=2024-03-01-preview')",
+                    "method": "POST",
                     "body": {
                         "assistant_id": "@{body('OpenAi-CreateAssisstant-Response')?['id']}",
                         "thread": {
                             "messages": "@outputs('Compose-Transcript')"
                         }
                     },
-                    "method": "POST",
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/runs?api-version=2024-03-01-preview')"
+                    "authentication": {
+                        "audience": "https://cognitiveservices.azure.com",
+                        "type": "ManagedServiceIdentity"
+                    }
                 },
                 "runAfter": {
                     "OpenAi-CreateAssisstant-Response": [
@@ -298,10 +299,10 @@
                     "contentTransfer": {
                         "transferMode": "Chunked"
                     }
-                },
-                "type": "Http"
+                }
             },
             "OpenAi-CreateRun-Response": {
+                "type": "ParseJson",
                 "inputs": {
                     "content": "@body('OpenAi-CreateRun-Request')",
                     "schema": {
@@ -375,17 +376,17 @@
                     "OpenAi-CreateRun-Request": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "ParseJson"
+                }
             },
             "OpenAi-GetMessages-Request": {
+                "type": "Http",
                 "inputs": {
+                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/messages?api-version=2024-02-15-preview')",
+                    "method": "GET",
                     "authentication": {
                         "audience": "https://cognitiveservices.azure.com",
                         "type": "ManagedServiceIdentity"
-                    },
-                    "method": "GET",
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/messages?api-version=2024-02-15-preview')"
+                    }
                 },
                 "runAfter": {
                     "Until": [
@@ -396,10 +397,10 @@
                     "contentTransfer": {
                         "transferMode": "Chunked"
                     }
-                },
-                "type": "Http"
+                }
             },
             "OpenAi-GetMessages-Response": {
+                "type": "ParseJson",
                 "inputs": {
                     "content": "@body('OpenAi-GetMessages-Request')",
                     "schema": {
@@ -494,14 +495,14 @@
                     "OpenAi-GetMessages-Request": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "ParseJson"
+                }
             },
             "Read_blob_content": {
+                "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "blobName": "@triggerBody()?['name']",
-                        "containerName": "@triggerBody()?['containerInfo']?['name']"
+                        "containerName": "@triggerBody()?['containerInfo']?['name']",
+                        "blobName": "@triggerBody()?['name']"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "AzureBlob",
@@ -509,12 +510,18 @@
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
                 },
-                "runAfter": {},
-                "type": "ServiceProvider"
+                "runAfter": {}
             },
             "Until": {
+                "type": "Until",
+                "expression": "@equals(body('OpenAi-CreateRun-Request')?['status'],'completed')",
+                "limit": {
+                    "count": 7,
+                    "timeout": "PT1H"
+                },
                 "actions": {
                     "Delay": {
+                        "type": "Wait",
                         "inputs": {
                             "interval": {
                                 "count": 30,
@@ -525,26 +532,26 @@
                             "OpenAi-GetRun-Response": [
                                 "SUCCEEDED"
                             ]
-                        },
-                        "type": "Wait"
+                        }
                     },
                     "OpenAi-GetRun-Request": {
+                        "type": "Http",
                         "inputs": {
+                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/runs/',body('OpenAi-CreateRun-Response')?['id'],'?api-version=2024-02-15-preview')",
+                            "method": "GET",
                             "authentication": {
                                 "audience": "https://cognitiveservices.azure.com",
                                 "type": "ManagedServiceIdentity"
-                            },
-                            "method": "GET",
-                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/runs/',body('OpenAi-CreateRun-Response')?['id'],'?api-version=2024-02-15-preview')"
+                            }
                         },
                         "runtimeConfiguration": {
                             "contentTransfer": {
                                 "transferMode": "Chunked"
                             }
-                        },
-                        "type": "Http"
+                        }
                     },
                     "OpenAi-GetRun-Response": {
+                        "type": "ParseJson",
                         "inputs": {
                             "content": "@body('OpenAi-GetRun-Request')",
                             "schema": {
@@ -732,27 +739,21 @@
                             "OpenAi-GetRun-Request": [
                                 "SUCCEEDED"
                             ]
-                        },
-                        "type": "ParseJson"
+                        }
                     }
-                },
-                "expression": "@equals(body('OpenAi-CreateRun-Request')?['status'],'completed')",
-                "limit": {
-                    "count": 7,
-                    "timeout": "PT1H"
                 },
                 "runAfter": {
                     "InitializeVariable-RunStatus": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "Until"
+                }
             },
             "UploadBlob-Assisstant": {
+                "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "blobName": "@replace(triggerBody()?['name'], 'promptcontent.json',\n'assistant.json'\n)",
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
+                        "blobName": "@replace(triggerBody()?['name'], 'promptcontent.json',\n'assistant.json'\n)",
                         "content": "@replace(replace (body('OpenAi-GetMessages-Response')?['data'][0]?['content'][0]?['text'].value, '```json',''),'```','')",
                         "overrideIfExists": "true"
                     },
@@ -766,10 +767,10 @@
                     "OpenAi-GetMessages-Response": [
                         "SUCCEEDED"
                     ]
-                },
-                "type": "ServiceProvider"
+                }
             },
             "static_prompt": {
+                "type": "InitializeVariable",
                 "inputs": {
                     "variables": [
                         {
@@ -783,19 +784,33 @@
                     "Compose-Transcript": [
                         "SUCCEEDED"
                     ]
+                }
+            },
+            "Read_config_file": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@triggerBody()?['containerInfo']?['name']",
+                        "blobName": "config.json"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "readBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
                 },
-                "type": "InitializeVariable"
+                "runAfter": {
+                    "Read_blob_content": [
+                        "SUCCEEDED"
+                    ]
+                }
             }
         },
         "contentVersion": "1.0.0.0",
         "outputs": {},
         "triggers": {
             "BlobTrigger": {
-                "conditions": [
-                    {
-                        "expression": "@contains(triggerBody()?['Name'],'promptcontent.json')"
-                    }
-                ],
+                "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
                         "path": "@parameters('STORAGE_CONTAINER_NAME_CURATED')"
@@ -806,7 +821,11 @@
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
                 },
-                "type": "ServiceProvider"
+                "conditions": [
+                    {
+                        "expression": "@contains(triggerBody()?['Name'],'promptcontent.json')"
+                    }
+                ]
             }
         }
     },
