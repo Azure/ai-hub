@@ -8,12 +8,15 @@
 ## Setup
 
 git config --global submodule.recurse true
+
 git clone  https://github.com/Azure/ai-hub.git
 
 ## Local Setup
 
 az login
+
 terraform plan -var="location=swedencentral" -var="environment=dev" -var="prefix=mmai-tf-1"
+
 terraform apply -var="location=swedencentral" -var="environment=dev" -var="prefix=mmai-tf-1"
 
 ## For Remote Setup
