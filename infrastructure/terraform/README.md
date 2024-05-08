@@ -10,6 +10,8 @@
 ```
 git config --global submodule.recurse true
 
+git submodule update --init --recursive
+
 git clone  https://github.com/Azure/ai-hub.git
 ```
 
@@ -17,6 +19,8 @@ git clone  https://github.com/Azure/ai-hub.git
 
 ```
 az login
+
+terraform init
 
 terraform plan -var="location=swedencentral" -var="environment=dev" -var="prefix=mmai-tf-1"
 
