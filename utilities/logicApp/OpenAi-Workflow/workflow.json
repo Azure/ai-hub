@@ -63,7 +63,7 @@
                     }
                 },
                 "runAfter": {
-                    "InitializeVariable-Transcipt": [
+                    "InitializeVariable-Transcript": [
                         "SUCCEEDED"
                     ]
                 }
