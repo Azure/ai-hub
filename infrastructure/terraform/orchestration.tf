@@ -72,6 +72,7 @@ module "logic_app_orchestration" {
     FUNCTION_SHORTCLIP_ID                = module.function_shortclip.linux_function_app_id
     FUNCTION_SHORTCLIP_HOSTNAME          = module.function_shortclip.linux_function_app_default_hostname
     FUNCTION_SHORTCLIP_KEY               = module.function_shortclip.linux_function_app_primary_key
+    META_PROMPT                          = data.local_file.file_meta_prompt.content
   }
   logic_app_always_on                                = true
   logic_app_code_path                                = "${path.module}/../../utilities/logicApp"
