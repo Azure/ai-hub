@@ -825,9 +825,7 @@
                                     "created_at": {},
                                     "expires_at": {},
                                     "failed_at": {},
-                                    "file_ids": {
-                                        "type": "array"
-                                    },
+                                    "file_ids": {},
                                     "id": {
                                         "type": "string"
                                     },
@@ -850,29 +848,12 @@
                                     "status": {
                                         "type": "string"
                                     },
-                                    "temperature": {
-                                        "type": "integer"
-                                    },
+                                    "temperature": {},
                                     "thread_id": {
                                         "type": "string"
                                     },
-                                    "tools": {
-                                        "type": "array"
-                                    },
-                                    "usage": {
-                                        "properties": {
-                                            "completion_tokens": {
-                                                "type": "integer"
-                                            },
-                                            "prompt_tokens": {
-                                                "type": "integer"
-                                            },
-                                            "total_tokens": {
-                                                "type": "integer"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
+                                    "tools": {},
+                                    "usage": {}
                                 },
                                 "type": "object"
                             }
