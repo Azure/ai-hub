@@ -31,6 +31,10 @@
     "type": "String",
     "value": "@appsetting('AZURE_OPENAI_ENDPOINT')"
   },
+  "DEFAULT_LANGUAGE": {
+    "type": "String",
+    "value": "@appsetting('DEFAULT_LANGUAGE')"
+  },
   "META_PROMPT": {
     "type": "String",
     "value": "@appsetting('META_PROMPT')"
