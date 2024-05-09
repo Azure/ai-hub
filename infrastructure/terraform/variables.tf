@@ -27,6 +27,28 @@ variable "environment" {
   }
 }
 
+variable "model_name" {
+  description = "Specifies the name of the model."
+  type        = string
+  sensitive   = false
+  default     = "gpt-4"
+  validation {
+    condition     = contains(["gpt-4"], var.model_name)
+    error_message = "Please use an allowed value: \"gpt-4\"."
+  }
+}
+
+variable "model_version" {
+  description = "Specifies the name of the model."
+  type        = string
+  sensitive   = false
+  default     = "1106-preview"
+  validation {
+    condition     = contains(["1106-preview", "turbo-2024-04-09"], var.model_version)
+    error_message = "Please use an allowed value: \"1106-preview\"."
+  }
+}
+
 variable "tags" {
   description = "Specifies the tags that you want to apply to all resources."
   type        = map(string)

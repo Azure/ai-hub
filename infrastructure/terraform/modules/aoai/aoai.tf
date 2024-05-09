@@ -53,7 +53,7 @@ resource "azurerm_cognitive_account" "cognitive_service" {
 # }
 
 resource "azurerm_cognitive_deployment" "gpt-4" {
-  name                 = "gpt-4"
+  name                 = var.gpt_model_name
   cognitive_account_id = azurerm_cognitive_account.cognitive_service.id
 
   model {
