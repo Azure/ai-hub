@@ -565,17 +565,11 @@
                     "content": "@body('OpenAi-CreateRun-Request')",
                     "schema": {
                         "properties": {
-                            "assistant_id": {
-                                "type": "string"
-                            },
+                            "assistant_id": {},
                             "cancelled_at": {},
                             "completed_at": {},
-                            "created_at": {
-                                "type": "integer"
-                            },
-                            "expires_at": {
-                                "type": "integer"
-                            },
+                            "created_at": {},
+                            "expires_at": {},
                             "failed_at": {},
                             "file_ids": {
                                 "items": {
@@ -608,9 +602,7 @@
                             "temperature": {
                                 "type": "integer"
                             },
-                            "thread_id": {
-                                "type": "string"
-                            },
+                            "thread_id": {},
                             "tools": {
                                 "items": {
                                     "properties": {
@@ -827,16 +819,10 @@
                             "content": "@body('OpenAi-GetRun-Request')",
                             "schema": {
                                 "properties": {
-                                    "assistant_id": {
-                                        "type": "string"
-                                    },
+                                    "assistant_id": {},
                                     "cancelled_at": {},
-                                    "completed_at": {
-                                        "type": "integer"
-                                    },
-                                    "created_at": {
-                                        "type": "integer"
-                                    },
+                                    "completed_at": {},
+                                    "created_at": {},
                                     "expires_at": {},
                                     "failed_at": {},
                                     "file_ids": {
@@ -860,9 +846,7 @@
                                         "type": "string"
                                     },
                                     "required_action": {},
-                                    "started_at": {
-                                        "type": "integer"
-                                    },
+                                    "started_at": {},
                                     "status": {
                                         "type": "string"
                                     },
