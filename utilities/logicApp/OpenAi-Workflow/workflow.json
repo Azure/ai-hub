@@ -2,14 +2,34 @@
     "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
-            "Compose-BlobContent": {
-                "inputs": "@body('Read_blob_content')?['content']",
+            "Check_Assistant_API_Workflow_Retry_Loop": {
+                "actions": {},
+                "else": {
+                    "actions": {
+                        "Workflow_Failed": {
+                            "inputs": {
+                                "runStatus": "Failed"
+                            },
+                            "type": "Terminate"
+                        }
+                    }
+                },
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@variables('workflow-successful')",
+                                true
+                            ]
+                        }
+                    ]
+                },
                 "runAfter": {
-                    "Read_config_file": [
+                    "workflow-retry-loop-copy": [
                         "SUCCEEDED"
                     ]
                 },
-                "type": "Compose"
+                "type": "If"
             },
             "Compose-Transcript": {
                 "inputs": "@variables('transcript')",
@@ -68,369 +88,117 @@
                 },
                 "type": "Foreach"
             },
-            "For_each": {
+            "Initialise_Variables": {
                 "actions": {
-                    "Condition": {
-                        "actions": {
-                            "AOAI_Result": {
-                                "inputs": {
-                                    "content": "@replace(replace(items('For_each')?['content'][0]?['text'].value, '```json',''), '```','')",
-                                    "schema": {
-                                        "properties": {
-                                            "scenes": {
-                                                "items": {
-                                                    "properties": {
-                                                        "description": {
-                                                            "type": "string"
-                                                        },
-                                                        "end_time": {
-                                                            "type": "string"
-                                                        },
-                                                        "id": {
-                                                            "type": "string"
-                                                        },
-                                                        "rating": {
-                                                            "type": "integer"
-                                                        },
-                                                        "reasoning": {
-                                                            "type": "string"
-                                                        },
-                                                        "start_time": {
-                                                            "type": "string"
-                                                        },
-                                                        "title": {
-                                                            "type": "string"
-                                                        },
-                                                        "transcript": {
-                                                            "type": "string"
-                                                        },
-                                                        "translation": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "id",
-                                                        "title",
-                                                        "rating",
-                                                        "start_time",
-                                                        "end_time"
-                                                    ],
-                                                    "type": "object"
-                                                },
-                                                "type": "array"
-                                            },
-                                            "summary": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "runAfter": {
-                                    "Valid_Response": [
-                                        "SUCCEEDED"
-                                    ]
-                                },
-                                "type": "ParseJson"
-                            },
-                            "FunctionShortClip-VideoExtraction-Request": {
-                                "inputs": {
-                                    "body": {
-                                        "orchestrator_workflow_name": "video_extraction_orchestrator",
-                                        "orchestrator_workflow_properties": {
-                                            "content_url_openai": "@{concat(\n    parameters('AZURE_BLOB_STORAGE_ENDPOINT'),\n    parameters('STORAGE_CONTAINER_NAME_CURATED'),\n    '/',\n    body('UploadBlob-Assisstant-Response')?['properties']?['blobPath']\n)}",
-                                            "content_url_video": "@{body('Read_config_file')?['content']?['videoUrl']}"
-                                        }
-                                    },
-                                    "method": "POST",
-                                    "uri": "@concat('https://', parameters('FUNCTION_SHORTCLIP_HOSTNAME'), '/api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))"
-                                },
-                                "runAfter": {
-                                    "UploadBlob-Assisstant-Response": [
-                                        "SUCCEEDED"
-                                    ]
-                                },
-                                "runtimeConfiguration": {
-                                    "contentTransfer": {
-                                        "transferMode": "Chunked"
-                                    }
-                                },
-                                "type": "Http"
-                            },
-                            "UploadBlob-Assisstant-Response": {
-                                "inputs": {
-                                    "parameters": {
-                                        "blobName": "@replace(triggerBody()?['name'], 'promptcontent.json',\n'assistant.json'\n)",
-                                        "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
-                                        "content": "@body('AOAI_Result')",
-                                        "overrideIfExists": "true"
-                                    },
-                                    "serviceProviderConfiguration": {
-                                        "connectionName": "AzureBlob",
-                                        "operationId": "uploadBlob",
-                                        "serviceProviderId": "/serviceProviders/AzureBlob"
-                                    }
-                                },
-                                "runAfter": {
-                                    "AOAI_Result": [
-                                        "SUCCEEDED"
-                                    ]
-                                },
-                                "type": "ServiceProvider"
-                            },
-                            "Valid_Response": {
-                                "inputs": {
-                                    "content": "@items('For_each')",
-                                    "schema": {
-                                        "properties": {
-                                            "assistant_id": {},
-                                            "content": {
-                                                "items": {
-                                                    "properties": {
-                                                        "text": {
-                                                            "properties": {
-                                                                "annotations": {
-                                                                    "type": "array"
-                                                                },
-                                                                "value": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "type": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "type",
-                                                        "text"
-                                                    ],
-                                                    "type": "object"
-                                                },
-                                                "type": "array"
-                                            },
-                                            "created_at": {
-                                                "type": "integer"
-                                            },
-                                            "file_ids": {
-                                                "type": "array"
-                                            },
-                                            "id": {
-                                                "type": "string"
-                                            },
-                                            "metadata": {
-                                                "properties": {},
-                                                "type": "object"
-                                            },
-                                            "object": {
-                                                "type": "string"
-                                            },
-                                            "role": {
-                                                "type": "string"
-                                            },
-                                            "run_id": {},
-                                            "thread_id": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "ParseJson"
-                            }
+                    "Compose-BlobContent": {
+                        "inputs": "@body('Read_blob_content')?['content']",
+                        "runAfter": {
+                            "Read_config_file": [
+                                "SUCCEEDED"
+                            ]
                         },
-                        "else": {
-                            "actions": {
-                                "Invalid_Response": {
-                                    "inputs": {
-                                        "content": "@items('For_each')",
-                                        "schema": {
+                        "type": "Compose"
+                    },
+                    "HtmlToText-BlobContent": {
+                        "inputs": {
+                            "body": "<p>@{outputs('Compose-BlobContent')}</p>",
+                            "host": {
+                                "connection": {
+                                    "referenceName": "conversionservice"
+                                }
+                            },
+                            "method": "post",
+                            "path": "/html2text"
+                        },
+                        "runAfter": {
+                            "Compose-BlobContent": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "type": "ApiConnection"
+                    },
+                    "HtmlToText-BlobContent-Response": {
+                        "inputs": {
+                            "content": "@body('HtmlToText-BlobContent')",
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "partition": {},
+                                    "sections": {
+                                        "items": {
                                             "properties": {
-                                                "assistant_id": {},
                                                 "content": {
-                                                    "items": {
-                                                        "properties": {
-                                                            "text": {
-                                                                "properties": {
-                                                                    "annotations": {
-                                                                        "type": "array"
-                                                                    },
-                                                                    "value": {
-                                                                        "type": "string"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "type": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "type",
-                                                            "text"
-                                                        ],
-                                                        "type": "object"
-                                                    },
-                                                    "type": "array"
+                                                    "type": "string"
                                                 },
-                                                "created_at": {
-                                                    "type": "integer"
-                                                },
-                                                "file_ids": {
-                                                    "type": "array"
+                                                "end": {
+                                                    "type": "string"
                                                 },
                                                 "id": {
-                                                    "type": "string"
+                                                    "type": "integer"
                                                 },
-                                                "metadata": {
-                                                    "properties": {},
-                                                    "type": "object"
-                                                },
-                                                "object": {
-                                                    "type": "string"
-                                                },
-                                                "role": {
-                                                    "type": "string"
-                                                },
-                                                "run_id": {},
-                                                "thread_id": {
+                                                "start": {
                                                     "type": "string"
                                                 }
                                             },
+                                            "required": [
+                                                "id",
+                                                "start",
+                                                "end",
+                                                "content"
+                                            ],
                                             "type": "object"
-                                        }
-                                    },
-                                    "type": "ParseJson"
-                                }
-                            }
-                        },
-                        "expression": {
-                            "and": [
-                                {
-                                    "equals": [
-                                        "@items('For_each')?['role']",
-                                        "assistant"
-                                    ]
-                                },
-                                {
-                                    "not": {
-                                        "equals": [
-                                            "@length(items('For_each')?['content'])",
-                                            0
-                                        ]
+                                        },
+                                        "type": "array"
                                     }
                                 },
-                                {
-                                    "and": [
-                                        {
-                                            "not": {
-                                                "contains": [
-                                                    "@items('For_each')?['content'][0]?['text'].value",
-                                                    "I'm sorry, but I cannot assist with that request."
-                                                ]
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        "type": "If"
-                    }
-                },
-                "foreach": "@body('OpenAi-GetMessages-Response')?['data']",
-                "runAfter": {
-                    "OpenAi-GetMessages-Response": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "runtimeConfiguration": {
-                    "concurrency": {
-                        "repetitions": 1
-                    }
-                },
-                "type": "Foreach"
-            },
-            "HtmlToText-BlobContent": {
-                "inputs": {
-                    "body": "<p>@{outputs('Compose-BlobContent')}</p>",
-                    "host": {
-                        "connection": {
-                            "referenceName": "conversionservice"
-                        }
-                    },
-                    "method": "post",
-                    "path": "/html2text"
-                },
-                "runAfter": {
-                    "Compose-BlobContent": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "type": "ApiConnection"
-            },
-            "HtmlToText-BlobContent-Response": {
-                "inputs": {
-                    "content": "@body('HtmlToText-BlobContent')",
-                    "schema": {
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "partition": {},
-                            "sections": {
-                                "items": {
-                                    "properties": {
-                                        "content": {
-                                            "type": "string"
-                                        },
-                                        "end": {
-                                            "type": "string"
-                                        },
-                                        "id": {
-                                            "type": "integer"
-                                        },
-                                        "start": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "start",
-                                        "end",
-                                        "content"
-                                    ],
-                                    "type": "object"
-                                },
-                                "type": "array"
+                                "type": "object"
                             }
                         },
-                        "type": "object"
+                        "runAfter": {
+                            "HtmlToText-BlobContent": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "type": "ParseJson"
+                    },
+                    "Read_blob_content": {
+                        "inputs": {
+                            "parameters": {
+                                "blobName": "@triggerBody()?['name']",
+                                "containerName": "@triggerBody()?['containerInfo']?['name']"
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "AzureBlob",
+                                "operationId": "readBlob",
+                                "serviceProviderId": "/serviceProviders/AzureBlob"
+                            }
+                        },
+                        "type": "ServiceProvider"
+                    },
+                    "Read_config_file": {
+                        "inputs": {
+                            "parameters": {
+                                "blobName": "@replace(triggerBody()?['name'], '/promptcontent.json', '/config.json')",
+                                "containerName": "@triggerBody()?['containerInfo']?['name']"
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "AzureBlob",
+                                "operationId": "readBlob",
+                                "serviceProviderId": "/serviceProviders/AzureBlob"
+                            }
+                        },
+                        "runAfter": {
+                            "Read_blob_content": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "type": "ServiceProvider"
                     }
                 },
-                "runAfter": {
-                    "HtmlToText-BlobContent": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "type": "ParseJson"
-            },
-            "InitializeVariable-RunStatus": {
-                "inputs": {
-                    "variables": [
-                        {
-                            "name": "runStatus",
-                            "type": "string",
-                            "value": "Unknown"
-                        }
-                    ]
-                },
-                "runAfter": {
-                    "OpenAi-CreateRun-Response": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "type": "InitializeVariable"
+                "runAfter": {},
+                "type": "Scope"
             },
             "InitializeVariable-Transcipt": {
                 "inputs": {
@@ -442,441 +210,788 @@
                     ]
                 },
                 "runAfter": {
-                    "HtmlToText-BlobContent-Response": [
+                    "Initialise_Variables": [
                         "SUCCEEDED"
                     ]
                 },
                 "type": "InitializeVariable"
             },
-            "OpenAi-CreateAssisstant-Request": {
+            "retry": {
                 "inputs": {
-                    "authentication": {
-                        "audience": "https://cognitiveservices.azure.com",
-                        "type": "ManagedServiceIdentity"
-                    },
-                    "body": {
-                        "instructions": "@{parameters('META_PROMPT')}",
-                        "model": "@{parameters('AZURE_OPENAI_DEPLOYMENT_NAME')}",
-                        "name": "@{concat(parameters('ASSISSTANT_NAME'), workflow()['id'])}"
-                    },
-                    "method": "POST",
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')"
+                    "variables": [
+                        {
+                            "name": "retry",
+                            "type": "integer",
+                            "value": 0
+                        }
+                    ]
                 },
                 "runAfter": {
                     "Compose-Transcript": [
                         "SUCCEEDED"
                     ]
                 },
-                "runtimeConfiguration": {
-                    "contentTransfer": {
-                        "transferMode": "Chunked"
-                    }
-                },
-                "type": "Http"
+                "type": "InitializeVariable"
             },
-            "OpenAi-CreateAssisstant-Response": {
-                "inputs": {
-                    "content": "@body('OpenAi-CreateAssisstant-Request')",
-                    "schema": {
-                        "properties": {
-                            "created_at": {
-                                "type": "integer"
-                            },
-                            "description": {},
-                            "file_ids": {
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "id": {
-                                "type": "string"
-                            },
-                            "instructions": {
-                                "type": "string"
-                            },
-                            "metadata": {
-                                "properties": {},
-                                "type": "object"
-                            },
-                            "model": {
-                                "type": "string"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "object": {
-                                "type": "string"
-                            },
-                            "tools": {
-                                "items": {
-                                    "properties": {
-                                        "type": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "type"
-                                    ],
-                                    "type": "object"
-                                },
-                                "type": "array"
-                            }
-                        },
-                        "type": "object"
-                    }
-                },
-                "runAfter": {
-                    "OpenAi-CreateAssisstant-Request": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "type": "ParseJson"
-            },
-            "OpenAi-CreateRun-Request": {
-                "inputs": {
-                    "authentication": {
-                        "audience": "https://cognitiveservices.azure.com",
-                        "type": "ManagedServiceIdentity"
-                    },
-                    "body": {
-                        "assistant_id": "@{body('OpenAi-CreateAssisstant-Response')?['id']}",
-                        "thread": {
-                            "messages": "@outputs('Compose-Transcript')"
-                        }
-                    },
-                    "method": "POST",
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/runs?api-version=2024-03-01-preview')"
-                },
-                "runAfter": {
-                    "OpenAi-CreateAssisstant-Response": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "runtimeConfiguration": {
-                    "contentTransfer": {
-                        "transferMode": "Chunked"
-                    }
-                },
-                "type": "Http"
-            },
-            "OpenAi-CreateRun-Response": {
-                "inputs": {
-                    "content": "@body('OpenAi-CreateRun-Request')",
-                    "schema": {
-                        "properties": {
-                            "assistant_id": {},
-                            "cancelled_at": {},
-                            "completed_at": {},
-                            "created_at": {},
-                            "expires_at": {},
-                            "failed_at": {},
-                            "file_ids": {
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "id": {
-                                "type": "string"
-                            },
-                            "instructions": {
-                                "type": "string"
-                            },
-                            "last_error": {},
-                            "metadata": {
-                                "properties": {},
-                                "type": "object"
-                            },
-                            "model": {
-                                "type": "string"
-                            },
-                            "object": {
-                                "type": "string"
-                            },
-                            "required_action": {},
-                            "started_at": {},
-                            "status": {
-                                "type": "string"
-                            },
-                            "temperature": {
-                                "type": "integer"
-                            },
-                            "thread_id": {},
-                            "tools": {
-                                "items": {
-                                    "properties": {
-                                        "type": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "type"
-                                    ],
-                                    "type": "object"
-                                },
-                                "type": "array"
-                            },
-                            "usage": {}
-                        },
-                        "type": "object"
-                    }
-                },
-                "runAfter": {
-                    "OpenAi-CreateRun-Request": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "type": "ParseJson"
-            },
-            "OpenAi-GetMessages-Request": {
-                "inputs": {
-                    "authentication": {
-                        "audience": "https://cognitiveservices.azure.com",
-                        "type": "ManagedServiceIdentity"
-                    },
-                    "method": "GET",
-                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/messages?api-version=2024-02-15-preview')"
-                },
-                "runAfter": {
-                    "Until": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "runtimeConfiguration": {
-                    "contentTransfer": {
-                        "transferMode": "Chunked"
-                    }
-                },
-                "type": "Http"
-            },
-            "OpenAi-GetMessages-Response": {
-                "inputs": {
-                    "content": "@body('OpenAi-GetMessages-Request')",
-                    "schema": {
-                        "properties": {
-                            "data": {
-                                "items": {
-                                    "properties": {
-                                        "assistant_id": {},
-                                        "content": {
-                                            "items": {
-                                                "properties": {
-                                                    "text": {
+            "workflow-retry-loop-copy": {
+                "actions": {
+                    "Call_Assistant_API": {
+                        "actions": {
+                            "Check_Run_Status": {
+                                "actions": {
+                                    "Until_Run_Status_Completed": {
+                                        "actions": {
+                                            "Delay": {
+                                                "inputs": {
+                                                    "interval": {
+                                                        "count": 30,
+                                                        "unit": "Second"
+                                                    }
+                                                },
+                                                "type": "Wait"
+                                            },
+                                            "OpenAi-GetRun-Request": {
+                                                "inputs": {
+                                                    "authentication": {
+                                                        "audience": "https://cognitiveservices.azure.com",
+                                                        "type": "ManagedServiceIdentity"
+                                                    },
+                                                    "method": "GET",
+                                                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/runs/',body('OpenAi-CreateRun-Response')?['id'],'?api-version=2024-02-15-preview')"
+                                                },
+                                                "runAfter": {
+                                                    "Delay": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "runtimeConfiguration": {
+                                                    "contentTransfer": {
+                                                        "transferMode": "Chunked"
+                                                    }
+                                                },
+                                                "type": "Http"
+                                            },
+                                            "OpenAi-GetRun-Response": {
+                                                "inputs": {
+                                                    "content": "@body('OpenAi-GetRun-Request')",
+                                                    "schema": {
                                                         "properties": {
-                                                            "annotations": {
-                                                                "type": "array"
-                                                            },
-                                                            "value": {
+                                                            "assistant_id": {},
+                                                            "cancelled_at": {},
+                                                            "completed_at": {},
+                                                            "created_at": {},
+                                                            "expires_at": {},
+                                                            "failed_at": {},
+                                                            "file_ids": {},
+                                                            "id": {
                                                                 "type": "string"
-                                                            }
+                                                            },
+                                                            "instructions": {
+                                                                "type": "string"
+                                                            },
+                                                            "last_error": {},
+                                                            "metadata": {
+                                                                "properties": {},
+                                                                "type": "object"
+                                                            },
+                                                            "model": {
+                                                                "type": "string"
+                                                            },
+                                                            "object": {
+                                                                "type": "string"
+                                                            },
+                                                            "required_action": {},
+                                                            "started_at": {},
+                                                            "status": {
+                                                                "type": "string"
+                                                            },
+                                                            "temperature": {},
+                                                            "thread_id": {
+                                                                "type": "string"
+                                                            },
+                                                            "tools": {},
+                                                            "usage": {}
                                                         },
                                                         "type": "object"
+                                                    }
+                                                },
+                                                "runAfter": {
+                                                    "OpenAi-GetRun-Request": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "type": "ParseJson"
+                                            }
+                                        },
+                                        "expression": "@equals(body('OpenAi-GetRun-Request')?['status'],'completed')",
+                                        "limit": {
+                                            "count": 10,
+                                            "timeout": "PT1H"
+                                        },
+                                        "type": "Until"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Create_Run": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "type": "Scope"
+                            },
+                            "Create_Assistant": {
+                                "actions": {
+                                    "OpenAi-CreateAssisstant-Request": {
+                                        "inputs": {
+                                            "authentication": {
+                                                "audience": "https://cognitiveservices.azure.com",
+                                                "type": "ManagedServiceIdentity"
+                                            },
+                                            "body": {
+                                                "instructions": "@{parameters('META_PROMPT')}",
+                                                "model": "@{parameters('AZURE_OPENAI_DEPLOYMENT_NAME')}",
+                                                "name": "@{concat(parameters('ASSISSTANT_NAME'), workflow()['id'])}"
+                                            },
+                                            "method": "POST",
+                                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/assistants?api-version=2024-03-01-preview')"
+                                        },
+                                        "runtimeConfiguration": {
+                                            "contentTransfer": {
+                                                "transferMode": "Chunked"
+                                            }
+                                        },
+                                        "type": "Http"
+                                    },
+                                    "OpenAi-CreateAssisstant-Response": {
+                                        "inputs": {
+                                            "content": "@body('OpenAi-CreateAssisstant-Request')",
+                                            "schema": {
+                                                "properties": {
+                                                    "created_at": {
+                                                        "type": "integer"
                                                     },
-                                                    "type": {
+                                                    "description": {},
+                                                    "file_ids": {
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "instructions": {
+                                                        "type": "string"
+                                                    },
+                                                    "metadata": {
+                                                        "properties": {},
+                                                        "type": "object"
+                                                    },
+                                                    "model": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "object": {
+                                                        "type": "string"
+                                                    },
+                                                    "tools": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "type"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": "array"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "OpenAi-CreateAssisstant-Request": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "ParseJson"
+                                    }
+                                },
+                                "type": "Scope"
+                            },
+                            "Create_Run": {
+                                "actions": {
+                                    "OpenAi-CreateRun-Request": {
+                                        "inputs": {
+                                            "authentication": {
+                                                "audience": "https://cognitiveservices.azure.com",
+                                                "type": "ManagedServiceIdentity"
+                                            },
+                                            "body": {
+                                                "assistant_id": "@{body('OpenAi-CreateAssisstant-Response')?['id']}",
+                                                "thread": {
+                                                    "messages": "@outputs('Compose-Transcript')"
+                                                }
+                                            },
+                                            "method": "POST",
+                                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/runs?api-version=2024-03-01-preview')"
+                                        },
+                                        "runtimeConfiguration": {
+                                            "contentTransfer": {
+                                                "transferMode": "Chunked"
+                                            }
+                                        },
+                                        "type": "Http"
+                                    },
+                                    "OpenAi-CreateRun-Response": {
+                                        "inputs": {
+                                            "content": "@body('OpenAi-CreateRun-Request')",
+                                            "schema": {
+                                                "properties": {
+                                                    "assistant_id": {},
+                                                    "cancelled_at": {},
+                                                    "completed_at": {},
+                                                    "created_at": {},
+                                                    "expires_at": {},
+                                                    "failed_at": {},
+                                                    "file_ids": {
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "instructions": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_error": {},
+                                                    "metadata": {
+                                                        "properties": {},
+                                                        "type": "object"
+                                                    },
+                                                    "model": {
+                                                        "type": "string"
+                                                    },
+                                                    "object": {
+                                                        "type": "string"
+                                                    },
+                                                    "required_action": {},
+                                                    "started_at": {},
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "temperature": {
+                                                        "type": "integer"
+                                                    },
+                                                    "thread_id": {},
+                                                    "tools": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "type"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "usage": {}
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "OpenAi-CreateRun-Request": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "ParseJson"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Create_Assistant": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "type": "Scope"
+                            },
+                            "Get_Assistant_Messages": {
+                                "actions": {
+                                    "OpenAi-GetMessages-Request": {
+                                        "inputs": {
+                                            "authentication": {
+                                                "audience": "https://cognitiveservices.azure.com",
+                                                "type": "ManagedServiceIdentity"
+                                            },
+                                            "method": "GET",
+                                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/messages?api-version=2024-02-15-preview')"
+                                        },
+                                        "runtimeConfiguration": {
+                                            "contentTransfer": {
+                                                "transferMode": "Chunked"
+                                            }
+                                        },
+                                        "type": "Http"
+                                    },
+                                    "OpenAi-GetMessages-Response": {
+                                        "inputs": {
+                                            "content": "@body('OpenAi-GetMessages-Request')",
+                                            "schema": {
+                                                "properties": {
+                                                    "data": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "assistant_id": {},
+                                                                "content": {
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "text": {
+                                                                                "properties": {
+                                                                                    "annotations": {
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "value": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            },
+                                                                            "type": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "type",
+                                                                            "text"
+                                                                        ],
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": "array"
+                                                                },
+                                                                "created_at": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "file_ids": {
+                                                                    "type": "array"
+                                                                },
+                                                                "id": {
+                                                                    "type": "string"
+                                                                },
+                                                                "metadata": {
+                                                                    "properties": {},
+                                                                    "type": "object"
+                                                                },
+                                                                "object": {
+                                                                    "type": "string"
+                                                                },
+                                                                "role": {
+                                                                    "type": "string"
+                                                                },
+                                                                "run_id": {},
+                                                                "thread_id": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "id",
+                                                                "object",
+                                                                "created_at",
+                                                                "assistant_id",
+                                                                "thread_id",
+                                                                "run_id",
+                                                                "role",
+                                                                "content",
+                                                                "file_ids",
+                                                                "metadata"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "first_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "has_more": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "last_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "object": {
                                                         "type": "string"
                                                     }
                                                 },
-                                                "required": [
-                                                    "type",
-                                                    "text"
-                                                ],
                                                 "type": "object"
-                                            },
-                                            "type": "array"
+                                            }
                                         },
-                                        "created_at": {
-                                            "type": "integer"
+                                        "runAfter": {
+                                            "OpenAi-GetMessages-Request": [
+                                                "Succeeded"
+                                            ]
                                         },
-                                        "file_ids": {
-                                            "type": "array"
-                                        },
-                                        "id": {
-                                            "type": "string"
-                                        },
-                                        "metadata": {
-                                            "properties": {},
-                                            "type": "object"
-                                        },
-                                        "object": {
-                                            "type": "string"
-                                        },
-                                        "role": {
-                                            "type": "string"
-                                        },
-                                        "run_id": {},
-                                        "thread_id": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "object",
-                                        "created_at",
-                                        "assistant_id",
-                                        "thread_id",
-                                        "run_id",
-                                        "role",
-                                        "content",
-                                        "file_ids",
-                                        "metadata"
-                                    ],
-                                    "type": "object"
+                                        "type": "ParseJson"
+                                    }
                                 },
-                                "type": "array"
+                                "runAfter": {
+                                    "Check_Run_Status": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "type": "Scope"
                             },
-                            "first_id": {
-                                "type": "string"
-                            },
-                            "has_more": {
-                                "type": "boolean"
-                            },
-                            "last_id": {
-                                "type": "string"
-                            },
-                            "object": {
-                                "type": "string"
+                            "Validate_Assistant_Response": {
+                                "actions": {
+                                    "For_each": {
+                                        "actions": {
+                                            "Condition": {
+                                                "actions": {
+                                                    "AOAI_Result": {
+                                                        "inputs": {
+                                                            "content": "@replace(replace(items('For_each')?['content'][0]?['text'].value, '```json',''), '```','')",
+                                                            "schema": {
+                                                                "properties": {
+                                                                    "scenes": {
+                                                                        "items": {
+                                                                            "properties": {
+                                                                                "description": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "end_time": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "id": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "rating": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "reasoning": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "start_time": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "title": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "transcript": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "translation": {}
+                                                                            },
+                                                                            "required": [
+                                                                                "id",
+                                                                                "title",
+                                                                                "rating",
+                                                                                "reasoning",
+                                                                                "description",
+                                                                                "start_time",
+                                                                                "end_time",
+                                                                                "transcript"
+                                                                            ],
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": "array"
+                                                                    },
+                                                                    "summary": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "runAfter": {
+                                                            "Valid_Response": [
+                                                                "Succeeded"
+                                                            ]
+                                                        },
+                                                        "type": "ParseJson"
+                                                    },
+                                                    "FunctionShortClip-VideoExtraction-Request": {
+                                                        "inputs": {
+                                                            "body": {
+                                                                "orchestrator_workflow_name": "video_extraction_orchestrator",
+                                                                "orchestrator_workflow_properties": {
+                                                                    "content_url_openai": "@{concat(\n    parameters('AZURE_BLOB_STORAGE_ENDPOINT'),\n    parameters('STORAGE_CONTAINER_NAME_CURATED'),\n    '/',\n    body('UploadBlob-Assisstant-Response')?['properties']?['blobPath']\n)}",
+                                                                    "content_url_video": "@{body('Read_config_file')?['content']?['videoUrl']}"
+                                                                }
+                                                            },
+                                                            "method": "POST",
+                                                            "uri": "@concat('https://', parameters('FUNCTION_SHORTCLIP_HOSTNAME'), '/api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))"
+                                                        },
+                                                        "runAfter": {
+                                                            "workflow-successful=true": [
+                                                                "SUCCEEDED"
+                                                            ]
+                                                        },
+                                                        "runtimeConfiguration": {
+                                                            "contentTransfer": {
+                                                                "transferMode": "Chunked"
+                                                            }
+                                                        },
+                                                        "type": "Http"
+                                                    },
+                                                    "UploadBlob-Assisstant-Response": {
+                                                        "inputs": {
+                                                            "parameters": {
+                                                                "blobName": "@replace(triggerBody()?['name'], 'promptcontent.json',\n'assistant.json'\n)",
+                                                                "containerName": "@parameters('STORAGE_CONTAINER_NAME_CURATED')",
+                                                                "content": "@body('AOAI_Result')",
+                                                                "overrideIfExists": "true"
+                                                            },
+                                                            "serviceProviderConfiguration": {
+                                                                "connectionName": "AzureBlob",
+                                                                "operationId": "uploadBlob",
+                                                                "serviceProviderId": "/serviceProviders/AzureBlob"
+                                                            }
+                                                        },
+                                                        "runAfter": {
+                                                            "AOAI_Result": [
+                                                                "Succeeded"
+                                                            ]
+                                                        },
+                                                        "type": "ServiceProvider"
+                                                    },
+                                                    "Valid_Response": {
+                                                        "inputs": {
+                                                            "content": "@items('For_each')",
+                                                            "schema": {
+                                                                "properties": {
+                                                                    "assistant_id": {},
+                                                                    "content": {
+                                                                        "items": {
+                                                                            "properties": {
+                                                                                "text": {
+                                                                                    "properties": {
+                                                                                        "annotations": {
+                                                                                            "type": "array"
+                                                                                        },
+                                                                                        "value": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "type": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "type",
+                                                                                "text"
+                                                                            ],
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": "array"
+                                                                    },
+                                                                    "created_at": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "file_ids": {
+                                                                        "type": "array"
+                                                                    },
+                                                                    "id": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "metadata": {
+                                                                        "properties": {},
+                                                                        "type": "object"
+                                                                    },
+                                                                    "object": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "role": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "run_id": {},
+                                                                    "thread_id": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "ParseJson"
+                                                    },
+                                                    "workflow-successful=true": {
+                                                        "inputs": {
+                                                            "name": "workflow-successful",
+                                                            "value": true
+                                                        },
+                                                        "runAfter": {
+                                                            "UploadBlob-Assisstant-Response": [
+                                                                "Succeeded"
+                                                            ]
+                                                        },
+                                                        "type": "SetVariable"
+                                                    }
+                                                },
+                                                "else": {
+                                                    "actions": {
+                                                        "Invalid_Response": {
+                                                            "inputs": {
+                                                                "content": "@items('For_each')",
+                                                                "schema": {
+                                                                    "properties": {
+                                                                        "assistant_id": {},
+                                                                        "content": {
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "text": {
+                                                                                        "properties": {
+                                                                                            "annotations": {
+                                                                                                "type": "array"
+                                                                                            },
+                                                                                            "value": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "required": [
+                                                                                    "type",
+                                                                                    "text"
+                                                                                ],
+                                                                                "type": "object"
+                                                                            },
+                                                                            "type": "array"
+                                                                        },
+                                                                        "created_at": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "file_ids": {
+                                                                            "type": "array"
+                                                                        },
+                                                                        "id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "metadata": {
+                                                                            "properties": {},
+                                                                            "type": "object"
+                                                                        },
+                                                                        "object": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "role": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "run_id": {},
+                                                                        "thread_id": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "type": "ParseJson"
+                                                        }
+                                                    }
+                                                },
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "equals": [
+                                                                "@items('For_each')?['role']",
+                                                                "assistant"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "not": {
+                                                                "equals": [
+                                                                    "@length(items('For_each')?['content'])",
+                                                                    0
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            "and": [
+                                                                {
+                                                                    "not": {
+                                                                        "contains": [
+                                                                            "@items('For_each')?['content'][0]?['text'].value",
+                                                                            "I'm sorry, but I cannot assist with that request."
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "type": "If"
+                                            }
+                                        },
+                                        "foreach": "@body('OpenAi-GetMessages-Response')?['data']",
+                                        "runtimeConfiguration": {
+                                            "concurrency": {
+                                                "repetitions": 1
+                                            }
+                                        },
+                                        "type": "Foreach"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Get_Assistant_Messages": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "type": "Scope"
                             }
-                        },
-                        "type": "object"
-                    }
-                },
-                "runAfter": {
-                    "OpenAi-GetMessages-Request": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "type": "ParseJson"
-            },
-            "Read_blob_content": {
-                "inputs": {
-                    "parameters": {
-                        "blobName": "@triggerBody()?['name']",
-                        "containerName": "@triggerBody()?['containerInfo']?['name']"
-                    },
-                    "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob",
-                        "operationId": "readBlob",
-                        "serviceProviderId": "/serviceProviders/AzureBlob"
-                    }
-                },
-                "runAfter": {},
-                "type": "ServiceProvider"
-            },
-            "Read_config_file": {
-                "inputs": {
-                    "parameters": {
-                        "blobName": "@replace(triggerBody()?['name'], '/promptcontent.json', '/config.json')",
-                        "containerName": "@triggerBody()?['containerInfo']?['name']"
-                    },
-                    "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob",
-                        "operationId": "readBlob",
-                        "serviceProviderId": "/serviceProviders/AzureBlob"
-                    }
-                },
-                "runAfter": {
-                    "Read_blob_content": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "type": "ServiceProvider"
-            },
-            "Until": {
-                "actions": {
-                    "Delay": {
-                        "inputs": {
-                            "interval": {
-                                "count": 30,
-                                "unit": "Second"
-                            }
-                        },
-                        "type": "Wait"
-                    },
-                    "OpenAi-GetRun-Request": {
-                        "inputs": {
-                            "authentication": {
-                                "audience": "https://cognitiveservices.azure.com",
-                                "type": "ManagedServiceIdentity"
-                            },
-                            "method": "GET",
-                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateRun-Response')?['thread_id'],'/runs/',body('OpenAi-CreateRun-Response')?['id'],'?api-version=2024-02-15-preview')"
                         },
                         "runAfter": {
-                            "Delay": [
-                                "SUCCEEDED"
+                            "retry++": [
+                                "Succeeded"
                             ]
                         },
-                        "runtimeConfiguration": {
-                            "contentTransfer": {
-                                "transferMode": "Chunked"
-                            }
-                        },
-                        "type": "Http"
+                        "type": "Scope"
                     },
-                    "OpenAi-GetRun-Response": {
+                    "retry++": {
                         "inputs": {
-                            "content": "@body('OpenAi-GetRun-Request')",
-                            "schema": {
-                                "properties": {
-                                    "assistant_id": {},
-                                    "cancelled_at": {},
-                                    "completed_at": {},
-                                    "created_at": {},
-                                    "expires_at": {},
-                                    "failed_at": {},
-                                    "file_ids": {},
-                                    "id": {
-                                        "type": "string"
-                                    },
-                                    "instructions": {
-                                        "type": "string"
-                                    },
-                                    "last_error": {},
-                                    "metadata": {
-                                        "properties": {},
-                                        "type": "object"
-                                    },
-                                    "model": {
-                                        "type": "string"
-                                    },
-                                    "object": {
-                                        "type": "string"
-                                    },
-                                    "required_action": {},
-                                    "started_at": {},
-                                    "status": {
-                                        "type": "string"
-                                    },
-                                    "temperature": {},
-                                    "thread_id": {
-                                        "type": "string"
-                                    },
-                                    "tools": {},
-                                    "usage": {}
-                                },
-                                "type": "object"
-                            }
+                            "name": "retry",
+                            "value": 1
                         },
-                        "runAfter": {
-                            "OpenAi-GetRun-Request": [
-                                "SUCCEEDED"
-                            ]
-                        },
-                        "type": "ParseJson"
+                        "type": "IncrementVariable"
                     }
                 },
-                "expression": "@equals(body('OpenAi-CreateRun-Response')?['status'],'completed')",
+                "expression": "@equals(or(\nequals(variables('workflow-successful'),true), greaterOrEquals(variables('retry'), 5)\n),true)",
                 "limit": {
-                    "count": 7,
                     "timeout": "PT1H"
                 },
                 "runAfter": {
-                    "InitializeVariable-RunStatus": [
+                    "workflow-successful": [
                         "SUCCEEDED"
                     ]
                 },
                 "type": "Until"
+            },
+            "workflow-successful": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "workflow-successful",
+                            "type": "boolean",
+                            "value": false
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "retry": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "InitializeVariable"
             }
         },
         "contentVersion": "1.0.0.0",
