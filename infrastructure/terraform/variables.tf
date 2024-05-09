@@ -42,9 +42,9 @@ variable "model_version" {
   description = "Specifies the name of the model."
   type        = string
   sensitive   = false
-  default     = "1106-preview"
+  default     = "1106-Preview"
   validation {
-    condition     = contains(["1106-preview", "turbo-2024-04-09"], var.model_version)
+    condition     = contains(["1106-Preview", "turbo-2024-04-09"], var.model_version)
     error_message = "Please use an allowed value: \"1106-preview\"."
   }
 }
