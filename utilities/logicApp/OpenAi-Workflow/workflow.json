@@ -3,7 +3,27 @@
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
             "Check_Assistant_API_Workflow_Retry_Loop": {
-                "actions": {},
+                "actions": {
+                    "FunctionShortClip-VideoExtraction-Request": {
+                        "inputs": {
+                            "body": {
+                                "orchestrator_workflow_name": "video_extraction_orchestrator",
+                                "orchestrator_workflow_properties": {
+                                    "content_url_openai": "@{concat(\n    parameters('AZURE_BLOB_STORAGE_ENDPOINT'),\n    parameters('STORAGE_CONTAINER_NAME_CURATED'),\n    '/',\n    body('UploadBlob-Assisstant-Response')?['properties']?['blobPath']\n)}",
+                                    "content_url_video": "@{body('Read_config_file')?['content']?['videoUrl']}"
+                                }
+                            },
+                            "method": "POST",
+                            "uri": "@concat('https://', parameters('FUNCTION_SHORTCLIP_HOSTNAME'), '/api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))"
+                        },
+                        "runtimeConfiguration": {
+                            "contentTransfer": {
+                                "transferMode": "Chunked"
+                            }
+                        },
+                        "type": "Http"
+                    }
+                },
                 "else": {
                     "actions": {
                         "Workflow_Failed": {
@@ -715,30 +735,6 @@
                                                             ]
                                                         },
                                                         "type": "ParseJson"
-                                                    },
-                                                    "FunctionShortClip-VideoExtraction-Request": {
-                                                        "inputs": {
-                                                            "body": {
-                                                                "orchestrator_workflow_name": "video_extraction_orchestrator",
-                                                                "orchestrator_workflow_properties": {
-                                                                    "content_url_openai": "@{concat(\n    parameters('AZURE_BLOB_STORAGE_ENDPOINT'),\n    parameters('STORAGE_CONTAINER_NAME_CURATED'),\n    '/',\n    body('UploadBlob-Assisstant-Response')?['properties']?['blobPath']\n)}",
-                                                                    "content_url_video": "@{body('Read_config_file')?['content']?['videoUrl']}"
-                                                                }
-                                                            },
-                                                            "method": "POST",
-                                                            "uri": "@concat('https://', parameters('FUNCTION_SHORTCLIP_HOSTNAME'), '/api/startWorkflow?code=', parameters('FUNCTION_SHORTCLIP_KEY'))"
-                                                        },
-                                                        "runAfter": {
-                                                            "workflow-successful=true": [
-                                                                "SUCCEEDED"
-                                                            ]
-                                                        },
-                                                        "runtimeConfiguration": {
-                                                            "contentTransfer": {
-                                                                "transferMode": "Chunked"
-                                                            }
-                                                        },
-                                                        "type": "Http"
                                                     },
                                                     "UploadBlob-Assisstant-Response": {
                                                         "inputs": {
