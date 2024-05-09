@@ -9,7 +9,7 @@
                         {
                             "name": "language",
                             "type": "string",
-                            "value": "en-US"
+                            "value": "@parameters('DEFAULT_LANGUAGE')"
                         }
                     ]
                 },
