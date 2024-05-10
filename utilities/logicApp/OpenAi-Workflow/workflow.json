@@ -9,7 +9,7 @@
                             "body": {
                                 "orchestrator_workflow_name": "video_extraction_orchestrator",
                                 "orchestrator_workflow_properties": {
-                                    "content_url_openai": "@{concat(\n    parameters('AZURE_BLOB_STORAGE_ENDPOINT'),\n    parameters('STORAGE_CONTAINER_NAME_CURATED'),\n    '/',\n    body('UploadBlob-Assisstant-Response')?['properties']?['blobPath']\n)}",
+                                    "content_url_openai": "@{concat(parameters('AZURE_BLOB_STORAGE_ENDPOINT'),parameters('STORAGE_CONTAINER_NAME_CURATED'),'/', replace(triggerBody()?['name'], 'promptcontent.json','assistant.json'))}",
                                     "content_url_video": "@{body('Read_config_file')?['content']?['videoUrl']}"
                                 }
                             },
@@ -45,7 +45,7 @@
                     ]
                 },
                 "runAfter": {
-                    "workflow-retry-loop-copy": [
+                    "workflow-retry-loop": [
                         "SUCCEEDED"
                     ]
                 },
@@ -253,7 +253,7 @@
                 },
                 "type": "InitializeVariable"
             },
-            "workflow-retry-loop-copy": {
+            "workflow-retry-loop": {
                 "actions": {
                     "Call_Assistant_API": {
                         "actions": {
