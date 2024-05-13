@@ -452,13 +452,10 @@
                                                 "type": "ManagedServiceIdentity"
                                             },
                                             "body": {
-                                                "assistant_id": "@{body('OpenAi-CreateAssisstant-Response')?['id']}",
-                                                "thread": {
-                                                    "messages": "@outputs('Compose-Transcript')"
-                                                }
+                                                "assistant_id": "@{body('OpenAi-CreateAssisstant-Response')?['id']}"
                                             },
                                             "method": "POST",
-                                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/runs?api-version=2024-03-01-preview')"
+                                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateThread-Response')?['id'],'/runs?api-version=2024-03-01-preview')"
                                         },
                                         "runtimeConfiguration": {
                                             "contentTransfer": {
@@ -538,11 +535,119 @@
                                     }
                                 },
                                 "runAfter": {
+                                    "ForEach-Transcript-Section": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "type": "Scope"
+                            },
+                            "Create_Thread": {
+                                "actions": {
+                                    "OpenAi-CreateThread-Request": {
+                                        "inputs": {
+                                            "authentication": {
+                                                "audience": "https://cognitiveservices.azure.com",
+                                                "type": "ManagedServiceIdentity"
+                                            },
+                                            "method": "POST",
+                                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads?api-version=2024-03-01-preview')"
+                                        },
+                                        "runtimeConfiguration": {
+                                            "contentTransfer": {
+                                                "transferMode": "Chunked"
+                                            }
+                                        },
+                                        "type": "Http"
+                                    },
+                                    "OpenAi-CreateThread-Response": {
+                                        "inputs": {
+                                            "content": "@body('OpenAi-CreateThread-Request')",
+                                            "schema": {
+                                                "properties": {
+                                                    "created_at": {
+                                                        "type": "integer"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "metadata": {
+                                                        "properties": {},
+                                                        "type": "object"
+                                                    },
+                                                    "object": {
+                                                        "type": "string"
+                                                    },
+                                                    "tool_resources": {
+                                                        "properties": {},
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "OpenAi-CreateThread-Request": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "ParseJson"
+                                    }
+                                },
+                                "runAfter": {
                                     "Create_Assistant": [
                                         "Succeeded"
                                     ]
                                 },
                                 "type": "Scope"
+                            },
+                            "ForEach-Transcript-Section": {
+                                "actions": {
+                                    "HtmlToText-Scene_1": {
+                                        "inputs": {
+                                            "body": "<p>@{items('ForEach-Transcript-Section')}</p>",
+                                            "host": {
+                                                "connection": {
+                                                    "referenceName": "conversionservice"
+                                                }
+                                            },
+                                            "method": "post",
+                                            "path": "/html2text"
+                                        },
+                                        "type": "ApiConnection"
+                                    },
+                                    "OpenAi-CreateMessage-Request": {
+                                        "inputs": {
+                                            "authentication": {
+                                                "audience": "https://cognitiveservices.azure.com",
+                                                "type": "ManagedServiceIdentity"
+                                            },
+                                            "body": {
+                                                "content": "@{body('HtmlToText-Scene_1')}",
+                                                "role": "user"
+                                            },
+                                            "method": "POST",
+                                            "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'),'/openai/threads/',body('OpenAi-CreateThread-Response')?['id'],'/messages?api-version=2024-03-01-preview')"
+                                        },
+                                        "runAfter": {
+                                            "HtmlToText-Scene_1": [
+                                                "SUCCEEDED"
+                                            ]
+                                        },
+                                        "runtimeConfiguration": {
+                                            "contentTransfer": {
+                                                "transferMode": "Chunked"
+                                            }
+                                        },
+                                        "type": "Http"
+                                    }
+                                },
+                                "foreach": "@body('HtmlToText-BlobContent-Response')?['sections']",
+                                "runAfter": {
+                                    "Create_Thread": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "type": "Foreach"
                             },
                             "Get_Assistant_Messages": {
                                 "actions": {
