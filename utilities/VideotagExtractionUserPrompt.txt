@@ -1,0 +1,3 @@
+News Content: "{news_content}"
+---
+Identify news sections for the provided news text according to the instructions. The text is from the following tv show: {news_show_details}
