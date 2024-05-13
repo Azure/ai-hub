@@ -58,4 +58,6 @@ locals {
   logic_app_orchestration_code_path = "${path.module}/../../utilities/logicApp"
   function_shortclip_code_path      = "${path.module}/modules/functions/rag-video-tagging/code/durablefunction"
   meta_prompt_code_path             = "${path.module}/../../utilities/AssistantMetaPrompt.txt"
+  newstagextraction_system_prompt   = "${path.module}/../../utilities/NewstagextractionSystemPrompt.txt"
+  newstagextraction_user_prompt     = "${path.module}/../../utilities/NewstagextractionUserPrompt.txt"
 }
