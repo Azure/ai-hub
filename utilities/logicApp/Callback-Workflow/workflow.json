@@ -88,7 +88,7 @@
             },
             "ParseMetadata": {
                 "inputs": {
-                    "content": "@body('Videoindexer-GetVideoIndex')?['description']",
+                    "content": "@body('Videoindexer-GetVideoIndex-GetMetadata')?['description']",
                     "schema": {
                         "properties": {
                             "language": {
