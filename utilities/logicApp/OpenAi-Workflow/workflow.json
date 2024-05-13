@@ -51,63 +51,6 @@
                 },
                 "type": "If"
             },
-            "Compose-Transcript": {
-                "inputs": "@variables('transcript')",
-                "runAfter": {
-                    "ForEach-Section": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "type": "Compose"
-            },
-            "ForEach-Section": {
-                "actions": {
-                    "AppendToArrayVariable-Transcript": {
-                        "inputs": {
-                            "name": "transcript",
-                            "value": "@outputs('Compose-Scene')"
-                        },
-                        "runAfter": {
-                            "Compose-Scene": [
-                                "SUCCEEDED"
-                            ]
-                        },
-                        "type": "AppendToArrayVariable"
-                    },
-                    "Compose-Scene": {
-                        "inputs": {
-                            "content": "@{body('HtmlToText-Scene')}",
-                            "role": "user"
-                        },
-                        "runAfter": {
-                            "HtmlToText-Scene": [
-                                "SUCCEEDED"
-                            ]
-                        },
-                        "type": "Compose"
-                    },
-                    "HtmlToText-Scene": {
-                        "inputs": {
-                            "body": "<p>@{items('ForEach-Section')}</p>",
-                            "host": {
-                                "connection": {
-                                    "referenceName": "conversionservice"
-                                }
-                            },
-                            "method": "post",
-                            "path": "/html2text"
-                        },
-                        "type": "ApiConnection"
-                    }
-                },
-                "foreach": "@body('HtmlToText-BlobContent-Response')?['sections']",
-                "runAfter": {
-                    "InitializeVariable-Transcipt": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "type": "Foreach"
-            },
             "Initialise_Variables": {
                 "actions": {
                     "Compose-BlobContent": {
@@ -220,22 +163,6 @@
                 "runAfter": {},
                 "type": "Scope"
             },
-            "InitializeVariable-Transcipt": {
-                "inputs": {
-                    "variables": [
-                        {
-                            "name": "transcript",
-                            "type": "array"
-                        }
-                    ]
-                },
-                "runAfter": {
-                    "Initialise_Variables": [
-                        "SUCCEEDED"
-                    ]
-                },
-                "type": "InitializeVariable"
-            },
             "retry": {
                 "inputs": {
                     "variables": [
@@ -247,7 +174,7 @@
                     ]
                 },
                 "runAfter": {
-                    "Compose-Transcript": [
+                    "Initialise_Variables": [
                         "SUCCEEDED"
                     ]
                 },
