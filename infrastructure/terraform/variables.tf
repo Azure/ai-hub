@@ -27,6 +27,25 @@ variable "environment" {
   }
 }
 
+variable "tags" {
+  description = "Specifies the tags that you want to apply to all resources."
+  type        = map(string)
+  sensitive   = false
+  default     = {}
+}
+
+# Resource variables
+variable "default_language" {
+  description = "Specifies the default language to use for the service."
+  type        = string
+  sensitive   = false
+  default     = "en-US"
+  validation {
+    condition     = contains(["en-US", "es-ES", "de-DE"], var.default_language)
+    error_message = "Please use an allowed language."
+  }
+}
+
 variable "model_name" {
   description = "Specifies the name of the model."
   type        = string
@@ -47,13 +66,6 @@ variable "model_version" {
     condition     = contains(["1106-Preview", "turbo-2024-04-09"], var.model_version)
     error_message = "Please use an allowed value: \"1106-preview\"."
   }
-}
-
-variable "tags" {
-  description = "Specifies the tags that you want to apply to all resources."
-  type        = map(string)
-  sensitive   = false
-  default     = {}
 }
 
 variable "logic_app_sku" {
