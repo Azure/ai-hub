@@ -50,7 +50,7 @@
             "Compose-VideoIndex": {
                 "inputs": "@body('Videoindexer-GetVideoIndex')",
                 "runAfter": {
-                    "ParseMetadata": [
+                    "Videoindexer-GetVideoIndex": [
                         "SUCCEEDED"
                     ]
                 },
@@ -111,7 +111,7 @@
                     }
                 },
                 "runAfter": {
-                    "Videoindexer-GetVideoIndex": [
+                    "Videoindexer-GetVideoIndex-GetMetadata": [
                         "SUCCEEDED"
                     ]
                 },
@@ -308,7 +308,7 @@
                 },
                 "operationOptions": "DisableAsyncPattern",
                 "runAfter": {
-                    "ParseMetadata": [
+                    "Videoindexer-GetVideoIndex": [
                         "SUCCEEDED"
                     ]
                 },
@@ -358,7 +358,7 @@
                 },
                 "operationOptions": "DisableAsyncPattern",
                 "runAfter": {
-                    "ParseMetadata": [
+                    "Videoindexer-GetVideoIndex": [
                         "SUCCEEDED"
                     ]
                 },
@@ -369,7 +369,7 @@
                 },
                 "type": "Http"
             },
-            "Videoindexer-GetVideoIndex": {
+            "Videoindexer-GetVideoIndex-GetMetadata": {
                 "inputs": {
                     "host": {
                         "connection": {
@@ -385,6 +385,27 @@
                 },
                 "runAfter": {
                     "Arm-VideoIndexerGenerateAccessToken-Response": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "Videoindexer-GetVideoIndex": {
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "videoindexer-v2"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/@{encodeURIComponent(parameters('WORKFLOWS_LOCATION_NAME'))}/Accounts/@{encodeURIComponent(parameters('VIDEO_INDEXER_ACCOUNT_ID'))}/Videos/@{encodeURIComponent(variables('videoId'))}/Index",
+                    "queries": {
+                        "accessToken": "@body('Arm-VideoIndexerGenerateAccessToken-Response')?['accessToken']",
+                        "language": "@body('ParseMetadata')?['language']"
+                    }
+                },
+                "runAfter": {
+                    "ParseMetadata": [
                         "SUCCEEDED"
                     ]
                 },
