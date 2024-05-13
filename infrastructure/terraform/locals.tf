@@ -42,6 +42,11 @@ locals {
   application_insights_name_shortclip    = "${local.prefix}-shrtclp-appi"
   function_name_shortclip                = "${local.prefix}-shrtclp-fnctn"
   user_assigned_identity_name_shortclip  = "${local.prefix}-shrtclp-uai"
+  function_sku_cpu_count = {
+    EP1 = "1"
+    EP2 = "2"
+    EP3 = "4"
+  }
 
   # Network
   subnet = var.subnet_id == "" ? {} : {

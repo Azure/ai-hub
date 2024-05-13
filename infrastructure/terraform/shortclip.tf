@@ -62,6 +62,7 @@ module "function_shortclip" {
     FUNCTIONS_WORKER_RUNTIME       = "python"
     AzureWebJobsFeatureFlags       = "EnableWorkerIndexing"
     TaskHubName                    = "shortclip"
+    FUNCTIONS_WORKER_PROCESS_COUNT = local.function_sku_cpu_count[var.function_sku]
     # App specific settings
     STORAGE_DOMAIN_NAME           = replace(trimprefix(module.storage_account.storage_account_primary_blob_endpoint, "https://"), "/", "")
     STORAGE_CONTAINER_NAME        = local.container_name_shortclip

@@ -47,6 +47,9 @@ jobs:
     continue-on-error: false
     environment: ${{ inputs.environment }}
     if: github.event_name == 'push' || github.event_name == 'release'
+    concurrency:
+      group: terraform-${{ inputs.config }}-${{ inputs.environment }}
+      cancel-in-progress: false
 
     env:
       ARM_TENANT_ID: ${{ inputs.tenant_id }}
