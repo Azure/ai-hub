@@ -71,8 +71,8 @@ module "logic_app_orchestration" {
   logic_app_share_name                               = local.logic_app_name
   logic_app_key_vault_id                             = module.key_vault_orchestration.key_vault_id
   logic_app_sku                                      = var.logic_app_sku
-  logic_app_application_insights_instrumentation_key = module.application_insights_orchestration.application_insights_instrumentation_key
-  logic_app_application_insights_connection_string   = module.application_insights_orchestration.application_insights_connection_string
+  logic_app_application_insights_instrumentation_key = module.application_insights.application_insights_instrumentation_key
+  logic_app_application_insights_connection_string   = module.application_insights.application_insights_connection_string
   logic_app_api_connections = {
     conversionservice = {
       kind                 = "V2"
