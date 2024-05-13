@@ -574,6 +574,11 @@
                                         "SUCCEEDED"
                                     ]
                                 },
+                                "runtimeConfiguration": {
+                                    "concurrency": {
+                                        "repetitions": 1
+                                    }
+                                },
                                 "type": "Foreach"
                             },
                             "Get_Assistant_Messages": {
