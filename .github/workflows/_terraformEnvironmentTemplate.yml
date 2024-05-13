@@ -75,7 +75,7 @@ jobs:
     environment: ${{ inputs.environment }}
     needs: [lint]
     concurrency:
-      group: terraform-apply-${{ inputs.config }}-${{ inputs.environment }}
+      group: terraform-${{ inputs.config }}-${{ inputs.environment }}
       cancel-in-progress: false
 
     env:
@@ -141,7 +141,7 @@ jobs:
     # if: github.event_name == 'push' || github.event_name == 'release'
     needs: [plan]
     concurrency:
-      group: terraform-apply-${{ inputs.config }}-${{ inputs.environment }}
+      group: terraform-${{ inputs.config }}-${{ inputs.environment }}
       cancel-in-progress: false
 
     env:
