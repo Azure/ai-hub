@@ -16,16 +16,6 @@ module "storage_account_shortclip" {
   customer_managed_key                      = null
 }
 
-module "application_insights_shortclip" {
-  source = "./modules/applicationinsights"
-
-  location                   = local.location
-  resource_group_name        = azurerm_resource_group.shortclip.name
-  tags                       = var.tags
-  application_insights_name  = local.application_insights_name_shortclip
-  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
-}
-
 module "key_vault_shortclip" {
   source = "./modules/keyvault"
 
@@ -77,8 +67,8 @@ module "function_shortclip" {
   function_key_vault_id                             = module.key_vault_shortclip.key_vault_id
   function_user_assigned_identity_id                = module.user_assigned_identity_shortclip.user_assigned_identity_id
   function_sku                                      = var.function_sku
-  function_application_insights_instrumentation_key = module.application_insights_shortclip.application_insights_instrumentation_key
-  function_application_insights_connection_string   = module.application_insights_shortclip.application_insights_connection_string
+  function_application_insights_instrumentation_key = module.application_insights.application_insights_instrumentation_key
+  function_application_insights_connection_string   = module.application_insights.application_insights_connection_string
   log_analytics_workspace_id                        = module.azure_log_analytics.log_analytics_id
   subnet_id                                         = var.subnet_id
   customer_managed_key                              = null
