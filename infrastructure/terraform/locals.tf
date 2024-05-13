@@ -8,7 +8,6 @@ locals {
   key_vault_name_orchestration               = "${local.prefix}-orch-kv"
   storage_account_name_orchestration_cleaned = replace("${local.prefix}-orch-stg}", "/[^a-z0-9]/", "")
   storage_account_name_orchestration         = lower(substr(local.storage_account_name_orchestration_cleaned, 0, min(length(local.storage_account_name_orchestration_cleaned), 24)))
-  application_insights_name_orchestration    = "${local.prefix}-orch-appi"
   logic_app_name                             = "${local.prefix}-orch-logic"
 
   # Resource names ai
@@ -31,15 +30,15 @@ locals {
   container_name_curated       = "videos-curated"
 
   # Resource names monitoring
-  monitoring_rg      = "${local.prefix}-mntrng"
-  log_analytics_name = "${local.prefix}-law"
+  monitoring_rg             = "${local.prefix}-mntrng"
+  log_analytics_name        = "${local.prefix}-law"
+  application_insights_name = "${local.prefix}-appi"
 
   # Resource names - short clip
   shortclip_rg                           = "${local.prefix}-shrtclp"
   storage_account_name_shortclip_cleaned = replace("${local.prefix}-shrtclp-stg}", "/[^a-z0-9]/", "")
   storage_account_name_shortclip         = lower(substr(local.storage_account_name_shortclip_cleaned, 0, min(length(local.storage_account_name_shortclip_cleaned), 24)))
   key_vault_name_shortclip               = "${local.prefix}-shrtclp-kv"
-  application_insights_name_shortclip    = "${local.prefix}-shrtclp-appi"
   function_name_shortclip                = "${local.prefix}-shrtclp-fnctn"
   user_assigned_identity_name_shortclip  = "${local.prefix}-shrtclp-uai"
   function_sku_cpu_count = {

@@ -17,16 +17,6 @@ module "storage_account_orchestration" {
   customer_managed_key                      = null
 }
 
-module "application_insights_orchestration" {
-  source = "./modules/applicationinsights"
-
-  location                   = local.location
-  resource_group_name        = azurerm_resource_group.orchestration.name
-  tags                       = var.tags
-  application_insights_name  = local.application_insights_name_orchestration
-  log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
-}
-
 module "key_vault_orchestration" {
   source = "./modules/keyvault"
 
@@ -49,8 +39,8 @@ module "logic_app_orchestration" {
   logic_app_name      = local.logic_app_name
   logic_app_application_settings = {
     # Logic App config settings
-    APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights_orchestration.application_insights_instrumentation_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights_orchestration.application_insights_connection_string
+    APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights.application_insights_instrumentation_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights_connection_string
     WEBSITE_RUN_FROM_PACKAGE              = "1"
     # App specific settings
     LOGIC_APP_ID                         = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${azurerm_resource_group.orchestration.name}/providers/Microsoft.Web/sites/${local.logic_app_name}"
