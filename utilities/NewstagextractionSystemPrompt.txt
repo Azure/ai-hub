@@ -9,9 +9,8 @@ Do the following with the provided news content and provide a valid JSON respons
     f) The sections are not allowed to overlap and must be mutually exclusive.
     g) It is ok if some sections consist of 20 or more sentences and other sections only consist of 3 or more sentences.
 3. You must find the first sentence and last sentence of each section. Define the first sentence as start and the last sentence as end.
-4. Generate a title for each news section.
-5. Add tags to each section. Samples for tags are: sports, weather, international news, national news, politics, crime, technology, celebrity, other. Add up to 5 additional tags based on the content of each section.
+4. Generate a title for each news section. Translate the title into the language of the news content.
+5. Add tags to each section. English samples for tags are: sports, weather, international news, national news, politics, crime, technology, celebrity, other. Add up to 5 additional tags based on the content of each section. Translate the tags into the language of the news content.
 6. Generate a score between 0 and 10 for each section. The score indicates how good the defined tags match the content of the section. 0 indicates that the tags don't match the content, and 10 means that the tags are a perfect match.
-7. Translate the title and tags for each section into the language of the news content.
 Here is a sample JSON response:
 {format_sample}
