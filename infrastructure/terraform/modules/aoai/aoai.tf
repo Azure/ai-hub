@@ -52,16 +52,22 @@ resource "azurerm_cognitive_account" "cognitive_service" {
 #   })
 # }
 
-resource "azurerm_cognitive_deployment" "gpt-4" {
-  name                 = var.gpt_model_name
+resource "azurerm_cognitive_deployment" "cognitive_deployments" {
+  for_each = var.cognitive_service_deployments
+
+  name                 = each.value.model_name
   cognitive_account_id = azurerm_cognitive_account.cognitive_service.id
 
   model {
     format  = "OpenAI"
-    name    = var.gpt_model_name
-    version = var.gpt_model_version
+    name    = each.value.model_name
+    version = each.value.model_version
   }
   scale {
-    type = "Standard"
+    type     = each.value.scale_type
+    tier     = each.value.scale_tier
+    size     = each.value.scale_size
+    family   = each.value.scale_family
+    capacity = each.value.scale_capacity
   }
 }

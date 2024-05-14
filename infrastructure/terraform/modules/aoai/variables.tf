@@ -53,6 +53,28 @@ variable "cognitive_service_sku" {
   }
 }
 
+variable "cognitive_service_deployments" {
+  description = "Specifies the name of the GPT model."
+  type = map(object({
+    model_name        = string
+    model_version     = string
+    model_api_version = optional(string, "2024-02-15-preview")
+    scale_type        = optional(string, "Standard")
+    scale_tier        = optional(string, "Standard")
+    scale_size        = optional(string, null)
+    scale_family      = optional(string, null)
+    scale_capacity    = optional(number, 1)
+  }))
+  sensitive = false
+  default   = {}
+  # validation {
+  #   condition = alltrue([
+  #     length([for model_name in values(var.cognitive_service_deployments)[*].model_name : model_name if !contains(["value1", "value2"], model_name)]) <= 0
+  #   ])
+  #   error_message = "Please specify a valid model configuration."
+  # }
+}
+
 # Monitoring variables
 variable "log_analytics_workspace_id" {
   description = "Specifies the resource ID of the log analytics workspace used for the stamp"
@@ -61,26 +83,6 @@ variable "log_analytics_workspace_id" {
   validation {
     condition     = length(split("/", var.log_analytics_workspace_id)) == 9
     error_message = "Please specify a valid resource ID."
-  }
-}
-
-variable "gpt_model_name" {
-  description = "Specifies the name of the GPT model."
-  type        = string
-  sensitive   = false
-  validation {
-    condition     = length(var.gpt_model_name) >= 2
-    error_message = "Please specify a valid name."
-  }
-}
-
-variable "gpt_model_version" {
-  description = "Specifies the version of the GPT model."
-  type        = string
-  sensitive   = false
-  validation {
-    condition     = length(var.gpt_model_version) >= 2
-    error_message = "Please specify a valid version."
   }
 }
 

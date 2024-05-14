@@ -56,8 +56,8 @@ module "function_shortclip" {
     # App specific settings
     STORAGE_DOMAIN_NAME             = replace(trimprefix(module.storage_account.storage_account_primary_blob_endpoint, "https://"), "/", "")
     STORAGE_CONTAINER_NAME          = local.container_name_shortclip
-    AZURE_OPEN_AI_API_VERSION       = "2024-02-15-preview"
-    AZURE_OPEN_AI_DEPLOYMENT_NAME   = local.gpt_model_name
+    AZURE_OPEN_AI_API_VERSION       = local.default_model_api_version
+    AZURE_OPEN_AI_DEPLOYMENT_NAME   = local.default_model_name
     AZURE_OPEN_AI_BASE_URL          = module.open_ai.cognitive_account_endpoint
     NEWSTAGEXTRACTION_SYSTEM_PROMPT = data.local_file.file_newstagextraction_system_prompt.content
     NEWSTAGEXTRACTION_USER_PROMPT   = data.local_file.file_newstagextraction_user_prompt.content
