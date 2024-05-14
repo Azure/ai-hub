@@ -108,6 +108,11 @@ jobs:
         with:
           submodules: true
 
+      # Terraform Override
+      - name: Terraform Override
+        run: |
+          mv utilities/terraformConfigSamples/terraform_override.tf infrastructure/terraform/
+
       # Terraform Init
       - name: Terraform Init
         id: terraform_init
@@ -173,6 +178,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
+
+      # Terraform Override
+      - name: Terraform Override
+        run: |
+          mv utilities/terraformConfigSamples/terraform_override.tf infrastructure/terraform/
 
       # Terraform Init
       - name: Terraform Init
