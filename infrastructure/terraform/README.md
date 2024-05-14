@@ -22,9 +22,9 @@ az login
 
 terraform init
 
-terraform plan -var="location=swedencentral" -var="environment=dev" -var="prefix=mmai-tf-1"
+terraform plan -var="location=swedencentral" -var="environment=dev" -var="default_language=es-ES" -var="prefix=mmai-tf-1" 
 
-terraform apply -var="location=swedencentral" -var="environment=dev" -var="prefix=mmai-tf-1"
+terraform apply -var="location=swedencentral" -var="environment=dev" -var="default_language=es-ES" -var="prefix=mmai-tf-1"
 ```
 
 ## For Remote Setup
@@ -34,5 +34,5 @@ TBD
 ## For YOLO
 
 ```
-terraform apply -auto-approve -var="location=swedencentral" -var="environment=dev" -var="prefix=mmai-tf-1"
+terraform apply -auto-approve -var="location=swedencentral" -var="environment=dev" -var="default_language=es-ES" -var="prefix=mmai-tf-1"
 ```
