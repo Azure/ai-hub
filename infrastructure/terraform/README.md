@@ -20,6 +20,13 @@ git clone  https://github.com/Azure/ai-hub.git
 ```
 az login
 
+move .\utilities\terraformConfigSamples\* .\infrastructure\terraform\
+# For Linux use 'mv utilities/terraformConfigSamples/* infrastructure/terraform/'
+# Update prefix in '.\infrastructure\terraform\vars.tfvars'
+
+cd .\infrastructure\terraform\
+# For Linux use 'cd infrastructure/terraform/'
+
 terraform init
 
 terraform plan -var="location=swedencentral" -var="environment=dev" -var="default_language=es-ES" -var="prefix=mmai-tf-1" 
