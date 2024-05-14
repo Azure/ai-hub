@@ -20,6 +20,9 @@ git clone  https://github.com/Azure/ai-hub.git
 ```
 az login
 
+cd .\infrastructure\terraform\
+# For Linux use 'cd infrastructure/terraform/'
+
 terraform init
 
 terraform plan -var="location=swedencentral" -var="environment=dev" -var="default_language=es-ES" -var="prefix=mmai-tf-1" 

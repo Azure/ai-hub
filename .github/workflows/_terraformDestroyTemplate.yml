@@ -81,6 +81,11 @@ jobs:
         with:
           submodules: true
 
+      # Terraform Override
+      - name: Terraform Override
+        run: |
+          mv utilities/terraformConfigSamples/terraform_override.tf infrastructure/terraform/
+
       # Terraform Init
       - name: Terraform Init
         working-directory: ${{ inputs.working_directory }}
