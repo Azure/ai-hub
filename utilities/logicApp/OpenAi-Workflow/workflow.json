@@ -51,117 +51,182 @@
                 },
                 "type": "If"
             },
-            "Initialise_Variables": {
+            "Condition-config": {
                 "actions": {
-                    "Compose-BlobContent": {
-                        "inputs": "@body('Read_blob_content')?['content']",
-                        "runAfter": {
-                            "Read_config_file": [
-                                "SUCCEEDED"
-                            ]
-                        },
-                        "type": "Compose"
-                    },
-                    "HtmlToText-BlobContent": {
-                        "inputs": {
-                            "body": "<p>@{outputs('Compose-BlobContent')}</p>",
-                            "host": {
-                                "connection": {
-                                    "referenceName": "conversionservice"
-                                }
+                    "Initialise_Variables": {
+                        "actions": {
+                            "Compose-BlobContent": {
+                                "inputs": "@body('Read_blob_content')?['content']",
+                                "runAfter": {
+                                    "Read_blob_content": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "type": "Compose"
                             },
-                            "method": "post",
-                            "path": "/html2text"
-                        },
-                        "runAfter": {
-                            "Compose-BlobContent": [
-                                "SUCCEEDED"
-                            ]
-                        },
-                        "type": "ApiConnection"
-                    },
-                    "HtmlToText-BlobContent-Response": {
-                        "inputs": {
-                            "content": "@body('HtmlToText-BlobContent')",
-                            "schema": {
-                                "properties": {
-                                    "name": {
-                                        "type": "string"
+                            "HtmlToText-BlobContent": {
+                                "inputs": {
+                                    "body": "<p>@{outputs('Compose-BlobContent')}</p>",
+                                    "host": {
+                                        "connection": {
+                                            "referenceName": "conversionservice"
+                                        }
                                     },
-                                    "partition": {},
-                                    "sections": {
-                                        "items": {
-                                            "properties": {
-                                                "content": {
-                                                    "type": "string"
-                                                },
-                                                "end": {
-                                                    "type": "string"
-                                                },
-                                                "id": {
-                                                    "type": "integer"
-                                                },
-                                                "start": {
-                                                    "type": "string"
-                                                }
+                                    "method": "post",
+                                    "path": "/html2text"
+                                },
+                                "runAfter": {
+                                    "Compose-BlobContent": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "type": "ApiConnection"
+                            },
+                            "HtmlToText-BlobContent-Response": {
+                                "inputs": {
+                                    "content": "@body('HtmlToText-BlobContent')",
+                                    "schema": {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
                                             },
-                                            "required": [
-                                                "id",
-                                                "start",
-                                                "end",
-                                                "content"
-                                            ],
-                                            "type": "object"
+                                            "partition": {},
+                                            "sections": {
+                                                "items": {
+                                                    "properties": {
+                                                        "content": {
+                                                            "type": "string"
+                                                        },
+                                                        "end": {
+                                                            "type": "string"
+                                                        },
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "start": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "start",
+                                                        "end",
+                                                        "content"
+                                                    ],
+                                                    "type": "object"
+                                                },
+                                                "type": "array"
+                                            }
                                         },
-                                        "type": "array"
+                                        "type": "object"
                                     }
                                 },
-                                "type": "object"
-                            }
-                        },
-                        "runAfter": {
-                            "HtmlToText-BlobContent": [
-                                "SUCCEEDED"
-                            ]
-                        },
-                        "type": "ParseJson"
-                    },
-                    "Read_blob_content": {
-                        "inputs": {
-                            "parameters": {
-                                "blobName": "@triggerBody()?['name']",
-                                "containerName": "@triggerBody()?['containerInfo']?['name']"
+                                "runAfter": {
+                                    "HtmlToText-BlobContent": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "type": "ParseJson"
                             },
-                            "serviceProviderConfiguration": {
-                                "connectionName": "AzureBlob",
-                                "operationId": "readBlob",
-                                "serviceProviderId": "/serviceProviders/AzureBlob"
+                            "Read_blob_content": {
+                                "inputs": {
+                                    "parameters": {
+                                        "blobName": "@triggerBody()?['name']",
+                                        "containerName": "@triggerBody()?['containerInfo']?['name']"
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "AzureBlob",
+                                        "operationId": "readBlob",
+                                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                                    }
+                                },
+                                "type": "ServiceProvider"
                             }
                         },
-                        "type": "ServiceProvider"
-                    },
-                    "Read_config_file": {
-                        "inputs": {
-                            "parameters": {
-                                "blobName": "@replace(triggerBody()?['name'], '/promptcontent.json', '/config.json')",
-                                "containerName": "@triggerBody()?['containerInfo']?['name']"
+                        "type": "Scope"
+                    }
+                },
+                "else": {
+                    "actions": {
+                        "TerminateSucceeded": {
+                            "inputs": {
+                                "runStatus": "Succeeded"
                             },
-                            "serviceProviderConfiguration": {
-                                "connectionName": "AzureBlob",
-                                "operationId": "readBlob",
-                                "serviceProviderId": "/serviceProviders/AzureBlob"
+                            "type": "Terminate"
+                        }
+                    }
+                },
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@body('Parse_config_file')?['shortclip']",
+                                1
+                            ]
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Parse_config_file": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "If"
+            },
+            "Parse_config_file": {
+                "inputs": {
+                    "content": "@body('Read_config_file')?['content']",
+                    "schema": {
+                        "properties": {
+                            "artifactBlobName": {
+                                "type": "string"
+                            },
+                            "containerName": {
+                                "type": "string"
+                            },
+                            "language": {
+                                "type": "string"
+                            },
+                            "newstags": {
+                                "type": "integer"
+                            },
+                            "promptContentBlobName": {
+                                "type": "string"
+                            },
+                            "shortclip": {
+                                "type": "integer"
+                            },
+                            "videoIndexName": {
+                                "type": "string"
+                            },
+                            "videoUrl": {
+                                "type": "string"
                             }
                         },
-                        "runAfter": {
-                            "Read_blob_content": [
-                                "SUCCEEDED"
-                            ]
-                        },
-                        "type": "ServiceProvider"
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Read_config_file": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "Read_config_file": {
+                "inputs": {
+                    "parameters": {
+                        "blobName": "@replace(triggerBody()?['name'], '/promptcontent.json', '/config.json')",
+                        "containerName": "@triggerBody()?['containerInfo']?['name']"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "AzureBlob",
+                        "operationId": "readBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
                 },
                 "runAfter": {},
-                "type": "Scope"
+                "type": "ServiceProvider"
             },
             "retry": {
                 "inputs": {
@@ -174,7 +239,7 @@
                     ]
                 },
                 "runAfter": {
-                    "Initialise_Variables": [
+                    "Condition-config": [
                         "SUCCEEDED"
                     ]
                 },
