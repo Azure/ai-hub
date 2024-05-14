@@ -79,6 +79,17 @@ variable "logic_app_sku" {
   }
 }
 
+variable "logic_app_website_run_from_package" {
+  description = "Specifies the logic app whether it should run as a package."
+  type        = string
+  sensitive   = false
+  default     = "0"
+  validation {
+    condition     = contains(["1", "0"], var.logic_app_website_run_from_package)
+    error_message = "Please use an allowed value: \"0\", \"1\"."
+  }
+}
+
 variable "function_sku" {
   description = "Specifies the SKU for the function app."
   type        = string
