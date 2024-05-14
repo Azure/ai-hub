@@ -22,7 +22,6 @@ az login
 
 move .\utilities\terraformConfigSamples\* .\infrastructure\terraform\
 # For Linux use 'mv utilities/terraformConfigSamples/* infrastructure/terraform/'
-# Update prefix in '.\infrastructure\terraform\vars.tfvars'
 
 cd .\infrastructure\terraform\
 # For Linux use 'cd infrastructure/terraform/'
