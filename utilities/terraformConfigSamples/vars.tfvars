@@ -1,5 +1,0 @@
-location                           = "swedencentral"
-prefix                             = "<please-update>"
-environment                        = "dev"
-default_language                   = "es-ES"
-logic_app_website_run_from_package = "0"
