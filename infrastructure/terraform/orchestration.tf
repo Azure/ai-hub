@@ -41,7 +41,7 @@ module "logic_app_orchestration" {
     # Logic App config settings
     APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights.application_insights_instrumentation_key
     APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights_connection_string
-    WEBSITE_RUN_FROM_PACKAGE              = "1"
+    WEBSITE_RUN_FROM_PACKAGE              = var.logic_app_website_run_from_package
     # App specific settings
     LOGIC_APP_ID                         = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${azurerm_resource_group.orchestration.name}/providers/Microsoft.Web/sites/${local.logic_app_name}"
     AZURE_BLOB_STORAGE_ENDPOINT          = module.storage_account.storage_account_primary_blob_endpoint
