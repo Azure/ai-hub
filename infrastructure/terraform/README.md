@@ -10,9 +10,9 @@
 ```
 git config --global submodule.recurse true
 
-git submodule update --init --recursive
-
 git clone  https://github.com/Azure/ai-hub.git
+
+git submodule update --init --recursive
 ```
 
 ## Local Setup
