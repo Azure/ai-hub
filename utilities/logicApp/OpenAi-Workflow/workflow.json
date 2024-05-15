@@ -770,6 +770,27 @@
                                 },
                                 "type": "Scope"
                             },
+                            "OpenAI-DeleteAssistant": {
+                                "inputs": {
+                                    "authentication": {
+                                        "audience": "https://cognitiveservices.azure.com",
+                                        "type": "ManagedServiceIdentity"
+                                    },
+                                    "method": "DELETE",
+                                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'), '/openai/assistants/', body('OpenAi-CreateAssisstant-Response')?['id'], '?api-version=2024-03-01-preview')"
+                                },
+                                "runAfter": {
+                                    "Get_Assistant_Messages": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "runtimeConfiguration": {
+                                    "contentTransfer": {
+                                        "transferMode": "Chunked"
+                                    }
+                                },
+                                "type": "Http"
+                            },
                             "Validate_Assistant_Response": {
                                 "actions": {
                                     "For_each": {
@@ -1032,44 +1053,17 @@
                                             }
                                         },
                                         "foreach": "@body('OpenAi-GetMessages-Response')?['data']",
-                                        "runAfter": {
-                                            "For_each_1": [
-                                                "SUCCEEDED"
-                                            ]
-                                        },
                                         "runtimeConfiguration": {
                                             "concurrency": {
                                                 "repetitions": 1
                                             }
                                         },
                                         "type": "Foreach"
-                                    },
-                                    "For_each_1": {
-                                        "actions": {
-                                            "OpenAI-DeleteAssistant": {
-                                                "inputs": {
-                                                    "authentication": {
-                                                        "audience": "https://cognitiveservices.azure.com",
-                                                        "type": "ManagedServiceIdentity"
-                                                    },
-                                                    "method": "DELETE",
-                                                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'), '/openai/assistants/', item()?['assistant_id'], '?api-version=2024-03-01-preview')"
-                                                },
-                                                "runtimeConfiguration": {
-                                                    "contentTransfer": {
-                                                        "transferMode": "Chunked"
-                                                    }
-                                                },
-                                                "type": "Http"
-                                            }
-                                        },
-                                        "foreach": "@outputs('OpenAi-GetMessages-Response')?['body']?['data']",
-                                        "type": "foreach"
                                     }
                                 },
                                 "runAfter": {
-                                    "Get_Assistant_Messages": [
-                                        "Succeeded"
+                                    "OpenAI-DeleteAssistant": [
+                                        "SUCCEEDED"
                                     ]
                                 },
                                 "type": "Scope"
