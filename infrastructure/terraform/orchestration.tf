@@ -64,6 +64,8 @@ module "logic_app_orchestration" {
     FUNCTION_SHORTCLIP_KEY               = module.function_shortclip.linux_function_app_primary_key
     META_PROMPT                          = data.local_file.file_meta_prompt.content
     DEFAULT_LANGUAGE                     = var.default_language
+    DELETE_ASSISTANT_ENABLED             = var.delete_assistant_enabled
+
   }
   logic_app_always_on                                = true
   logic_app_code_path                                = "${path.module}/../../utilities/logicApp"

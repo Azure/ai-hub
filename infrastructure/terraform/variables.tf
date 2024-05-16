@@ -107,3 +107,10 @@ variable "subnet_id" {
   sensitive = false
   default   = "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/swedencentral-vnet/providers/Microsoft.Network/virtualNetworks/swedencentral-vnet/subnets/default"
 }
+
+variable "delete_assistant_enabled" {
+  description = "Specifies whether the delete assistant is enabled."
+  type        = bool
+  sensitive   = false
+  default     = false
+}
