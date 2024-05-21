@@ -2717,9 +2717,6 @@
                     "azureOpenAiEndpoint": {
                         "value": "[variables('aoaiEndpoint1')]"
                     },
-                    "systemMessage": {
-                        "value": "[base64ToString(variables('azureOpenAISystemMessage'))]"
-                    },
                     "documentIntelligenceEndpoint": {
                         "value": "[variables('azAiDocumentIntelligenceEndpoint')]"
                     },
@@ -2737,9 +2734,6 @@
                     },
                     "indexName": {
                         "value": "[variables('resourceNames').azureAiSearchIndexName]"
-                    },
-                    "cosmosDbNoSqlResourceId": {
-                        "value": "[variables('resourceIds').cosmosDbResourceId]"
                     },
                     "aiSearchResourceId": {
                         "value": "[variables('resourceIds').azureAiSearchResourceId]"
