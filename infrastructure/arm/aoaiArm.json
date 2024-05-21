@@ -2674,7 +2674,6 @@
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').cosmosDbDeploymentName)]",
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureAiSearchDeploymentName)]",
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureDocumentIntelligenceDeploymentName)]"
             ],
@@ -2715,53 +2714,14 @@
                     "storageAccountBlobEndpoint": {
                         "value": "[variables('blobStorageEndpoint')]"
                     },
-                    "cosmosDbNoSqlEndpoint": {
-                        "value": "[variables('cosmosDbEndpoint')]"
-                    },
-                    "cosmosDbNoSqlDatabase": {
-                        "value": "responses"
-                    },
-                    "cosmosDbNoSqlContainer": {
-                        "value": "docs"
-                    },
-                    "onYourData_properties_typeProperties_url": {
-                        "value": "@{linkedService().documentIntelligenceAPI}documentintelligence/documentModels/@{linkedService().modelId}/analyzeResults/@{linkedService().resultID}?api-version=2023-10-31-preview"
-                    },
-                    "GPT4Deployment_properties_typeProperties_url": {
-                        "value": "@{linkedService().open_ai_base}"
-                    },
-                    "triggerDocBlob_properties_singleAnalyzeDocument_parameters_fileName": {
-                        "value": "@triggerBody().fileName"
-                    },
                     "azureOpenAiEndpoint": {
                         "value": "[variables('aoaiEndpoint1')]"
                     },
                     "systemMessage": {
                         "value": "[base64ToString(variables('azureOpenAISystemMessage'))]"
                     },
-                    "userPrompt": {
-                        "value": "Summarize the data for me."
-                    },
-                    "storageAccountContainer": {
-                        "value": "docs"
-                    },
-                    "storageAccountBatchContainer": {
-                        "value": "docsbatch"
-                    },
-                    "storageAccountIntelContainer": {
-                        "value": "docsintel"
-                    },
-                    "temperature": {
-                        "value": "1"
-                    },
-                    "topP": {
-                        "value": "1"
-                    },
                     "documentIntelligenceEndpoint": {
                         "value": "[variables('azAiDocumentIntelligenceEndpoint')]"
-                    },
-                    "documentIntelligenceModelId": {
-                        "value": "prebuilt-layout"
                     },
                     "aiSearchServiceEndpoint": {
                         "value": "[variables('azureAiSearchEndpoint')]"
