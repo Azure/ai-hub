@@ -10,14 +10,18 @@
 ```
 git config --global submodule.recurse true
 
+git clone  https://github.com/Azure/ai-hub.git
+
 git submodule update --init --recursive
 
-git clone  https://github.com/Azure/ai-hub.git
 ```
 
 ## Local Setup
 
 ```
+
+az upgrade
+
 az login
 
 cd .\infrastructure\terraform\
