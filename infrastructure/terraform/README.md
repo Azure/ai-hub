@@ -24,6 +24,8 @@ Make sure you replace:
 - {yourprefix} with your desired prefix (must be less than 8 characters). 
 
 ```
+az upgrade
+
 az login
 
 cd .\infrastructure\terraform\
