@@ -324,7 +324,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "resourceGroup": "[parameters('rgName')]",
-            "name": "[variables('adfRgDeploymentName')]",
+            "name": "dataFactoryResources",
             "dependsOn": [
                 "[concat('Microsoft.Resources/resourceGroups/', parameters('rgName'))]",
                 "[concat('Microsoft.Resources/deployments/', 'dataFactory')]"
