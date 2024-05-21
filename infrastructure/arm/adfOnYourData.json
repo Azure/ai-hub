@@ -380,7 +380,7 @@
                         "value": "[parameters('aiSearchServiceEndpoint')]"
                     },
                     "aiSearchIndexName": {
-                        "defaultValue": "[parameters('indexName')]"
+                        "value": "[parameters('indexName')]"
                     },
                     "openAIAPI": {
                         "value": "[parameters('azureOpenAiEndpoint')]"
