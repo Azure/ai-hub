@@ -315,96 +315,96 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "type": "Microsoft.Resources/deployments",
-                            "apiVersion": "2022-09-01",
-                            "resourceGroup": "[parameters('rgName')]",
-                            "name": "[variables('adfRgDeploymentName')]",
-                            "dependsOn": [
-                                "[concat('Microsoft.Resources/resourceGroups/', parameters('rgName'))]",
-                                "[concat('Microsoft.DataFactory/factories/', variables('name-compliant-df'))]"
-                            ],
-                            "properties": {
-                                "mode": "Incremental",
-                                "templateLink": {
-                                    "uri": "[variables('adfRgDeploymentUri')]",
-                                    "contentVersion": "1.0.0.0"
-                                },
-                                "parameters": {
-                                    "factoryName": {
-                                        "value": "[variables('name-compliant-df')]"
-                                    },
-                                    "triggerDocBlob_properties_singleAnalyzeDocument_parameters_fileName": {
-                                        "value": "@trigger().outputs.body.fileName"
-                                    },
-                                    "triggerDocBlob_properties_typeProperties_scope": {
-                                        "value": "[parameters('storageAccountResourceId')]"
-                                    },
-                                    "triggerDocBlobWithoutIntel_properties_singleAnalyzeDocument_withoutIntel_parameters_fileName": {
-                                        "value": "@trigger().outputs.body.fileName"
-                                    },
-                                    "triggerDocBlobWithoutIntel_properties_typeProperties_scope": {
-                                        "value": "[parameters('storageAccountResourceId')]"
-                                    },
-                                    "blobStoreDoc_properties_typeProperties_serviceEndpoint": {
-                                        "value": "[parameters('storageAccountBlobEndpoint')]"
-                                    },
-                                    "onYourData_properties_typeProperties_url": {
-                                        "value": "@{linkedService().documentIntelligenceAPI}documentintelligence/documentModels/@{linkedService().modelId}/analyzeResults/@{linkedService().resultID}?api-version=2023-10-31-preview"
-                                    },
-                                    "onYourData_properties_typeProperties_aadResourceId": {
-                                        "value": "https://cognitiveservices.azure.com"
-                                    },
-                                    "GPT4Deployment_properties_typeProperties_url": {
-                                        "value": "@{linkedService().open_ai_base}"
-                                    },
-                                    "GPT4Deployment_properties_typeProperties_aadResourceId": {
-                                        "value": "https://cognitiveservices.azure.com"
-                                    },
-                                    "storageaccountcontainerBatch": {
-                                        "value": "docsbatch"
-                                    },
-                                    "storageaccountcontainerBatchIntel": {
-                                        "value": "docsintelbatch"
-                                    },
-                                    "storageaccounturl": {
-                                        "value": "[parameters('storageAccountBlobEndpoint')]"
-                                    },
-                                    "searchServiceEndpoint": {
-                                        "value": "[parameters('aiSearchServiceEndpoint')]"
-                                    },
-                                    "aiSearchIndexName": {
-                                        "defaultValue": "[parameters('indexName')]"
-                                    },
-                                    "openAIAPI": {
-                                        "value": "[parameters('azureOpenAiEndpoint')]"
-                                    },
-                                    "embeddingDeploymentName": {
-                                        "value": "[parameters('embeddingsDeploymentName')]"
-                                    },
-                                    "dataRefreshIntervalInMinutes": {
-                                        "value": "60"
-                                    },
-                                    "chunkSize": {
-                                        "value": "1024"
-                                    },
-                                    "storageAccountResourceId": {
-                                        "value": "[parameters('storageAccountResourceId')]"
-                                    },
-                                    "documentIntelligenceAPI": {
-                                        "value": "[parameters('documentIntelligenceEndpoint')]"
-                                    },
-                                    "modelId": {
-                                        "value": "prebuilt-layout"
-                                    },
-                                    "gpt4DeploymentName": {
-                                        "value": "[parameters('gpt4DeploymentName')]"
-                                    }
-                                }
-                            }
                         }
                     ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "resourceGroup": "[parameters('rgName')]",
+            "name": "[variables('adfRgDeploymentName')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/resourceGroups/', parameters('rgName'))]",
+                "[concat('Microsoft.Resources/deployments/', 'dataFactory')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('adfRgDeploymentUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[variables('name-compliant-df')]"
+                    },
+                    "triggerDocBlob_properties_singleAnalyzeDocument_parameters_fileName": {
+                        "value": "@trigger().outputs.body.fileName"
+                    },
+                    "triggerDocBlob_properties_typeProperties_scope": {
+                        "value": "[parameters('storageAccountResourceId')]"
+                    },
+                    "triggerDocBlobWithoutIntel_properties_singleAnalyzeDocument_withoutIntel_parameters_fileName": {
+                        "value": "@trigger().outputs.body.fileName"
+                    },
+                    "triggerDocBlobWithoutIntel_properties_typeProperties_scope": {
+                        "value": "[parameters('storageAccountResourceId')]"
+                    },
+                    "blobStoreDoc_properties_typeProperties_serviceEndpoint": {
+                        "value": "[parameters('storageAccountBlobEndpoint')]"
+                    },
+                    "onYourData_properties_typeProperties_url": {
+                        "value": "@{linkedService().documentIntelligenceAPI}documentintelligence/documentModels/@{linkedService().modelId}/analyzeResults/@{linkedService().resultID}?api-version=2023-10-31-preview"
+                    },
+                    "onYourData_properties_typeProperties_aadResourceId": {
+                        "value": "https://cognitiveservices.azure.com"
+                    },
+                    "GPT4Deployment_properties_typeProperties_url": {
+                        "value": "@{linkedService().open_ai_base}"
+                    },
+                    "GPT4Deployment_properties_typeProperties_aadResourceId": {
+                        "value": "https://cognitiveservices.azure.com"
+                    },
+                    "storageaccountcontainerBatch": {
+                        "value": "docsbatch"
+                    },
+                    "storageaccountcontainerBatchIntel": {
+                        "value": "docsintelbatch"
+                    },
+                    "storageaccounturl": {
+                        "value": "[parameters('storageAccountBlobEndpoint')]"
+                    },
+                    "searchServiceEndpoint": {
+                        "value": "[parameters('aiSearchServiceEndpoint')]"
+                    },
+                    "aiSearchIndexName": {
+                        "defaultValue": "[parameters('indexName')]"
+                    },
+                    "openAIAPI": {
+                        "value": "[parameters('azureOpenAiEndpoint')]"
+                    },
+                    "embeddingDeploymentName": {
+                        "value": "[parameters('embeddingsDeploymentName')]"
+                    },
+                    "dataRefreshIntervalInMinutes": {
+                        "value": "60"
+                    },
+                    "chunkSize": {
+                        "value": "1024"
+                    },
+                    "storageAccountResourceId": {
+                        "value": "[parameters('storageAccountResourceId')]"
+                    },
+                    "documentIntelligenceAPI": {
+                        "value": "[parameters('documentIntelligenceEndpoint')]"
+                    },
+                    "modelId": {
+                        "value": "prebuilt-layout"
+                    },
+                    "gpt4DeploymentName": {
+                        "value": "[parameters('gpt4DeploymentName')]"
+                    }
                 }
             }
         }
