@@ -110,7 +110,8 @@
         "name-compliant-df-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf-pe')]",
         "name-compliant-df-nic": "[concat(variables('name-compliant-df'), '-nic')]",
         "adfRgDeploymentUri": "[uri(deployment().properties.templateLink.uri, 'adfRgDeployment.json')]",
-        "adfRgDeploymentName": "[concat('adfRgDeployment-', uniqueString(resourceGroup().id))]",
+        "factoryDeploymentName": "dataFactory",
+        "adfRgDeploymentName": "adfResources",
         "dfIdentity": {
             "type": "SystemAssigned"
         },
@@ -135,7 +136,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
-            "name": "dataFactory",
+            "name": "[variables('factoryDeploymentName')]",
             "resourceGroup": "[parameters('rgName')]",
             "dependsOn": [
                 "[concat('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
@@ -324,7 +325,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "resourceGroup": "[parameters('rgName')]",
-            "name": "dataFactoryResources",
+            "name": "[variables('adfRgDeploymentName')]",
             "dependsOn": [
                 "[concat('Microsoft.Resources/resourceGroups/', parameters('rgName'))]",
                 "[concat('Microsoft.Resources/deployments/', 'dataFactory')]"
