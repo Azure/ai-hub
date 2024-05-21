@@ -192,7 +192,7 @@
                                 },
                                 "deleteRetentionPolicy": {
                                     "allowPermanentDelete": false,
-                                    "enabled": true,
+                                    "enabled": false,
                                     "days": 7
                                 }
                             }
