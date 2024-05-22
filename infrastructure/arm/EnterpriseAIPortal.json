@@ -1002,6 +1002,11 @@
                             "constraints": {
                                 "allowedValues": [
                                     {
+                                        "label": "GPT-4o",
+                                        "description": "Use the latest multi-modal model from GPT with support for images, text, speach, and video. GPT-4o is a large multimodal model (LMM) developed by OpenAI that can analyze images and provide textual responses to questions about them. It incorporates both natural language processing and visual understanding. The GPT-4o model answers general questions about what's present in the images. You can also show it video if you use Vision enhancement.",
+                                        "value": "gpt-4o"
+                                    },
+                                    {
                                         "label": "GPT-4",
                                         "description": "GPT-4 can solve difficult problems with greater accuracy than any of OpenAI's previous models. Like GPT-3.5 Turbo, GPT-4 is optimized for chat and works well for traditional completions tasks. Use the Chat Completions API to use GPT-4.",
                                         "value": "gpt-4"
