@@ -7,7 +7,7 @@
 
 ## Git Setup
 
-```
+```sh
 git config --global submodule.recurse true
 
 git clone  https://github.com/Azure/ai-hub.git
@@ -23,7 +23,7 @@ Make sure you replace:
 - {xx-XX} with the default language of the content to be processed (for example: en-US or es-ES)
 - {yourprefix} with your desired prefix (must be less than 8 characters). 
 
-```
+```sh
 az upgrade
 
 az login
@@ -40,7 +40,7 @@ terraform apply -var="location={yourazureregion}" -var="environment=dev" -var="d
 
 As an example, if your desired Azure region is _swedencentral_, the content language is _es-ES_ and your desired prefix is _mmai515_, the command lines should look like:
 
-```
+```sh
 terraform init
 
 terraform plan -var="location=swedencentral" -var="environment=dev" -var="default_language=es-ES" -var="prefix=mmai515" 
@@ -58,12 +58,12 @@ TBD
 
 If you make changes in your local clone, run the following command to redeploy and make the corresponding updates in your Azure environment:
 
-```
+```sh
 terraform apply -var="location={yourazureregion}" -var="environment=dev" -var="default_language={xx-XX}" -var="prefix={yourprefix}"
 ```
 
 ## For YOLO
 
-```
+```sh
 terraform apply -auto-approve -var="location={yourazureregion}" -var="environment=dev" -var="default_language={xx-XX}" -var="prefix={yourprefix}"
 ```
