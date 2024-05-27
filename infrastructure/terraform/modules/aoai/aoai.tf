@@ -65,7 +65,7 @@ resource "azurerm_cognitive_deployment" "cognitive_deployments" {
     version = each.value.model_version
   }
   scale {
-    type     = each.value.scale_type
+    type = each.value.scale_type
     # tier     = each.value.scale_tier
     size     = each.value.scale_size
     family   = each.value.scale_family
