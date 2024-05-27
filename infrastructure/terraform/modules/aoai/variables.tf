@@ -56,14 +56,15 @@ variable "cognitive_service_sku" {
 variable "cognitive_service_deployments" {
   description = "Specifies the name of the GPT model."
   type = map(object({
-    model_name        = string
-    model_version     = string
-    model_api_version = optional(string, "2024-02-15-preview")
-    scale_type        = optional(string, "Standard")
-    scale_tier        = optional(string, "Standard")
-    scale_size        = optional(string, null)
-    scale_family      = optional(string, null)
-    scale_capacity    = optional(number, 1)
+    model_name             = string
+    model_version          = string
+    model_api_version      = optional(string, "2024-02-15-preview")
+    version_upgrade_option = optional(string, "OnceNewDefaultVersionAvailable")
+    scale_type             = optional(string, "Standard")
+    scale_tier             = optional(string, "Standard")
+    scale_size             = optional(string, null)
+    scale_family           = optional(string, null)
+    scale_capacity         = optional(number, 1)
   }))
   sensitive = false
   default   = {}
