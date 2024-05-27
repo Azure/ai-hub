@@ -59,7 +59,7 @@ variable "cognitive_service_deployments" {
     model_name             = string
     model_version          = string
     model_api_version      = optional(string, "2024-02-15-preview")
-    version_upgrade_option = optional(string, "OnceNewDefaultVersionAvailable")
+    version_upgrade_option = optional(string, "OnceCurrentVersionExpired")
     scale_type             = optional(string, "Standard")
     scale_tier             = optional(string, "Standard")
     scale_size             = optional(string, null)

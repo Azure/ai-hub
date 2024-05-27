@@ -66,7 +66,7 @@ resource "azurerm_cognitive_deployment" "cognitive_deployments" {
   }
   scale {
     type     = each.value.scale_type
-    tier     = each.value.scale_tier
+    # tier     = each.value.scale_tier
     size     = each.value.scale_size
     family   = each.value.scale_family
     capacity = each.value.scale_capacity
