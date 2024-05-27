@@ -11,8 +11,8 @@ variable "prefix" {
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.prefix) >= 2 && length(var.prefix) <= 10
-    error_message = "Please specify a prefix with more than two and less than 10 characters."
+    condition     = length(var.prefix) >= 2 && length(var.prefix) <= 8
+    error_message = "Please specify a prefix with more than two and less than 8 characters."
   }
 }
 

@@ -23,123 +23,64 @@
                 "gpt-35-turbo",
                 "gpt-35-turbo-16k",
                 "gpt-4-vision",
-                "text-embedding-ada-002"
+                "text-embedding-ada-002",
+                "gpt-4o"
             ]
         }
     },
     "variables": {
-        "name-compliant-azureOpenAi": "[concat(parameters('prefix'), '-', parameters('location'), '-AzOpenAI')]"
+        "nameCompliantAzureOpenAi": "[concat(parameters('prefix'), '-', parameters('location'), '-AzOpenAI')]",
+        "modelName": {
+            "text-embedding-ada-002": "text-embedding-ada-002",
+            "gpt-4-vision": "gpt-4",
+            "gpt-4-32k": "gpt-4-32k",
+            "gpt-4": "gpt-4",
+            "gpt-35-turbo": "gpt-35-turbo",
+            "gpt-35-turbo-16k": "gpt-35-turbo-16k",
+            "gpt-4o": "gpt-4o"
+        },
+        "modelVersion": {
+            "text-embedding-ada-002": "2",
+            "gpt-4-vision": "vision-preview",
+            "gpt-4-32k": "0613",
+            "gpt-4": "0613",
+            "gpt-35-turbo": "0301",
+            "gpt-35-turbo-16k": "0613",
+            "gpt-4o": "2024-05-13"
+        },
+        "deploymentNameSuffix": {
+            "text-embedding-ada-002": "text-embedding-ada-002",
+            "gpt-4-vision": "gpt4-vision",
+            "gpt-4-32k": "gpt4-32k",
+            "gpt-4": "gpt-4",
+            "gpt-35-turbo": "gpt-35-turbo",
+            "gpt-35-turbo-16k": "gpt-35-turbo-16k",
+            "gpt-4o": "gpt-4o"
+        },
+        "skuCapacity": {
+            "text-embedding-ada-002": 1,
+            "gpt-4-vision": 1,
+            "gpt-4-32k": 1,
+            "gpt-4": 1,
+            "gpt-35-turbo": 120,
+            "gpt-35-turbo-16k": 120,
+            "gpt-4o": 1
+        }
     },
     "resources": [
         {
-            "condition": "[equals(parameters('aiModelVersion'), 'text-embedding-ada-002')]",
             "type": "Microsoft.CognitiveServices/accounts/deployments",
             "apiVersion": "2023-05-01",
-            "name": "[concat(variables('name-compliant-azureOpenAi'), '/', parameters('aiModelDeploymentName'), '-', 'text-embedding-ada-002')]",
+            "name": "[concat(variables('nameCompliantAzureOpenAi'), '/', parameters('aiModelDeploymentName'), '-', variables('deploymentNameSuffix')[parameters('aiModelVersion')])]",
             "sku": {
                 "name": "Standard",
-                "capacity": 1
+                "capacity": "[variables('skuCapacity')[parameters('aiModelVersion')]]"
             },
             "properties": {
                 "model": {
                     "format": "OpenAI",
-                    "name": "text-embedding-ada-002",
-                    "version": "2"
-                },
-                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "raiPolicyName": "Microsoft.Default"
-            }
-        },
-        {
-            "condition": "[equals(parameters('aiModelVersion'), 'gpt-4-vision')]",
-            "type": "Microsoft.CognitiveServices/accounts/deployments",
-            "apiVersion": "2023-05-01",
-            "name": "[concat(variables('name-compliant-azureOpenAi'), '/', parameters('aiModelDeploymentName'), '-', 'gpt4-vision')]",
-            "sku": {
-                "name": "Standard",
-                "capacity": 1
-            },
-            "properties": {
-                "model": {
-                    "format": "OpenAI",
-                    "name": "gpt-4",
-                    "version": "vision-preview"
-                },
-                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "raiPolicyName": "Microsoft.Default"
-            }
-        },
-        {
-            "condition": "[equals(parameters('aiModelVersion'), 'gpt-4-32k')]",
-            "type": "Microsoft.CognitiveServices/accounts/deployments",
-            "apiVersion": "2023-05-01",
-            "name": "[concat(variables('name-compliant-azureOpenAi'), '/', parameters('aiModelDeploymentName'), '-', 'gpt4-32k')]",
-            "sku": {
-                "name": "Standard",
-                "capacity": 1
-            },
-            "properties": {
-                "model": {
-                    "format": "OpenAI",
-                    "name": "gpt-4-32k",
-                    "version": "0613"
-                },
-                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "raiPolicyName": "Microsoft.Default"
-            }
-        },
-        {
-            "condition": "[equals(parameters('aiModelVersion'), 'gpt-4')]",
-            "type": "Microsoft.CognitiveServices/accounts/deployments",
-            "apiVersion": "2023-05-01",
-            "name": "[concat(variables('name-compliant-azureOpenAi'), '/', parameters('aiModelDeploymentName'), '-', 'gpt-4')]",
-            "sku": {
-                "name": "Standard",
-                "capacity": 1
-            },
-            "properties": {
-                "model": {
-                    "format": "OpenAI",
-                    "name": "gpt-4",
-                    "version": "0613"
-                },
-                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "raiPolicyName": "Microsoft.Default"
-            }
-        },
-        {
-            "condition": "[equals(parameters('aiModelVersion'), 'gpt-35-turbo')]",
-            "type": "Microsoft.CognitiveServices/accounts/deployments",
-            "apiVersion": "2023-05-01",
-            "name": "[concat(variables('name-compliant-azureOpenAi'), '/', parameters('aiModelDeploymentName'), '-', 'gpt-35-turbo')]",
-            "sku": {
-                "name": "Standard",
-                "capacity": 120
-            },
-            "properties": {
-                "model": {
-                    "format": "OpenAI",
-                    "name": "gpt-35-turbo",
-                    "version": "0301"
-                },
-                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "raiPolicyName": "Microsoft.Default"
-            }
-        },
-        {
-            "condition": "[equals(parameters('aiModelVersion'), 'gpt-35-turbo-16k')]",
-            "type": "Microsoft.CognitiveServices/accounts/deployments",
-            "apiVersion": "2023-05-01",
-            "name": "[concat(variables('name-compliant-azureOpenAi'), '/', parameters('aiModelDeploymentName'), '-', 'gpt-35-turbo-16k')]",
-            "sku": {
-                "name": "Standard",
-                "capacity": 120
-            },
-            "properties": {
-                "model": {
-                    "format": "OpenAI",
-                    "name": "gpt-35-turbo-16k",
-                    "version": "0613"
+                    "name": "[variables('modelName')[parameters('aiModelVersion')]]",
+                    "version": "[variables('modelVersion')[parameters('aiModelVersion')]]"
                 },
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
                 "raiPolicyName": "Microsoft.Default"
