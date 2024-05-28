@@ -14,6 +14,7 @@ locals {
   ai_rg                 = "${local.prefix}-ai"
   videoindexer_name     = "${local.prefix}-vi"
   open_ai_name          = "${local.prefix}-aoai"
+  speech_ai_name        = "${local.prefix}-speech"
   search_service_name   = lower(replace("${local.prefix}-search", "/[^a-z0-9]/", ""))
   docintel_service_name = "${local.prefix}-docintel"
 
