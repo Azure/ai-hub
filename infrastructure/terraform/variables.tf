@@ -105,5 +105,5 @@ variable "function_sku" {
 variable "subnet_id" {
   type      = string
   sensitive = false
-  default   = "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/swedencentral-vnet/providers/Microsoft.Network/virtualNetworks/swedencentral-vnet/subnets/default"
+  default   = ""
 }
