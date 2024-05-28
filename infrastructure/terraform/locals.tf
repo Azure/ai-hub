@@ -14,8 +14,6 @@ locals {
   ai_rg                 = "${local.prefix}-ai"
   videoindexer_name     = "${local.prefix}-vi"
   open_ai_name          = "${local.prefix}-aoai"
-  gpt_model_name        = lower(var.model_name)
-  gpt_model_version     = var.model_version
   search_service_name   = lower(replace("${local.prefix}-search", "/[^a-z0-9]/", ""))
   docintel_service_name = "${local.prefix}-docintel"
 
@@ -46,6 +44,12 @@ locals {
     EP2 = "2"
     EP3 = "4"
   }
+
+  # Open AI model
+  default_model_key         = keys(var.cognitive_service_deployments)[0]
+  default_model_name        = var.cognitive_service_deployments[local.default_model_key].model_name
+  default_model_version     = var.cognitive_service_deployments[local.default_model_key].model_version
+  default_model_api_version = var.cognitive_service_deployments[local.default_model_key].model_api_version
 
   # Network
   subnet = var.subnet_id == "" ? {} : {

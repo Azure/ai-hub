@@ -46,25 +46,30 @@ variable "default_language" {
   }
 }
 
-variable "model_name" {
-  description = "Specifies the name of the model."
-  type        = string
-  sensitive   = false
-  default     = "gpt-4"
-  validation {
-    condition     = contains(["gpt-4"], var.model_name)
-    error_message = "Please use an allowed value: \"gpt-4\"."
+variable "cognitive_service_deployments" {
+  description = "Specifies the name of the GPT model."
+  type = map(object({
+    model_name             = string
+    model_version          = string
+    model_api_version      = optional(string, "2024-02-15-preview")
+    version_upgrade_option = optional(string, "OnceCurrentVersionExpired")
+    scale_type             = optional(string, "Standard")
+    scale_size             = optional(string, null)
+    scale_family           = optional(string, null)
+    scale_capacity         = optional(number, 1)
+  }))
+  sensitive = false
+  default = {
+    gpt-4 = {
+      model_name    = "gpt-4"
+      model_version = "turbo-2024-04-09"
+    }
   }
-}
-
-variable "model_version" {
-  description = "Specifies the name of the model."
-  type        = string
-  sensitive   = false
-  default     = "1106-Preview"
   validation {
-    condition     = contains(["1106-Preview", "turbo-2024-04-09"], var.model_version)
-    error_message = "Please use an allowed value: \"1106-preview\"."
+    condition = alltrue([
+      length(var.cognitive_service_deployments) > 0
+    ])
+    error_message = "Please specify a valid model configuration."
   }
 }
 
