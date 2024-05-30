@@ -46,7 +46,7 @@
                 "inputs": {
                     "parameters": {
                         "containerName": "@parameters('STORAGE_CONTAINER_NAME_RAW')",
-                        "blobName": "@concat(variables('workflowId'),'/config.json')",
+                        "blobName": "@concat('news/', variables('workflowId'),'/config.json')",
                         "content": {
                             "language": "@{variables('language')}",
                             "shortclip": 0,
