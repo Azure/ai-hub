@@ -77,12 +77,12 @@
         }
     },
     "variables": {
-        "name-compliant-storage": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(deployment().name)), 23))]",
+        "name-compliant-storage": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(deployment().name),'md'), 23))]",
         "name-compliant-keyvault": "[take(concat(parameters('prefix'), '-', parameters('location'), '-kv'), 23)]",
         "name-compliant-storage-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-storage-asg')]",
-        "name-compliant-storage-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-storage-pe')]",
+        "name-compliant-storage-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-storagemd-pe')]",
         "name-compliant-storage-nic": "[concat(variables('name-compliant-storage'), '-nic')]",
-        "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
+        "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-mon')]",
         "cmk": {
             "requireInfrastructureEncryption": true,
             "identity": {
@@ -192,7 +192,7 @@
                                 },
                                 "deleteRetentionPolicy": {
                                     "allowPermanentDelete": false,
-                                    "enabled": true,
+                                    "enabled": false,
                                     "days": 7
                                 }
                             }
@@ -201,67 +201,7 @@
                             "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
                             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
                             "apiVersion": "2023-01-01",
-                            "name": "[concat(variables('name-compliant-storage'), '/default/', 'docsintelbatch')]",
-                            "dependsOn": [
-                                "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'))]",
-                                "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'), '/blobServices', '/default')]"
-                            ],
-                            "properties": {
-                                "publicAccess": "None",
-                                "defaultEncryptionScope": "$account-encryption-key",
-                                "denyEncryptionScopeOverride": true
-                            }
-                        },
-                        {
-                            "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
-                            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-                            "apiVersion": "2023-01-01",
-                            "name": "[concat(variables('name-compliant-storage'), '/default/', 'docsbatch')]",
-                            "dependsOn": [
-                                "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'))]",
-                                "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'), '/blobServices', '/default')]"
-                            ],
-                            "properties": {
-                                "publicAccess": "None",
-                                "defaultEncryptionScope": "$account-encryption-key",
-                                "denyEncryptionScopeOverride": true
-                            }
-                        },
-                        {
-                            "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
-                            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-                            "apiVersion": "2023-01-01",
                             "name": "[concat(variables('name-compliant-storage'), '/default/', 'curated')]",
-                            "dependsOn": [
-                                "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'))]",
-                                "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'), '/blobServices', '/default')]"
-                            ],
-                            "properties": {
-                                "publicAccess": "None",
-                                "defaultEncryptionScope": "$account-encryption-key",
-                                "denyEncryptionScopeOverride": true
-                            }
-                        },
-                        {
-                            "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
-                            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-                            "apiVersion": "2023-01-01",
-                            "name": "[concat(variables('name-compliant-storage'), '/default/', 'failed')]",
-                            "dependsOn": [
-                                "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'))]",
-                                "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'), '/blobServices', '/default')]"
-                            ],
-                            "properties": {
-                                "publicAccess": "None",
-                                "defaultEncryptionScope": "$account-encryption-key",
-                                "denyEncryptionScopeOverride": true
-                            }
-                        },
-                        {
-                            "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
-                            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-                            "apiVersion": "2023-01-01",
-                            "name": "[concat(variables('name-compliant-storage'), '/default/', 'processed')]",
                             "dependsOn": [
                                 "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'))]",
                                 "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'), '/blobServices', '/default')]"
