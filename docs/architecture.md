@@ -63,7 +63,7 @@ The following sections provide an overview of the design considerations and the 
 
 * To scale out the Azure OpenAI instance, there's a few things to consider:
     * The limit of Azure OpenAI resources per region per Azure subscription is 30
-    * The regional quota (soft) limits (token per minutes) per Azure subscription for GPT-35-Turbo and GPT-4 are as follows: 
+    * The regional quota (soft) limits (token per minutes) per Azure subscription for example for GPT-35-Turbo and GPT-4 are as follows: 
     * GPT-35-turbo: 
         * eastus, southcentralus, westeurope, francecentral, uksouth: 240k
         * northcentralus, australiaeast, eastus2, canadaeast, japaneast, swedencentral, switzerlandnorth: 300k
@@ -83,8 +83,11 @@ The following sections provide an overview of the design considerations and the 
 
 #### Design recommendations
 
-* If a model in an Azure OpenAI instance is shared by multiple teams, and the model is being used by multiple applications, it is recommended to deploy a dedicated Azure OpenAI instance per application. This will provide separation at instance level, and the application layer is responsible for retry logic, and error handling as needed.
-* To scale out Azure Open AI with multiple instances, it is recommended to deploy the instances across dedicated subscriptions, across Azure regions. The quota is per region per subscription, and the regional quota is soft limit, and can be increased by contacting Microsoft support.
+* If a model in an Azure OpenAI instance is shared by multiple teams, and the model is being used by multiple applications, it is recommended to deploy a dedicated Azure OpenAI instance per application if separation of duties and resource governance is required. This will provide separation at instance level, and the application layer is responsible for retry logic, and error handling as needed.
+* To scale out Azure Open AI with multiple instances, in the same region, you must create additional subscriptions to get additional quota and capacity as it bound the region within the subscription.
+* If you have a multi-region subscription setup, you do not have to create additional subscriptions, as the quota is per region per subscription.
+* If you have a dedicated team that provides Azure OpenAI and auxilliary services to the application teams, you can deploy a single or multiple Azure OpenAI instances, and manage the quota and capacity centrally, and provide the application teams with the necessary access to the Azure OpenAI instance through Azure API management to provide granular access at the API/operation layer and have centralized governance, logging, access management, and more.
+* The regional quota is soft limit, and can be increased by contacting Microsoft support.
 
 ### Network and connectivity
 
@@ -98,7 +101,7 @@ The following sections provide an overview of the design considerations and the 
 
 * For production enterprise environments, deploy the Azure resources required for your Enterprise Azure OpenAI Hub use case (for example, RAG) with the following network settings:
   * Disable public network access.
-  * Deploy private endpoint
+  * Deploy private endpoints.
 * If Azure OpenAI instances are created in regions other than the ones where you have deployed your virtual networks, create the Azure OpenAI private endpoints in your existing virtual networks, and simply link the private endpoint to the Azure OpenAI instance in whichever Azure region it was deployed. Any traffic between the private endpoint and the Azure OpenAI instance is done via a private and secure channel over the Microsoft Azure backbone.
 * When multiple private endpoints are deployed on the same virtual network, ensure you are using and configuring and application security group per private endpoint, to ensure only the required services can communicate with your Azure PaaS instances.
 
@@ -109,7 +112,6 @@ The following sections provide an overview of the design considerations and the 
 * Use customer-managed keys to encrypt the data, and store the keys in a Key Vault. This will ensure that the data is encrypted at rest, and the keys are stored in a secure location, and can be rotated as needed.
 * Use centralized RBAC (Azure AD) for the Key Vault to ensure that the access to the Key Vault is centrally managed and controlled.
 * Use Azure Policy to ensure that the Azure Open AI instance(s) are deployed with the right configuration, and that the configuration is maintained over time. For example, it is recommended to deploy Azure Open AI using a private endpoint, and not expose the service over the public internet.
-
 
 ### Identity and Access Management
 
