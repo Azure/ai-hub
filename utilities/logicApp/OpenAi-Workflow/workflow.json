@@ -770,6 +770,27 @@
                                 },
                                 "type": "Scope"
                             },
+                            "OpenAI-DeleteAssistant": {
+                                "inputs": {
+                                    "authentication": {
+                                        "audience": "https://cognitiveservices.azure.com",
+                                        "type": "ManagedServiceIdentity"
+                                    },
+                                    "method": "DELETE",
+                                    "uri": "@concat(parameters('AZURE_OPENAI_ENDPOINT'), '/openai/assistants/', body('OpenAi-CreateAssisstant-Response')?['id'], '?api-version=2024-03-01-preview')"
+                                },
+                                "runAfter": {
+                                    "Get_Assistant_Messages": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "runtimeConfiguration": {
+                                    "contentTransfer": {
+                                        "transferMode": "Chunked"
+                                    }
+                                },
+                                "type": "Http"
+                            },
                             "Validate_Assistant_Response": {
                                 "actions": {
                                     "For_each": {
@@ -1041,8 +1062,8 @@
                                     }
                                 },
                                 "runAfter": {
-                                    "Get_Assistant_Messages": [
-                                        "Succeeded"
+                                    "OpenAI-DeleteAssistant": [
+                                        "SUCCEEDED"
                                     ]
                                 },
                                 "type": "Scope"
