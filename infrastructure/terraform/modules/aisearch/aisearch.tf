@@ -8,7 +8,6 @@ resource "azurerm_search_service" "search_service" {
   }
 
   allowed_ips                 = []
-  authentication_failure_mode = "http401WithBearerChallenge"
   hosting_mode                = "default"
 
   sku                                      = var.search_service_sku
