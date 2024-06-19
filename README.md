@@ -43,6 +43,7 @@ You can deploy the following reference implementations to your Azure subscriptio
 | Reference Implementation | Description | Deploy | Instructions  
 |:----------|:-------------------------|:------------|:-------|  
 | Enterprise Azure OpenAI Hub | Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure OpenAI workload composition into your Azure regions and subscriptions | [![Deploy to Azure](./docs/deploytomicrosoftcloud.svg)](https://aka.ms/DeploySecureGenAI)| [User Guide](./docs/EnterpriseAzureOpenAIHub.md) |  
+| Enterprise Azure OpenAI Hub Terraform| Provides an onramp path for Gen AI use cases while ensuring a secure-by-default Azure OpenAI workload composition into your Azure regions and subscriptions | [![Deploy to Azure](./docs/deploytomicrosoftcloud.svg)](./infrastructure/terraform//README.md)| [User Guide](./infrastructure/terraform/README.md) |  
 
 ### Things that matters
 
