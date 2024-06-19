@@ -10,6 +10,16 @@
                     "label": "Architecture setup",
                     "elements": [
                         {
+                            "name": "info",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "text": "To deploy Enterprise Azure OpenAI Hub with Terraform, visit the following link to get started",
+                                "uri": "https://github.com/Azure/ai-hub/blob/main/infrastructure/terraform/README.md#enterprise-azure-openai-hub---terraform-setup",
+                                "style": "Info"
+                            }
+                        },
+                        {
                             "name": "aiIntentionText",
                             "type": "Microsoft.Common.TextBlock",
                             "visible": true,
