@@ -7,9 +7,8 @@ resource "azurerm_search_service" "search_service" {
     type = "SystemAssigned"
   }
 
-  allowed_ips                 = []
-  hosting_mode                = "default"
-
+  allowed_ips                              = []
+  hosting_mode                             = "default"
   sku                                      = var.search_service_sku
   partition_count                          = var.search_service_partition_count
   replica_count                            = var.search_service_replica_count

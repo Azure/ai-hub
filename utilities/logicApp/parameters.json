@@ -59,6 +59,10 @@
     "type": "String",
     "value": "@appsetting('VIDEO_INDEXER_ACCOUNT_ID')"
   },
+  "VIDEO_INDEXER_TIER": {
+    "type": "String",
+    "value": "@appsetting('VIDEO_INDEXER_TIER')"
+  },
   "WORKFLOWS_LOCATION_NAME": {
     "type": "String",
     "value": "@appsetting('WORKFLOWS_LOCATION_NAME')"
