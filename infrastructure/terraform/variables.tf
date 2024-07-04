@@ -46,6 +46,17 @@ variable "default_language" {
   }
 }
 
+variable "default_video_indexer_tier" {
+  description = "Specifies the default video indexer tier to use when indexing the videos."
+  type        = string
+  sensitive   = false
+  default     = "advanced"
+  validation {
+    condition     = contains(["basic", "standard", "advanced"], var.default_video_indexer_tier)
+    error_message = "Please use an allowed video indexer tier."
+  }
+}
+
 variable "cognitive_service_deployments" {
   description = "Specifies the name of the GPT model."
   type = map(object({

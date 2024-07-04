@@ -56,6 +56,7 @@ module "logic_app_orchestration" {
     AZURE_OPENAI_DEPLOYMENT_NAME         = local.default_model_name
     VIDEO_INDEXER_ID                     = module.videoindexer.videoindexer_id
     VIDEO_INDEXER_ACCOUNT_ID             = module.videoindexer.videoindexer_account_id
+    VIDEO_INDEXER_TIER                   = var.default_video_indexer_tier
     WORKFLOWS_SUBSCRIPTION_ID            = data.azurerm_subscription.current.subscription_id
     WORKFLOWS_RESOURCE_GROUP_NAME        = azurerm_resource_group.orchestration.name
     WORKFLOWS_LOCATION_NAME              = local.location
