@@ -63,7 +63,9 @@
                         "description": "@{string(body('ParseBlob-Config'))}",
                         "callbackUrl": "@body('Arm-LogicAppListCallbackUri-Response')?['value']",
                         "metadata": "@{string(body('ParseBlob-Config'))}",
-                        "language": "@body('ParseBlob-Config')?['language']"
+                        "language": "@body('ParseBlob-Config')?['language']",
+                        "indexingPreset": "@parameters('VIDEO_INDEXER_TIER')",
+                        "streamingPreset": "NoStreaming"
                     }
                 },
                 "runAfter": {

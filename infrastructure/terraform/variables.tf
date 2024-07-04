@@ -50,9 +50,9 @@ variable "default_video_indexer_tier" {
   description = "Specifies the default video indexer tier to use when indexing the videos."
   type        = string
   sensitive   = false
-  default     = "advanced"
+  default     = "Basic"
   validation {
-    condition     = contains(["basic", "standard", "advanced"], var.default_video_indexer_tier)
+    condition     = contains(["Basic", "Default", "Advanced"], var.default_video_indexer_tier)
     error_message = "Please use an allowed video indexer tier."
   }
 }
