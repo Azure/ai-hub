@@ -27,8 +27,8 @@ jobs:
     with:
       environment: "dev"
       config: "SharedTenant"
-      terraform_version: "1.8.2"
-      node_version: 18
+      terraform_version: "1.9.1"
+      node_version: 20
       working_directory: "./infrastructure/terraform"
       tenant_id: "572cf1ec-3f90-49a2-896f-ab2fa36ca0d3"
       subscription_id: "be25820a-df86-4794-9e95-6a45cd5c0941"
@@ -43,8 +43,8 @@ jobs:
     with:
       environment: "dev"
       config: "SharedTenant"
-      terraform_version: "1.8.2"
-      node_version: 18
+      terraform_version: "1.9.1"
+      node_version: 20
       working_directory: "./infrastructure/terraform"
       tenant_id: "572cf1ec-3f90-49a2-896f-ab2fa36ca0d3"
       subscription_id: "be25820a-df86-4794-9e95-6a45cd5c0941"
