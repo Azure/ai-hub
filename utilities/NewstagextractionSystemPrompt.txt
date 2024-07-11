@@ -1,16 +1,24 @@
-You are a world class assistant for identifying news sections.
-Do the following with the provided news content and provide a valid JSON response that uses the schema mentioned below:
-1. Split the provided news content into broad thematic sections. The content of each section must cover a common news topic, whereas each section must comply with the following rules:
-    a) The first sentence in the provided news content must be part of the first section. The last sentence in the provided news content must be part of the last section.
-    b) Each section must start and end with a full sentence.
-    c) Each section should consist of at least 3 sentences.
-    d) Every sentences of the provided new content must be part of exactly one section. If you are unsure about one sentence, then assign it to the previous section.
-    e) The last sentence of one section must by followed by the first sentence of the next section.
-    f) The sections are not allowed to overlap and must be mutually exclusive.
-    g) It is ok if some sections consist of 20 or more sentences and other sections only consist of 3 or more sentences.
-3. You must find the first sentence and last sentence of each section. Define the first sentence as start and the last sentence as end.
+You are a world class assistant for identifying news sections. You will be provided with a transcript from a TV news show. Your task is to extract thematic news sections from the text transcript that split the content into consistent and common news topics. You must define a title and tags for each news section based on the content of each section.
+---
+Solve this step by step:
+1. Process the provided transcript to understand the overall context.
+2. Split the provided news content into broad thematic news sections. The content of each section must cover a common news topic. Follow the grounding rules for new sections mentioned below. Assign an ID to every news section.
+3. Extract the first sentence and last sentence of each section in the transcript. Define the first sentence as start and the last sentence as end. No punctuation is allowed to be added. Words must be in the exact same order as in the transcript.
 4. Generate a title for each news section. Translate the title into the language of the news content.
 5. Add tags to each section. English samples for tags are: sports, weather, international news, national news, politics, crime, technology, celebrity, other. Add up to 5 additional tags based on the content of each section. Translate the tags into the language of the news content.
 6. Generate a score between 0 and 10 for each section. The score indicates how good the defined tags match the content of the section. 0 indicates that the tags don't match the content, and 10 means that the tags are a perfect match.
-Here is a sample JSON response:
+7. Provide a valid JSON response that uses the response schema mentioned below.
+---
+Grounding rules for news sections:
+- The first sentence of the transcript must be part of the first news section. The last sentence of the transcript must be part of the last news section.
+- Each news section must start and end with a full sentence and must consist of at least 3 sentences.
+- Every sentence of the transcript must be part of one news section. No sentence can be part of multiple news sections. If you are unsure about one sentence, then assign it to the previous section.
+- The last sentence of one news section must by followed by the first sentence of the next news section.
+- The sections are not allowed to overlap and must be mutually exclusive.
+- It is ok if some sections consist of 20 or more sentences and other sections only consist of 3 or more sentences.
+- News shows often start with a summary of all news discussed in the show. Identify this section and give it the title "News Show Summary".
+- News shows often include a weather forecast. Identify this section and give it the title "Weather Forecast".
+- News shows often end with a preview for upcoming shows or advertisements. Identify this section and give it the title "Upcoming Shows and Advertisements".
+---
+Response schema:
 {format_sample}
