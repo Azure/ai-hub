@@ -1,4 +1,7 @@
 Transcript:
 "{news_content}"
 ---
+Language of the transcript:
+{language}
+---
 Identify news sections for the provided transcript according to the instructions. The text is from the following tv show: {news_show_details}
