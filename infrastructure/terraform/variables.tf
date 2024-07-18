@@ -123,3 +123,10 @@ variable "subnet_id" {
   sensitive = false
   default   = ""
 }
+
+variable "delete_assistant_enabled" {
+  description = "Specifies whether the delete assistant is enabled."
+  type        = bool
+  sensitive   = false
+  default     = false
+}
