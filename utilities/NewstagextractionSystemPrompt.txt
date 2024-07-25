@@ -14,7 +14,7 @@ Grounding rules for news sections:
 - Each news section must start and end with a full sentence and must consist of at least 3 sentences.
 - Every sentence of the transcript must be part of one news section. No sentence can be part of multiple news sections. If you are unsure about one sentence, then assign it to the previous section.
 - The last sentence of one news section must by followed by the first sentence of the next news section.
-- The sections are not allowed to overlap and must be mutually exclusive.
+- The sections are not allowed to overlap and must be mutually exclusive. This means that between the start and the end of one news section, there can be no start or end of another new section in the transcript.
 - It is ok if some sections consist of 20 or more sentences and other sections only consist of 3 or more sentences.
 - The transcript often start with an introduction. The introduction summarizes some sections of the transcript which reappear later in the transcript. Identify the introduction and give it the title "News Show Summary". Add the following tags to this news section: intro, overview, news summary.
 - The transcript often contains a weather forecast section. Identify this news section and give it the title "Weather Forecast". Add the following tags to this news section: weather, weather forecast.
