@@ -1,3 +1,7 @@
-News Content: "{news_content}"
+Transcript:
+{news_content}
 ---
-Identify news sections for the provided news text according to the instructions. The text is from the following tv show: {news_show_details}
+Language of the transcript:
+{language}
+---
+Identify news sections for the provided transcript according to the instructions. The text is from the following tv show: {news_show_details}
