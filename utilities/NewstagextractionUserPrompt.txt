@@ -1,5 +1,5 @@
 Transcript:
-"{news_content}"
+{news_content}
 ---
 Language of the transcript:
 {language}
