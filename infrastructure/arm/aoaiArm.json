@@ -2749,7 +2749,8 @@
         },
         // Retrieving the objectId from DF system identity
         {
-            "condition": "[and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'))]",
+            //"condition": "[and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'))]",
+            "condition": "[and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'patientreferral')), equals(parameters('dfSystemIdentity'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').rgAzureDfObjectIdDeploymentName]",
