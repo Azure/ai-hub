@@ -1604,6 +1604,11 @@
                                         "value": "onyourdata"
                                     },
                                     {
+                                        "label": "'Patient Referral'",
+                                        "description": "Analyze healthcare referral documents using the power of OpenAI models, such as GPT-4, directly on your data with enterprise-grade security on Azure.",
+                                        "value": "patientreferral"
+                                    },                                    
+                                    {
                                         "label": "AI Assistant for videos (Preview)",
                                         "description": "Extract key insights and identify scenes suited for short video clip generation for social media, using Azure Video Indexer and Azure OpenAI Assistant (Preview) APIs",
                                         "value": "video"
@@ -1622,6 +1627,15 @@
                                 "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-video-architecture.svg'>"
                             }
                         },
+                        {
+                            "name": "patientReferralArchitecture",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-video-architecture.svg'>"
+                            }
+                        },                        
                         {
                             "name": "onYourDataArchitecture",
                             "type": "Microsoft.Common.InfoBox",
@@ -1782,7 +1796,7 @@
                         {
                             "name": "aiDedicatedSection",
                             "type": "Microsoft.Common.Section",
-                            "label": "Dedicated Azure OpenAI instace for index and embeddings",
+                            "label": "Dedicated Azure OpenAI instance for index and embeddings",
                             "visible": "[equals(steps('aiAuxiliarySettings').aiAddEmbeddingInstance, 'Yes')]",
                             "elements": [
                                 {
@@ -2773,19 +2787,19 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Required services for the selected use case",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                            "visible": "[or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'))]"
                         },
                         {
                             "name": "dfSection",
                             "type": "Microsoft.Common.Section",
                             "label": "Azure Data Factory",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                            "visible": "[or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'))]"
                         },
                         {
                             "name": "dfInfo",
                             "type": "Microsoft.Common.TextBlock",
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]",
+                            "visible": "[or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'))]",
                             "options": {
                                 "icon": "None",
                                 "text": "Azure Data Factory is a cloud-based data integration service that allows you to create, schedule, and orchestrate data pipelines for moving and transforming data between different data stores. In this setup Data Factory will provide pipelines for index creation in Azure AI Search for RAG based use cases.",
@@ -2800,7 +2814,7 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Network Settings",
                             "elements": [],
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "visible": "[and(or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "dfDisableNetworkAccess",
@@ -2886,7 +2900,7 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Authorization Settings",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                            "visible": "[or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'))]"
                         },
                         {
                             "name": "dfSystemIdentity",
@@ -2907,14 +2921,14 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                            "visible": "[or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'))]"
                         },
                         {
                             "name": "dfMonSection",
                             "type": "Microsoft.Common.Section",
                             "label": "Azure Monitor Settings",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                            "visible": "[or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'))]"
                         },
                         {
                             "name": "dfMonCreation",
@@ -2935,7 +2949,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                            "visible": "[or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'))]"
                         }
                     ]
                 }
