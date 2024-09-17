@@ -2,6 +2,7 @@
 # Licensed under the MIT license.
 
 import azure.cognitiveservices.speech as speechsdk
+import copy
 import datetime
 import html
 import json
@@ -14,6 +15,7 @@ import threading
 import time
 import traceback
 import uuid
+from sseclient import SSEClient
 from flask import Flask, Response, render_template, request
 from azure.identity import DefaultAzureCredential
 from openai import AzureOpenAI
@@ -77,11 +79,23 @@ def chatView():
 # The API route to get the speech token
 @app.route("/api/getSpeechToken", methods=["GET"])
 def getSpeechToken() -> Response:
+    global speech_token
+    response = Response(speech_token, status=200)
+    response.headers['SpeechRegion'] = speech_region
+    if speech_private_endpoint:
+        response.headers['SpeechPrivateEndpoint'] = speech_private_endpoint
     return response
 
 # The API route to get the ICE token
 @app.route("/api/getIceToken", methods=["GET"])
 def getIceToken() -> Response:
+    # Apply customized ICE server if provided
+    if ice_server_url and ice_server_username and ice_server_password:
+        custom_ice_token = json.dumps({
+            'Urls': [ ice_server_url ],
+            'Username': ice_server_username,
+            'Password': ice_server_password
+        })
     return Response(ice_token, status=200)
 
 # The API route to connect the TTS avatar
@@ -356,7 +370,7 @@ def handleUserQuery(user_query: str, client_id: uuid.UUID):
     assistant_reply = ''
     spoken_sentence = ''    
 
-    orchestrator = PF_Orchestrator(data_sources[0]) # should implement dependency injection somehow
+    orchestrator = PF_Orchestrator() # should implement dependency injection somehow
     response = orchestrator.run_user_query(messages)
 
     for response_token in response:

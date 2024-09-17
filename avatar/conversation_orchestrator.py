@@ -1,3 +1,9 @@
+import copy
+from sseclient import SSEClient
+import requests
+import json
+import os
+
 class ConversationOrchestrator:
     def __init__():
         pass 
@@ -7,16 +13,16 @@ class ConversationOrchestrator:
 
 
 class PF_Orchestrator(ConversationOrchestrator):
-    def __init__(self, data_source):
+    def __init__(self):
         
-        self.pf_endpoint_name=data_source['parameters']['endpoint']
-        self.pf_deployment_name=data_source['parameters']['index_name']
-        self.pf_endpoint_key=data_source['parameters']['authentication']['key']
+        self.pf_endpoint_name=os.environ.get("PF_ENDPOINT_NAME")
+        self.pf_deployment_name=os.environ.get("PF_DEPLOYMENT_NAME")
+        self.pf_endpoint_key=os.environ.get("PF_ENDPOINT_KEY")
         self.headers = {'Content-Type':'application/json', 'Authorization':('Bearer '+ self.pf_endpoint_key),"Accept": "text/event-stream, application/json"}
 
     
     def _get_payload(self, messages):
-        _messages = copy.deepcopy(messages)
+        _messages = copy.deepcopy(messages[1:])
         chat_history = []
         chat_input = _messages.pop()['content']
 
