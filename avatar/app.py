@@ -28,7 +28,6 @@ speech_key = os.environ.get('SPEECH_KEY')
 speech_private_endpoint = os.environ.get('SPEECH_PRIVATE_ENDPOINT') # e.g. https://my-speech-service.cognitiveservices.azure.com/ (optional)
 speech_resource_url = os.environ.get('SPEECH_RESOURCE_URL') # e.g. /subscriptions/6e83d8b7-00dd-4b0a-9e98-dab9f060418b/resourceGroups/my-rg/providers/Microsoft.CognitiveServices/accounts/my-speech (optional, only used for private endpoint)
 user_assigned_managed_identity_client_id = os.environ.get('USER_ASSIGNED_MANAGED_IDENTITY_CLIENT_ID') # e.g. the client id of user assigned managed identity accociated to your app service (optional, only used for private endpoint and user assigned managed identity)
-# Customized ICE server (optional, only required for customized ICE server)
 ice_server_url = os.environ.get('ICE_SERVER_URL') # The ICE URL, e.g. turn:x.x.x.x:3478
 ice_server_url_remote = os.environ.get('ICE_SERVER_URL_REMOTE') # The ICE URL for remote side, e.g. turn:x.x.x.x:3478. This is only required when the ICE address for remote side is different from local side.
 ice_server_username = os.environ.get('ICE_SERVER_USERNAME') # The ICE username
@@ -39,7 +38,6 @@ default_tts_voice = 'en-US-JennyMultilingualV2Neural' # Default TTS voice
 sentence_level_punctuations = [ '.', '?', '!', ':', ';', '。', '？', '！', '：', '；' ] # Punctuations that indicate the end of a sentence
 enable_quick_reply = False # Enable quick reply for certain chat models which take longer time to respond
 quick_replies = [ 'Let me take a look.', 'Let me check.', 'One moment, please.' ] # Quick reply reponses
-# oyd_doc_regex = re.compile(r'\[doc(\d+)\]') # Regex to match the OYD (on-your-data) document reference
 
 # Global variables
 client_contexts = {} # Client contexts
@@ -90,7 +88,6 @@ def connectAvatar() -> Response:
     client_id = uuid.UUID(request.headers.get('ClientId'))
     client_context = client_contexts[client_id]
 
-    # Override default values with client provided values
     client_context['tts_voice'] = request.headers.get('TtsVoice') if request.headers.get('TtsVoice') else default_tts_voice
     client_context['custom_voice_endpoint_id'] = request.headers.get('CustomVoiceEndpointId')
     client_context['personal_voice_speaker_profile_id'] = request.headers.get('PersonalVoiceSpeakerProfileId')
@@ -291,6 +288,7 @@ def initializeChatContext(client_id: uuid.UUID) -> None:
     global client_contexts
     client_context = client_contexts[client_id]
     messages = client_context['messages']
+
     # Initialize messages
     messages.clear()
 
@@ -309,7 +307,6 @@ def handleUserQuery(user_query: str, client_id: uuid.UUID):
     }
     messages.append(chat_message)
 
-    # if len(data_sources) > 0 and enable_quick_reply:
     if enable_quick_reply:
         speakWithQueue(random.choice(quick_replies), 2000)
 
