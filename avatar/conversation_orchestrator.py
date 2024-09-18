@@ -15,14 +15,14 @@ class ConversationOrchestrator:
 class PF_Orchestrator(ConversationOrchestrator):
     def __init__(self):
         
-        self.pf_endpoint_name=os.environ.get("PF_ENDPOINT_NAME")
-        self.pf_deployment_name=os.environ.get("PF_DEPLOYMENT_NAME")
-        self.pf_endpoint_key=os.environ.get("PF_ENDPOINT_KEY")
+        self.pf_endpoint_name="https://okr35-be-chatflow-restep.swedencentral.inference.ml.azure.com/score" #os.environ.get("PF_ENDPOINT_NAME")
+        self.pf_deployment_name="okr35-be-chatflow-restep-2" #os.environ.get("PF_DEPLOYMENT_NAME")
+        self.pf_endpoint_key="4mvGIXh9XxbO9jKhw6OE83rzZpexSaJ8" #os.environ.get("PF_ENDPOINT_KEY")
         self.headers = {'Content-Type':'application/json', 'Authorization':('Bearer '+ self.pf_endpoint_key),"Accept": "text/event-stream, application/json"}
 
     
     def _get_payload(self, messages):
-        _messages = copy.deepcopy(messages[1:])
+        _messages = copy.deepcopy(messages)
         chat_history = []
         chat_input = _messages.pop()['content']
 
