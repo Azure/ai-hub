@@ -22,7 +22,7 @@ class PF_Orchestrator(ConversationOrchestrator):
 
     
     def _get_payload(self, messages):
-        _messages = copy.deepcopy(messages[1:])
+        _messages = copy.deepcopy(messages)
         chat_history = []
         chat_input = _messages.pop()['content']
 
