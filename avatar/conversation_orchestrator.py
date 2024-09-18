@@ -1,4 +1,3 @@
-import copy
 from sseclient import SSEClient
 import requests
 import json
@@ -27,32 +26,6 @@ class PF_Orchestrator(ConversationOrchestrator):
         
         self.headers = {'Content-Type':'application/json', 'Authorization':('Bearer '+ self.pf_endpoint_key),"Accept": "text/event-stream, application/json"}
         self.history = []
-
-    
-    # def _get_payload(self, messages):
-    #     _messages = copy.deepcopy(messages)
-    #     chat_history = []
-    #     chat_input = _messages.pop()['content']
-
-    #     while _messages: #assuming there is always one assistant's answer for each user's question - real?
-    #         a=_messages.pop()['content']
-    #         q=_messages.pop()['content']
-            
-
-    #         chat_history.append({
-    #                 "inputs": {
-    #                     "question": q,
-    #                 },
-    #                 "outputs": a,
-    #             })
-
-    #     body = {
-    #         "question": chat_input,
-    #         "chat_history": chat_history,
-    #     }
-
-    #     return body
-
     
     
     def run_user_query(self, user_question):             
@@ -89,7 +62,7 @@ class PF_Orchestrator(ConversationOrchestrator):
 
         self.prune_history()
     
-    
+
     def prune_history(self):
         pass
                     
