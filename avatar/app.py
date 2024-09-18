@@ -252,8 +252,6 @@ def initializeClient() -> uuid.UUID:
         'speech_token': None, # Speech token for client side authentication with speech service
         'ice_token': None, # ICE token for ICE/TURN/Relay server connection
         'chat_initiated': False, # Flag to indicate if the chat context is initiated
-        # 'messages': [], # Chat messages (history)
-        # 'data_sources': [], # Data sources for 'on your data' scenario
         'orchestrator': None,
         'is_speaking': False, # Flag to indicate if the avatar is speaking
         'spoken_text_queue': [], # Queue to store the spoken text
@@ -283,32 +281,20 @@ def refreshSpeechToken() -> None:
             speech_token = requests.post(f'https://{speech_region}.api.cognitive.microsoft.com/sts/v1.0/issueToken', headers={'Ocp-Apim-Subscription-Key': speech_key}).text
         time.sleep(60 * 9)
 
-# Initialize the chat context, e.g. chat history (messages), data sources, etc. For chat scenario.
-# def initializeChatContext(system_prompt: str, client_id: uuid.UUID) -> None:
+
 def initializeChatContext(client_id: uuid.UUID) -> None:
     global client_contexts
-    client_context = client_contexts[client_id]
-    # messages = client_context['messages']
-    # messages.clear()
-    client_context['orchestrator']=None
+    client_contexts[client_id]['orchestrator']=None
+        
 
 # Handle the user query and return the assistant reply. For chat scenario.
 # The function is a generator, which yields the assistant reply in chunks.
-
-
 def handleUserQuery(user_query: str, client_id: uuid.UUID):
     global client_contexts
     client_context = client_contexts[client_id]
-    # messages = client_context['messages']
     if client_context['orchestrator'] is None:
         client_context['orchestrator'] = PF_Orchestrator() # should implement dependency injection somehow
     orchestrator = client_context['orchestrator']
-        
-    # chat_message = {
-    #     'role': 'user',
-    #     'content': user_query
-    # }
-    # messages.append(chat_message)
 
     if enable_quick_reply:
         speakWithQueue(random.choice(quick_replies), 2000)
@@ -339,13 +325,6 @@ def handleUserQuery(user_query: str, client_id: uuid.UUID):
     if spoken_sentence != '':
         speakWithQueue(spoken_sentence.strip(), 0, client_id)
         spoken_sentence = ''
-
-    # assistant_message = {
-    #     'role': 'assistant',
-    #     'content': assistant_reply
-    # }
-    # messages.append(assistant_message)
-
 
 # Speak the given text. If there is already a speaking in progress, add the text to the queue. For chat scenario.
 def speakWithQueue(text: str, ending_silence_ms: int, client_id: uuid.UUID) -> None:
