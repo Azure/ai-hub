@@ -9,16 +9,13 @@ import json
 import os
 import pytz
 import random
-import re
 import requests
 import threading
 import time
 import traceback
 import uuid
-from sseclient import SSEClient
 from flask import Flask, Response, render_template, request
 from azure.identity import DefaultAzureCredential
-from openai import AzureOpenAI
 from conversation_orchestrator import PF_Orchestrator
 
 # Create the Flask app
@@ -32,13 +29,13 @@ speech_private_endpoint = os.environ.get('SPEECH_PRIVATE_ENDPOINT') # e.g. https
 speech_resource_url = os.environ.get('SPEECH_RESOURCE_URL') # e.g. /subscriptions/6e83d8b7-00dd-4b0a-9e98-dab9f060418b/resourceGroups/my-rg/providers/Microsoft.CognitiveServices/accounts/my-speech (optional, only used for private endpoint)
 user_assigned_managed_identity_client_id = os.environ.get('USER_ASSIGNED_MANAGED_IDENTITY_CLIENT_ID') # e.g. the client id of user assigned managed identity accociated to your app service (optional, only used for private endpoint and user assigned managed identity)
 # OpenAI resource (required for chat scenario)
-azure_openai_endpoint = os.environ.get('AZURE_OPENAI_ENDPOINT') # e.g. https://my-aoai.openai.azure.com/
-azure_openai_api_key = os.environ.get('AZURE_OPENAI_API_KEY')
-azure_openai_deployment_name = os.environ.get('AZURE_OPENAI_DEPLOYMENT_NAME') # e.g. my-gpt-35-turbo-deployment
+# azure_openai_endpoint = os.environ.get('AZURE_OPENAI_ENDPOINT') # e.g. https://my-aoai.openai.azure.com/
+# azure_openai_api_key = os.environ.get('AZURE_OPENAI_API_KEY')
+# azure_openai_deployment_name = os.environ.get('AZURE_OPENAI_DEPLOYMENT_NAME') # e.g. my-gpt-35-turbo-deployment
 # Cognitive search resource (optional, only required for 'on your data' scenario)
-cognitive_search_endpoint = os.environ.get('COGNITIVE_SEARCH_ENDPOINT') # e.g. https://my-cognitive-search.search.windows.net/
-cognitive_search_api_key = os.environ.get('COGNITIVE_SEARCH_API_KEY')
-cognitive_search_index_name = os.environ.get('COGNITIVE_SEARCH_INDEX_NAME') # e.g. my-search-index
+# cognitive_search_endpoint = os.environ.get('COGNITIVE_SEARCH_ENDPOINT') # e.g. https://my-cognitive-search.search.windows.net/
+# cognitive_search_api_key = os.environ.get('COGNITIVE_SEARCH_API_KEY')
+# cognitive_search_index_name = os.environ.get('COGNITIVE_SEARCH_INDEX_NAME') # e.g. my-search-index
 # Customized ICE server (optional, only required for customized ICE server)
 ice_server_url = os.environ.get('ICE_SERVER_URL') # The ICE URL, e.g. turn:x.x.x.x:3478
 ice_server_url_remote = os.environ.get('ICE_SERVER_URL_REMOTE') # The ICE URL for remote side, e.g. turn:x.x.x.x:3478. This is only required when the ICE address for remote side is different from local side.
@@ -50,16 +47,16 @@ default_tts_voice = 'en-US-JennyMultilingualV2Neural' # Default TTS voice
 sentence_level_punctuations = [ '.', '?', '!', ':', ';', '。', '？', '！', '：', '；' ] # Punctuations that indicate the end of a sentence
 enable_quick_reply = False # Enable quick reply for certain chat models which take longer time to respond
 quick_replies = [ 'Let me take a look.', 'Let me check.', 'One moment, please.' ] # Quick reply reponses
-oyd_doc_regex = re.compile(r'\[doc(\d+)\]') # Regex to match the OYD (on-your-data) document reference
+# oyd_doc_regex = re.compile(r'\[doc(\d+)\]') # Regex to match the OYD (on-your-data) document reference
 
 # Global variables
 client_contexts = {} # Client contexts
 speech_token = None # Speech token
 ice_token = None # ICE token
-azure_openai = AzureOpenAI(
-    azure_endpoint=azure_openai_endpoint,
-    api_version='2024-06-01',
-    api_key=azure_openai_api_key)
+# azure_openai = AzureOpenAI(
+#     azure_endpoint=azure_openai_endpoint,
+#     api_version='2024-06-01',
+#     api_key=azure_openai_api_key)
 
 # The default route, which shows the default web page (basic.html)
 @app.route("/")
@@ -106,8 +103,8 @@ def connectAvatar() -> Response:
     client_context = client_contexts[client_id]
 
     # Override default values with client provided values
-    client_context['azure_openai_deployment_name'] = request.headers.get('AoaiDeploymentName') if request.headers.get('AoaiDeploymentName') else azure_openai_deployment_name
-    client_context['cognitive_search_index_name'] = request.headers.get('CognitiveSearchIndexName') if request.headers.get('CognitiveSearchIndexName') else cognitive_search_index_name
+    # client_context['azure_openai_deployment_name'] = request.headers.get('AoaiDeploymentName') if request.headers.get('AoaiDeploymentName') else azure_openai_deployment_name
+    # client_context['cognitive_search_index_name'] = request.headers.get('CognitiveSearchIndexName') if request.headers.get('CognitiveSearchIndexName') else cognitive_search_index_name
     client_context['tts_voice'] = request.headers.get('TtsVoice') if request.headers.get('TtsVoice') else default_tts_voice
     client_context['custom_voice_endpoint_id'] = request.headers.get('CustomVoiceEndpointId')
     client_context['personal_voice_speaker_profile_id'] = request.headers.get('PersonalVoiceSpeakerProfileId')
@@ -230,7 +227,7 @@ def chat() -> Response:
     client_context = client_contexts[client_id]
     chat_initiated = client_context['chat_initiated']
     if not chat_initiated:
-        initializeChatContext(request.headers.get('SystemPrompt'), client_id)
+        initializeChatContext(client_id) #initializeChatContext(request.headers.get('SystemPrompt'), client_id)
         client_context['chat_initiated'] = True
     user_query = request.data.decode('utf-8')
     return Response(handleUserQuery(user_query, client_id), mimetype='text/plain', status=200)
@@ -241,7 +238,7 @@ def clearChatHistory() -> Response:
     global client_contexts
     client_id = uuid.UUID(request.headers.get('ClientId'))
     client_context = client_contexts[client_id]
-    initializeChatContext(request.headers.get('SystemPrompt'), client_id)
+    initializeChatContext(client_id) #initializeChatContext(request.headers.get('SystemPrompt'), client_id)
     client_context['chat_initiated'] = True
     return Response('Chat history cleared.', status=200)
 
@@ -263,8 +260,8 @@ def disconnectAvatar() -> Response:
 def initializeClient() -> uuid.UUID:
     client_id = uuid.uuid4()
     client_contexts[client_id] = {
-        'azure_openai_deployment_name': azure_openai_deployment_name, # Azure OpenAI deployment name
-        'cognitive_search_index_name': cognitive_search_index_name, # Cognitive search index name
+        # 'azure_openai_deployment_name': azure_openai_deployment_name, # Azure OpenAI deployment name
+        # 'cognitive_search_index_name': cognitive_search_index_name, # Cognitive search index name
         'tts_voice': default_tts_voice, # TTS voice
         'custom_voice_endpoint_id': None, # Endpoint ID (deployment ID) for custom voice
         'personal_voice_speaker_profile_id': None, # Speaker profile ID for personal voice
@@ -273,7 +270,7 @@ def initializeClient() -> uuid.UUID:
         'ice_token': None, # ICE token for ICE/TURN/Relay server connection
         'chat_initiated': False, # Flag to indicate if the chat context is initiated
         'messages': [], # Chat messages (history)
-        'data_sources': [], # Data sources for 'on your data' scenario
+        # 'data_sources': [], # Data sources for 'on your data' scenario
         'is_speaking': False, # Flag to indicate if the avatar is speaking
         'spoken_text_queue': [], # Queue to store the spoken text
         'speaking_thread': None, # The thread to speak the spoken text queue
@@ -303,49 +300,50 @@ def refreshSpeechToken() -> None:
         time.sleep(60 * 9)
 
 # Initialize the chat context, e.g. chat history (messages), data sources, etc. For chat scenario.
-def initializeChatContext(system_prompt: str, client_id: uuid.UUID) -> None:
+# def initializeChatContext(system_prompt: str, client_id: uuid.UUID) -> None:
+def initializeChatContext(client_id: uuid.UUID) -> None:
     global client_contexts
     client_context = client_contexts[client_id]
-    cognitive_search_index_name = client_context['cognitive_search_index_name']
+    # cognitive_search_index_name = client_context['cognitive_search_index_name']
     messages = client_context['messages']
-    data_sources = client_context['data_sources']
+    # data_sources = client_context['data_sources']
 
     # Initialize data sources for 'on your data' scenario
-    data_sources.clear()
-    if cognitive_search_endpoint and cognitive_search_api_key and cognitive_search_index_name:
-        # On-your-data scenario
-        data_source = {
-            'type': 'azure_search',
-            'parameters': {
-                'endpoint': cognitive_search_endpoint,
-                'index_name': cognitive_search_index_name,
-                'authentication': {
-                    'type': 'api_key',
-                    'key': cognitive_search_api_key
-                },
-                'semantic_configuration': '',
-                'query_type': 'simple',
-                'fields_mapping': {
-                    'content_fields_separator': '\n',
-                    'content_fields': ['content'],
-                    'filepath_field': None,
-                    'title_field': 'title',
-                    'url_field': None
-                },
-                'in_scope': True,
-                'role_information': system_prompt
-            }
-        }
-        data_sources.append(data_source)
+    # data_sources.clear()
+    # if cognitive_search_endpoint and cognitive_search_api_key and cognitive_search_index_name:
+    #     # On-your-data scenario
+    #     data_source = {
+    #         'type': 'azure_search',
+    #         'parameters': {
+    #             'endpoint': cognitive_search_endpoint,
+    #             'index_name': cognitive_search_index_name,
+    #             'authentication': {
+    #                 'type': 'api_key',
+    #                 'key': cognitive_search_api_key
+    #             },
+    #             'semantic_configuration': '',
+    #             'query_type': 'simple',
+    #             'fields_mapping': {
+    #                 'content_fields_separator': '\n',
+    #                 'content_fields': ['content'],
+    #                 'filepath_field': None,
+    #                 'title_field': 'title',
+    #                 'url_field': None
+    #             },
+    #             'in_scope': True,
+    #             'role_information': system_prompt
+    #         }
+    #     }
+    #     data_sources.append(data_source)
 
     # Initialize messages
     messages.clear()
-    if len(data_sources) == 0:
-        system_message = {
-            'role': 'system',
-            'content': system_prompt
-        }
-        messages.append(system_message)
+    # if len(data_sources) == 0:
+    #     system_message = {
+    #         'role': 'system',
+    #         'content': system_prompt
+    #     }
+    #     messages.append(system_message)
 
 # Handle the user query and return the assistant reply. For chat scenario.
 # The function is a generator, which yields the assistant reply in chunks.
@@ -354,9 +352,9 @@ def initializeChatContext(system_prompt: str, client_id: uuid.UUID) -> None:
 def handleUserQuery(user_query: str, client_id: uuid.UUID):
     global client_contexts
     client_context = client_contexts[client_id]
-    azure_openai_deployment_name = client_context['azure_openai_deployment_name']
+    # azure_openai_deployment_name = client_context['azure_openai_deployment_name']
     messages = client_context['messages']
-    data_sources = client_context['data_sources']
+    # data_sources = client_context['data_sources']
 
     chat_message = {
         'role': 'user',
@@ -364,7 +362,8 @@ def handleUserQuery(user_query: str, client_id: uuid.UUID):
     }
     messages.append(chat_message)
 
-    if len(data_sources) > 0 and enable_quick_reply:
+    # if len(data_sources) > 0 and enable_quick_reply:
+    if enable_quick_reply:
         speakWithQueue(random.choice(quick_replies), 2000)
 
     assistant_reply = ''
