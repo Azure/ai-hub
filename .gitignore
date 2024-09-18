@@ -1,3 +1,7 @@
+# AML stuff
+**.amlignore
+**.amlignore.amltmp
+
 # Local .terraform directories
 **/.terraform/*
 
