@@ -2849,12 +2849,12 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "visible": "[and(or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "dfNetworkingInfo",
                             "type": "Microsoft.Common.InfoBox",
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').dfDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').dfDisableNetworkAccess, 'Yes'), or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'),equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')), not(equals(steps('basics').aiIntention, 'Multiple')))]",
                             "options": {
                                 "icon": "warning",
                                 "text": "The VNet and subnet you select can be in a different Azure region then the Private Endpoint for Data Factory. Ensure you have connectivity to the other services you are creating."
@@ -2871,7 +2871,7 @@
 									"location": "all"
 								}
 							},
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').dfDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').dfDisableNetworkAccess, 'Yes'), or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'),equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')), not(equals(steps('basics').aiIntention, 'Multiple')))]"
 						},
 						{
 							"name": "dfSubnets",
@@ -2890,7 +2890,7 @@
 								"allowedValues": "[map(steps('aiAuxiliarySettings').dfSubnets.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
 								"required": true
 							},
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').dfDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').dfDisableNetworkAccess, 'Yes'), or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'),equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')), not(equals(steps('basics').aiIntention, 'Multiple')))]"
 						},
                         {  
                             "name": "dfSelectedVnetDetails",  
@@ -2903,7 +2903,7 @@
                         {
                             "name": "dfNetworkingRegionOutputInfo",
                             "type": "Microsoft.Common.InfoBox",
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').dfDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('aiAuxiliarySettings').dfSelectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').dfDisableNetworkAccess, 'Yes'), or(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'),equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')), not(equals(steps('aiAuxiliarySettings').dfSelectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
                             "options": {
                                 "icon": "warning",
                                 "text": "Note you are creating the Private Endpoint into a different Azure Region then Data Factory. Ensure you have connectivity with the other Azure services you are creating in case their Private Endpoints are in different regions and Virtual Networks"
