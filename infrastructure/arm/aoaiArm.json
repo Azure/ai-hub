@@ -745,7 +745,8 @@
         "useCasesMap": {
         "onyourdata": "UGxlYXNlIGV4dHJhY3QgYW5kIHByb3ZpZGUgcHJlY2lzZSBpbmZvcm1hdGlvbiBmcm9tIHRoZSBwcm92aWRlZCBkb2N1bWVudHMgdGhhdCBkaXJlY3RseSBhZGRyZXNzZXMgdGhlIHNwZWNpZmljIGlucXVpcnkuIEF2b2lkIGluY2x1ZGluZyBhbnkgYWRkaXRpb25hbCBjb21tZW50YXJ5IG5vdCBmb3VuZCB3aXRoaW4gdGhlIGRvY3VtZW50cyBzdXBwbGllZC4=",
         "vision": "UGxlYXNlIGV4dHJhY3QgYW5kIHByb3ZpZGUgcHJlY2lzZSBpbmZvcm1hdGlvbiBmcm9tIHRoZSBwcm92aWRlZCBkb2N1bWVudHMgdGhhdCBkaXJlY3RseSBhZGRyZXNzZXMgdGhlIHNwZWNpZmljIGlucXVpcnkuIEF2b2lkIGluY2x1ZGluZyBhbnkgYWRkaXRpb25hbCBjb21tZW50YXJ5IG5vdCBmb3VuZCB3aXRoaW4gdGhlIGRvY3VtZW50cyBzdXBwbGllZC4=",
-        "video": "UGxlYXNlIGV4dHJhY3QgYW5kIHByb3ZpZGUgcHJlY2lzZSBpbmZvcm1hdGlvbiBmcm9tIHRoZSBwcm92aWRlZCBkb2N1bWVudHMgdGhhdCBkaXJlY3RseSBhZGRyZXNzZXMgdGhlIHNwZWNpZmljIGlucXVpcnkuIEF2b2lkIGluY2x1ZGluZyBhbnkgYWRkaXRpb25hbCBjb21tZW50YXJ5IG5vdCBmb3VuZCB3aXRoaW4gdGhlIGRvY3VtZW50cyBzdXBwbGllZC4="
+        "video": "UGxlYXNlIGV4dHJhY3QgYW5kIHByb3ZpZGUgcHJlY2lzZSBpbmZvcm1hdGlvbiBmcm9tIHRoZSBwcm92aWRlZCBkb2N1bWVudHMgdGhhdCBkaXJlY3RseSBhZGRyZXNzZXMgdGhlIHNwZWNpZmljIGlucXVpcnkuIEF2b2lkIGluY2x1ZGluZyBhbnkgYWRkaXRpb25hbCBjb21tZW50YXJ5IG5vdCBmb3VuZCB3aXRoaW4gdGhlIGRvY3VtZW50cyBzdXBwbGllZC4=",
+        "patientreferral": "WW91IGFyZSBhIG1lZGljYWwgYW5hbHlzaXMgYWdlbnQgdGhhdCBjYW4gZXh0cmFjdCBpbmZvcm1hdGlvbiBmcm9tIHBhdGllbnQgcmVmZXJyYWxzIGFuZCBwcm92aWRlIGEgY2xpbmljYWwgc3VtbWFyeS4gIEtleSBmaWVsZHMgd2lsbCBpbmNsdWRlIHBhdGllbnQgZGV0YWlscywgdHlwZSBvZiByZWZlcnJhbCwgdGFyZ2V0IG9mIHJlZmVycmFsLiAgQWxsIG91dHB1dCBpcyBpbiBqc29uIGZvcm1hdC4NCg=="
         },
         "azureOpenAISystemMessage": "[if(not(empty(parameters('aiUseCaseSelection'))), variables('useCasesMap')[parameters('aiUseCaseSelection')], json('null'))]",
         "resourceNames": {
@@ -2664,7 +2665,7 @@
         },
         // Deploying Data Factory into the primary region if 'on your data' use case is being select
         {
-            "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
+            "condition": "[or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'patientreferral'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').adfOnYourDataDeploymentName]",
@@ -2806,7 +2807,7 @@
         },
         // Creating Role Assignment for DF on AOAI using Cognitive Services Open AI Contributor role
         {
-            "condition": "[and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('aiRbacAuthz'), 'Yes'))]",
+            "condition": "[and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'onyourdata')), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('aiRbacAuthz'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').adfOnYourDataRbacForOpenAiDeploymentName]",
@@ -2895,7 +2896,7 @@
         },
         // Creating Role Assignment for DF on Storage account using Storage Blob Data Contributor role
         {
-            "condition": "[and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('stRbacAuthz'), 'Yes'))]",
+            "condition": "[and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'onyourdata')), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('stRbacAuthz'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').adfOnYourDataRbacForBlobContributorDeploymentName]",
