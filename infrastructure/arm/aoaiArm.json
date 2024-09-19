@@ -1432,7 +1432,7 @@
         },
         // Deploying Azure AI Search into primary region
         {
-            "condition": "[equals(parameters('aiUseCaseDeployment'), 'Yes')]",
+            "condition": "[and(equals(parameters('aiUseCaseDeployment'), 'Yes'), equals(parameters('aiUseCaseSelection'), 'onyourdata'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').azureAiSearchDeploymentName]",
