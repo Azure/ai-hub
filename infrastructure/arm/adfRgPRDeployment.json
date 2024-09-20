@@ -1,0 +1,2224 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "triggerDocBlob_properties_singleAnalyzeDocument_parameters_fileName": {
+            "type": "string",
+            "defaultValue": "@trigger().outputs.body.fileName"
+        },
+        "triggerDocBlob_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "triggerDocBlobWithoutIntel_properties_singleAnalyzeDocument_withoutIntel_parameters_fileName": {
+            "type": "string",
+            "defaultValue": "@trigger().outputs.body.fileName"
+        },
+        "triggerDocBlobWithoutIntel_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "blobStoreDoc_properties_typeProperties_serviceEndpoint": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "onYourData_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "@{linkedService().documentIntelligenceAPI}documentintelligence/documentModels/@{linkedService().modelId}/analyzeResults/@{linkedService().resultID}?api-version=2023-10-31-preview"
+        },
+        "onYourData_properties_typeProperties_aadResourceId": {
+            "type": "string",
+            "defaultValue": "https://cognitiveservices.azure.com"
+        },
+        "GPT4Deployment_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "@{linkedService().open_ai_base}"
+        },
+        "GPT4Deployment_properties_typeProperties_aadResourceId": {
+            "type": "string",
+            "defaultValue": "https://cognitiveservices.azure.com"
+        },
+        "storageaccountcontainerBatch": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "storageaccountcontainerBatchIntel": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "storageaccounturl": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "searchServiceEndpoint": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "aiSearchIndexName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "openAIAPI": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "embeddingDeploymentName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "dataRefreshIntervalInMinutes": {
+            "type": "string",
+            "defaultValue": "60"
+        },
+        "chunkSize": {
+            "type": "string",
+            "defaultValue": "1024"
+        },
+        "storageAccountResourceId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "documentIntelligenceAPI": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "modelId": {
+            "type": "string",
+            "defaultValue": "prebuilt-layout"
+        },
+        "gpt4DeploymentName": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/AzureOpenAI')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "GPT4Deployment",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "open_ai_base": {
+                            "value": "@dataset().openai_api_base",
+                            "type": "Expression"
+                        },
+                        "gpt4deployment": {
+                            "value": "@dataset().gpt4_deployment_name",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "parameters": {
+                    "openai_api_base": {
+                        "type": "String"
+                    },
+                    "gpt4_deployment_name": {
+                        "type": "string"
+                    },
+                    "relative_url": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "RestResource",
+                "typeProperties": {
+                    "relativeUrl": {
+                        "value": "@dataset().relative_url",
+                        "type": "Expression"
+                    }
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/GPT4Deployment')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/blobfile')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "blobStoreDoc",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "container": {
+                        "type": "string",
+                        "defaultValue": "na"
+                    },
+                    "filename": {
+                        "type": "string",
+                        "defaultValue": "na"
+                    },
+                    "folder": {
+                        "type": "string",
+                        "defaultValue": "na"
+                    }
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "container": {
+                            "value": "@dataset().container",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/blobStoreDoc')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/tempfile')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "blobStoreDoc",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string",
+                        "defaultValue": "tempfile.txt"
+                    }
+                },
+                "annotations": [],
+                "type": "Json",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "container": "temp"
+                    }
+                },
+                "schema": {}
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/blobStoreDoc')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/blob')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "blobStoreDoc",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "container": {
+                        "type": "string",
+                        "defaultValue": "na"
+                    },
+                    "endpoint": {
+                        "type": "string",
+                        "defaultValue": "na"
+                    }
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "container": {
+                            "value": "@dataset().container",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/blobStoreDoc')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DocIntel')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "onYourData",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "documentIntelligenceAPI": {
+                            "value": "@dataset().documentIntelligenceAPI",
+                            "type": "Expression"
+                        },
+                        "modelId": {
+                            "value": "@dataset().modelId",
+                            "type": "Expression"
+                        },
+                        "resultID": {
+                            "value": "@dataset().resultID",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "parameters": {
+                    "documentIntelligenceAPI": {
+                        "type": "string"
+                    },
+                    "modelId": {
+                        "type": "string"
+                    },
+                    "resultID": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "RestResource",
+                "typeProperties": {},
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/onYourData')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/singleAnalyzeDocument_withoutIntel')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Copy to curated",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "BinarySource",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageReadSettings",
+                                    "recursive": true,
+                                    "deleteFilesAfterCompletion": true
+                                },
+                                "formatSettings": {
+                                    "type": "BinaryReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "BinarySink",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageWriteSettings"
+                                }
+                            },
+                            "enableStaging": false
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "blobfile",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "container": {
+                                        "value": "@pipeline().parameters.storageAccountContainer",
+                                        "type": "Expression"
+                                    },
+                                    "filename": {
+                                        "value": "@pipeline().parameters.fileName",
+                                        "type": "Expression"
+                                    },
+                                    "folder": " "
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "blobfile",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "container": "curated",
+                                    "filename": {
+                                        "value": "@pipeline().parameters.fileName",
+                                        "type": "Expression"
+                                    },
+                                    "folder": {
+                                        "value": "@pipeline().parameters.storageaccounturl",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "If batch",
+                        "description": "Run OnYourData if not batch",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Copy to curated",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@pipeline().parameters.batch",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "Execute Pipeline onYourData",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "onYourData",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ingestionStatus": {
+                                                "value": "@variables('ingestionStatus')",
+                                                "type": "Expression"
+                                            },
+                                            "storageaccountcontainer": {
+                                                "value": "@pipeline().parameters.storageAccountContainer",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            },
+                                            "batch": {
+                                                "value": "@pipeline().parameters.batch",
+                                                "type": "Expression"
+                                            },
+                                            "searchServiceEndpoint": {
+                                                "value": "@pipeline().parameters.searchServiceEndpoint",
+                                                "type": "Expression"
+                                            },
+                                            "aiSearchIndexName": {
+                                                "value": "@pipeline().parameters.aiSearchIndexName",
+                                                "type": "Expression"
+                                            },
+                                            "openAIAPI": {
+                                                "value": "@pipeline().parameters.openAIAPI",
+                                                "type": "Expression"
+                                            },
+                                            "dataRefreshIntervalInMinutes": {
+                                                "value": "@pipeline().parameters.dataRefreshIntervalInMinutes",
+                                                "type": "Expression"
+                                            },
+                                            "chunkSize": {
+                                                "value": "@pipeline().parameters.chunkSize",
+                                                "type": "Expression"
+                                            },
+                                            "storageaccounturl": {
+                                                "value": "@pipeline().parameters.storageaccounturl",
+                                                "type": "Expression"
+                                            },
+                                            "storageAccountResourceId": {
+                                                "value": "@pipeline().parameters.storageAccountResourceId",
+                                                "type": "Expression"
+                                            },
+                                            "embeddingDeploymentName": {
+                                                "value": "@pipeline().parameters.embeddingDeploymentName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "storageAccountContainer": {
+                        "type": "string"
+                    },
+                    "batch": {
+                        "type": "bool",
+                        "defaultValue": false
+                    },
+                    "searchServiceEndpoint": {
+                        "type": "string"
+                    },
+                    "aiSearchIndexName": {
+                        "type": "string"
+                    },
+                    "dataRefreshIntervalInMinutes": {
+                        "type": "string"
+                    },
+                    "chunkSize": {
+                        "type": "string"
+                    },
+                    "openAIAPI": {
+                        "type": "string"
+                    },
+                    "embeddingDeploymentName": {
+                        "type": "string"
+                    },
+                    "storageAccountResourceId": {
+                        "type": "string"
+                    },
+                    "storageaccounturl": {
+                        "type": "string"
+                    }
+                },
+                "variables": {
+                    "indexName": {
+                        "type": "String"
+                    },
+                    "indexID": {
+                        "type": "String"
+                    },
+                    "ingestionStatus": {
+                        "type": "String",
+                        "defaultValue": "Running"
+                    },
+                    "processedfolder": {
+                        "type": "String"
+                    },
+                    "resultID": {
+                        "type": "String"
+                    },
+                    "documentIdObj": {
+                        "type": "Array"
+                    }
+                },
+                "folder": {
+                    "name": "Not using Document Inteligence"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-05-21T09:05:03Z"
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/blobfile')]",
+                "[concat(variables('factoryId'), '/pipelines/onYourData')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/singleAnalyzeDocument')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Check and wait until ingestion complete",
+                        "type": "Until",
+                        "dependsOn": [
+                            {
+                                "activity": "Set resultID",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@or(equals(variables('ingestionStatus'),'succeeded'),equals(variables('ingestionStatus'),'Failed'))",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "Check if completed",
+                                    "type": "IfCondition",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "Set ingestion status",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@or(equals(variables('ingestionStatus'),'succeeded'),equals(variables('ingestionStatus'),'Failed'))",
+                                            "type": "Expression"
+                                        },
+                                        "ifFalseActivities": [
+                                            {
+                                                "name": "Wait and check again in a bit",
+                                                "type": "Wait",
+                                                "dependsOn": [],
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "waitTimeInSeconds": 10
+                                                }
+                                            }
+                                        ],
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "CreateMDfile",
+                                                "type": "ExecuteDataFlow",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "timeout": "0.12:00:00",
+                                                    "retry": 0,
+                                                    "retryIntervalInSeconds": 30,
+                                                    "secureOutput": false,
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "dataflow": {
+                                                        "referenceName": "createMDfile",
+                                                        "type": "DataFlowReference",
+                                                        "parameters": {
+                                                            "filename": {
+                                                                "value": "'@{pipeline().parameters.fileName}.md'",
+                                                                "type": "Expression"
+                                                            }
+                                                        },
+                                                        "datasetParameters": {
+                                                            "DocumentIntelligence": {
+                                                                "documentIntelligenceAPI": {
+                                                                    "value": "@pipeline().parameters.documentIntelligenceAPI",
+                                                                    "type": "Expression"
+                                                                },
+                                                                "modelId": {
+                                                                    "value": "@pipeline().parameters.modelId",
+                                                                    "type": "Expression"
+                                                                },
+                                                                "resultID": {
+                                                                    "value": "@variables('resultID')",
+                                                                    "type": "Expression"
+                                                                }
+                                                            },
+                                                            "storeMDfile": {}
+                                                        }
+                                                    },
+                                                    "staging": {},
+                                                    "compute": {
+                                                        "coreCount": 8,
+                                                        "computeType": "General"
+                                                    },
+                                                    "traceLevel": "Fine"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "Set ingestion status",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "see if ingestion completed",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "ingestionStatus",
+                                        "value": {
+                                            "value": "@activity('see if ingestion completed').output.status",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "see if ingestion completed",
+                                    "type": "WebActivity",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "0.12:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "method": "GET",
+                                        "headers": {},
+                                        "url": {
+                                            "value": "@{pipeline().parameters.documentIntelligenceAPI}documentintelligence/documentModels/@{pipeline().parameters.modelId}/analyzeResults/@{variables('resultID')}?api-version=2023-10-31-preview\n",
+                                            "type": "Expression"
+                                        },
+                                        "authentication": {
+                                            "type": "MSI",
+                                            "resource": "https://cognitiveservices.azure.com"
+                                        }
+                                    }
+                                }
+                            ],
+                            "timeout": "0.00:15:00"
+                        }
+                    },
+                    {
+                        "name": "Set resultID",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "Ingest document",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "resultID",
+                            "value": {
+                                "value": "@{activity('Ingest document').output.ADFWebActivityResponseHeaders['apim-request-id']}",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Ingest document",
+                        "type": "WebActivity",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "method": "POST",
+                            "headers": {
+                                "Content-Type": "application/json"
+                            },
+                            "url": {
+                                "value": "@{pipeline().parameters.documentIntelligenceAPI}documentintelligence/documentModels/@{pipeline().parameters.modelId}:analyze?_overload=analyzeDocument&api-version=2023-10-31-preview&outputContentFormat=markdown",
+                                "type": "Expression"
+                            },
+                            "body": {
+                                "value": "{\"urlSource\":\"@{pipeline().parameters.storageaccounturl}@{pipeline().parameters.storageAccountContainer}/@{pipeline().parameters.fileName}\"}",
+                                "type": "Expression"
+                            },
+                            "authentication": {
+                                "type": "MSI",
+                                "resource": "https://cognitiveservices.azure.com"
+                            }
+                        }
+                    },
+                    {
+                        "name": "If batch",
+                        "description": "Run OnYourData if not batch",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check and wait until ingestion complete",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@pipeline().parameters.batch",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "Execute Pipeline onYourData",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "onYourData",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ingestionStatus": {
+                                                "value": "@variables('ingestionStatus')",
+                                                "type": "Expression"
+                                            },
+                                            "storageaccountcontainer": {
+                                                "value": "@pipeline().parameters.storageAccountContainer",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            },
+                                            "searchServiceEndpoint": {
+                                                "value": "@pipeline().parameters.searchServiceEndpoint",
+                                                "type": "Expression"
+                                            },
+                                            "aiSearchIndexName": {
+                                                "value": "@pipeline().parameters.aiSearchIndexName",
+                                                "type": "Expression"
+                                            },
+                                            "openAIAPI": {
+                                                "value": "@pipeline().parameters.openAIAPI",
+                                                "type": "Expression"
+                                            },
+                                            "dataRefreshIntervalInMinutes": {
+                                                "value": "@pipeline().parameters.dataRefreshIntervalInMinutes",
+                                                "type": "Expression"
+                                            },
+                                            "chunkSize": {
+                                                "value": "@pipeline().parameters.chunkSize",
+                                                "type": "Expression"
+                                            },
+                                            "storageaccounturl": {
+                                                "value": "@pipeline().parameters.storageaccounturl",
+                                                "type": "Expression"
+                                            },
+                                            "storageAccountResourceId": {
+                                                "value": "@pipeline().parameters.storageAccountResourceId",
+                                                "type": "Expression"
+                                            },
+                                            "embeddingDeploymentName": {
+                                                "value": "@pipeline().parameters.embeddingDeploymentName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "If Condition batch",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "If batch",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@pipeline().parameters.batch",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "Move file to processed container",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "0.12:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "BinarySource",
+                                            "storeSettings": {
+                                                "type": "AzureBlobStorageReadSettings",
+                                                "recursive": false,
+                                                "deleteFilesAfterCompletion": true
+                                            },
+                                            "formatSettings": {
+                                                "type": "BinaryReadSettings"
+                                            }
+                                        },
+                                        "sink": {
+                                            "type": "BinarySink",
+                                            "storeSettings": {
+                                                "type": "AzureBlobStorageWriteSettings"
+                                            }
+                                        },
+                                        "enableStaging": false
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "blobfile",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "container": {
+                                                    "value": "@pipeline().parameters.storageAccountContainer",
+                                                    "type": "Expression"
+                                                },
+                                                "filename": {
+                                                    "value": "@pipeline().parameters.fileName",
+                                                    "type": "Expression"
+                                                },
+                                                "folder": " "
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "blobfile",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "container": "processed",
+                                                "filename": {
+                                                    "value": "@pipeline().parameters.fileName",
+                                                    "type": "Expression"
+                                                },
+                                                "folder": "na"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Move file to failed",
+                        "type": "Copy",
+                        "dependsOn": [
+                            {
+                                "activity": "Ingest document",
+                                "dependencyConditions": [
+                                    "Failed"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "BinarySource",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageReadSettings",
+                                    "recursive": false,
+                                    "deleteFilesAfterCompletion": true
+                                },
+                                "formatSettings": {
+                                    "type": "BinaryReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "BinarySink",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageWriteSettings"
+                                }
+                            },
+                            "enableStaging": false
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "blobfile",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "container": {
+                                        "value": "@pipeline().parameters.storageAccountContainer",
+                                        "type": "Expression"
+                                    },
+                                    "filename": {
+                                        "value": "@pipeline().parameters.fileName",
+                                        "type": "Expression"
+                                    },
+                                    "folder": " "
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "blobfile",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "container": "failed",
+                                    "filename": {
+                                        "value": "@pipeline().parameters.fileName",
+                                        "type": "Expression"
+                                    },
+                                    "folder": "na"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "storageAccountContainer": {
+                        "type": "string"
+                    },
+                    "batch": {
+                        "type": "bool",
+                        "defaultValue": false
+                    },
+                    "documentIntelligenceAPI": {
+                        "type": "string"
+                    },
+                    "storageaccounturl": {
+                        "type": "string"
+                    },
+                    "modelId": {
+                        "type": "string"
+                    },
+                    "searchServiceEndpoint": {
+                        "type": "string"
+                    },
+                    "aiSearchIndexName": {
+                        "type": "string"
+                    },
+                    "dataRefreshIntervalInMinutes": {
+                        "type": "string"
+                    },
+                    "chunkSize": {
+                        "type": "string"
+                    },
+                    "openAIAPI": {
+                        "type": "string"
+                    },
+                    "embeddingDeploymentName": {
+                        "type": "string"
+                    },
+                    "storageAccountResourceId": {
+                        "type": "string"
+                    }
+                },
+                "variables": {
+                    "indexName": {
+                        "type": "String"
+                    },
+                    "indexID": {
+                        "type": "String"
+                    },
+                    "ingestionStatus": {
+                        "type": "String",
+                        "defaultValue": "Running"
+                    },
+                    "processedfolder": {
+                        "type": "String"
+                    },
+                    "resultID": {
+                        "type": "String"
+                    },
+                    "documentIdObj": {
+                        "type": "Array"
+                    },
+                    "openaiStatus": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "Document Inteligence"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-05-21T09:05:03Z"
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/blobfile')]",
+                "[concat(variables('factoryId'), '/pipelines/onYourData')]",
+                "[concat(variables('factoryId'), '/dataflows/createMDfile')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/batchAnalyzeDocuments_withoutIntel')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get documents",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "blob",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "container": {
+                                        "value": "@pipeline().parameters.storageaccountcontainer",
+                                        "type": "Expression"
+                                    },
+                                    "endpoint": {
+                                        "value": "@pipeline().parameters.storageaccounturl",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": {
+                                "type": "BinaryReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "If contains files",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "ForEach Document File",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@greater( length(activity('Get documents').output.childItems), 0)",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "Execute onYourData_copy1",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "onYourData",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ingestionStatus": "succeeded",
+                                            "storageaccountcontainer": {
+                                                "value": "@pipeline().parameters.storageaccountcontainer",
+                                                "type": "Expression"
+                                            },
+                                            "batch": true,
+                                            "searchServiceEndpoint": {
+                                                "value": "@pipeline().parameters.searchServiceEndpoint",
+                                                "type": "Expression"
+                                            },
+                                            "aiSearchIndexName": {
+                                                "value": "@pipeline().parameters.aiSearchIndexName",
+                                                "type": "Expression"
+                                            },
+                                            "openAIAPI": {
+                                                "value": "@pipeline().parameters.openAIAPI",
+                                                "type": "Expression"
+                                            },
+                                            "dataRefreshIntervalInMinutes": {
+                                                "value": "@pipeline().parameters.dataRefreshIntervalInMinutes",
+                                                "type": "Expression"
+                                            },
+                                            "chunkSize": {
+                                                "value": "@pipeline().parameters.chunkSize",
+                                                "type": "Expression"
+                                            },
+                                            "storageaccounturl": {
+                                                "value": "@pipeline().parameters.storageaccounturl",
+                                                "type": "Expression"
+                                            },
+                                            "storageAccountResourceId": {
+                                                "value": "@pipeline().parameters.storageAccountResourceId",
+                                                "type": "Expression"
+                                            },
+                                            "embeddingDeploymentName": {
+                                                "value": "@pipeline().parameters.embeddingDeploymentName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ForEach Document File",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get documents",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get documents').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "activities": [
+                                {
+                                    "name": "childAnalyzeDocuments",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "singleAnalyzeDocument_withoutIntel",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "fileName": {
+                                                "value": "@item().name",
+                                                "type": "Expression"
+                                            },
+                                            "storageAccountContainer": {
+                                                "value": "@pipeline().parameters.storageaccountcontainer",
+                                                "type": "Expression"
+                                            },
+                                            "batch": true,
+                                            "searchServiceEndpoint": {
+                                                "value": "@pipeline().parameters.searchServiceEndpoint",
+                                                "type": "Expression"
+                                            },
+                                            "aiSearchIndexName": {
+                                                "value": "@pipeline().parameters.aiSearchIndexName",
+                                                "type": "Expression"
+                                            },
+                                            "dataRefreshIntervalInMinutes": {
+                                                "value": "@pipeline().parameters.dataRefreshIntervalInMinutes",
+                                                "type": "Expression"
+                                            },
+                                            "chunkSize": {
+                                                "value": "@pipeline().parameters.chunkSize",
+                                                "type": "Expression"
+                                            },
+                                            "openAIAPI": {
+                                                "value": "@pipeline().parameters.openAIAPI",
+                                                "type": "Expression"
+                                            },
+                                            "embeddingDeploymentName": {
+                                                "value": "@pipeline().parameters.embeddingDeploymentName",
+                                                "type": "Expression"
+                                            },
+                                            "storageAccountResourceId": {
+                                                "value": "@pipeline().parameters.storageAccountResourceId",
+                                                "type": "Expression"
+                                            },
+                                            "storageaccounturl": {
+                                                "value": "@pipeline().parameters.storageaccounturl",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "storageaccountcontainer": {
+                        "type": "string",
+                        "defaultValue": "[parameters('storageaccountcontainerBatch')]"
+                    },
+                    "storageaccounturl": {
+                        "type": "string",
+                        "defaultValue": "[parameters('storageaccounturl')]"
+                    },
+                    "searchServiceEndpoint": {
+                        "type": "string",
+                        "defaultValue": "[parameters('searchServiceEndpoint')]"
+                    },
+                    "aiSearchIndexName": {
+                        "type": "string",
+                        "defaultValue": "[parameters('aiSearchIndexName')]"
+                    },
+                    "dataRefreshIntervalInMinutes": {
+                        "type": "string",
+                        "defaultValue": "[parameters('dataRefreshIntervalInMinutes')]"
+                    },
+                    "chunkSize": {
+                        "type": "string",
+                        "defaultValue": "[parameters('chunkSize')]"
+                    },
+                    "openAIAPI": {
+                        "type": "string",
+                        "defaultValue": "[parameters('openAIAPI')]"
+                    },
+                    "embeddingDeploymentName": {
+                        "type": "string",
+                        "defaultValue": "[parameters('embeddingDeploymentName')]"
+                    },
+                    "storageAccountResourceId": {
+                        "type": "string",
+                        "defaultValue": "[parameters('storageAccountResourceId')]"
+                    }
+                },
+                "variables": {
+                    "top_p": {
+                        "type": "String"
+                    },
+                    "temperature": {
+                        "type": "String"
+                    },
+                    "resultID": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "Not using Document Inteligence"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-05-21T09:05:04Z"
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/blob')]",
+                "[concat(variables('factoryId'), '/pipelines/onYourData')]",
+                "[concat(variables('factoryId'), '/pipelines/singleAnalyzeDocument_withoutIntel')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/batchAnalyzeDocuments')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get documents",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "blob",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "container": {
+                                        "value": "@pipeline().parameters.storageaccountcontainer",
+                                        "type": "Expression"
+                                    },
+                                    "endpoint": {
+                                        "value": "@pipeline().parameters.storageaccounturl",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": {
+                                "type": "BinaryReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "If contains files",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "ForEach Document File",
+                                "dependencyConditions": [
+                                    "Succeeded",
+                                    "Failed"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@greater( length(activity('Get documents').output.childItems), 0)",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "Execute onYourData_copy1",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "onYourData",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ingestionStatus": "succeeded",
+                                            "storageaccountcontainer": {
+                                                "value": "@pipeline().parameters.storageaccountcontainer",
+                                                "type": "Expression"
+                                            },
+                                            "batch": true,
+                                            "searchServiceEndpoint": {
+                                                "value": "@pipeline().parameters.searchServiceEndpoint",
+                                                "type": "Expression"
+                                            },
+                                            "aiSearchIndexName": {
+                                                "value": "@pipeline().parameters.aiSearchIndexName",
+                                                "type": "Expression"
+                                            },
+                                            "openAIAPI": {
+                                                "value": "@pipeline().parameters.openAIAPI",
+                                                "type": "Expression"
+                                            },
+                                            "dataRefreshIntervalInMinutes": {
+                                                "value": "@pipeline().parameters.dataRefreshIntervalInMinutes",
+                                                "type": "Expression"
+                                            },
+                                            "chunkSize": {
+                                                "value": "@pipeline().parameters.chunkSize",
+                                                "type": "Expression"
+                                            },
+                                            "storageaccounturl": {
+                                                "value": "@pipeline().parameters.storageaccounturl",
+                                                "type": "Expression"
+                                            },
+                                            "storageAccountResourceId": {
+                                                "value": "@pipeline().parameters.storageAccountResourceId",
+                                                "type": "Expression"
+                                            },
+                                            "embeddingDeploymentName": {
+                                                "value": "@pipeline().parameters.embeddingDeploymentName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ForEach Document File",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get documents",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get documents').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "activities": [
+                                {
+                                    "name": "Analyze Documents",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "singleAnalyzeDocument",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "fileName": {
+                                                "value": "@item().name",
+                                                "type": "Expression"
+                                            },
+                                            "storageAccountContainer": {
+                                                "value": "@pipeline().parameters.storageaccountcontainer",
+                                                "type": "Expression"
+                                            },
+                                            "batch": true,
+                                            "documentIntelligenceAPI": {
+                                                "value": "@pipeline().parameters.documentIntelligenceAPI",
+                                                "type": "Expression"
+                                            },
+                                            "storageaccounturl": {
+                                                "value": "@pipeline().parameters.storageaccounturl",
+                                                "type": "Expression"
+                                            },
+                                            "modelId": {
+                                                "value": "@pipeline().parameters.modelId",
+                                                "type": "Expression"
+                                            },
+                                            "searchServiceEndpoint": {
+                                                "value": "@pipeline().parameters.searchServiceEndpoint",
+                                                "type": "Expression"
+                                            },
+                                            "aiSearchIndexName": {
+                                                "value": "@pipeline().parameters.aiSearchIndexName",
+                                                "type": "Expression"
+                                            },
+                                            "dataRefreshIntervalInMinutes": {
+                                                "value": "@pipeline().parameters.dataRefreshIntervalInMinutes",
+                                                "type": "Expression"
+                                            },
+                                            "chunkSize": {
+                                                "value": "@pipeline().parameters.chunkSize",
+                                                "type": "Expression"
+                                            },
+                                            "openAIAPI": {
+                                                "value": "@pipeline().parameters.openAIAPI",
+                                                "type": "Expression"
+                                            },
+                                            "embeddingDeploymentName": {
+                                                "value": "@pipeline().parameters.embeddingDeploymentName",
+                                                "type": "Expression"
+                                            },
+                                            "storageAccountResourceId": {
+                                                "value": "@pipeline().parameters.storageAccountResourceId",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Cleanup Document File",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "If contains files",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get documents').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "activities": [
+                                {
+                                    "name": "Move file to processed container",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "0.12:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "BinarySource",
+                                            "storeSettings": {
+                                                "type": "AzureBlobStorageReadSettings",
+                                                "recursive": false,
+                                                "deleteFilesAfterCompletion": true
+                                            },
+                                            "formatSettings": {
+                                                "type": "BinaryReadSettings"
+                                            }
+                                        },
+                                        "sink": {
+                                            "type": "BinarySink",
+                                            "storeSettings": {
+                                                "type": "AzureBlobStorageWriteSettings"
+                                            }
+                                        },
+                                        "enableStaging": false
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "blobfile",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "container": {
+                                                    "value": "@pipeline().parameters.storageaccountcontainer",
+                                                    "type": "Expression"
+                                                },
+                                                "filename": {
+                                                    "value": "@item().name",
+                                                    "type": "Expression"
+                                                },
+                                                "folder": " "
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "blobfile",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "container": "processed",
+                                                "filename": {
+                                                    "value": "@item().name",
+                                                    "type": "Expression"
+                                                },
+                                                "folder": "na"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "storageaccountcontainer": {
+                        "type": "string",
+                        "defaultValue": "[parameters('storageaccountcontainerBatchIntel')]"
+                    },
+                    "storageaccounturl": {
+                        "type": "string",
+                        "defaultValue": "[parameters('storageaccounturl')]"
+                    },
+                    "searchServiceEndpoint": {
+                        "type": "string",
+                        "defaultValue": "[parameters('searchServiceEndpoint')]"
+                    },
+                    "aiSearchIndexName": {
+                        "type": "string",
+                        "defaultValue": "[parameters('aiSearchIndexName')]"
+                    },
+                    "openAIAPI": {
+                        "type": "string",
+                        "defaultValue": "[parameters('openAIAPI')]"
+                    },
+                    "embeddingDeploymentName": {
+                        "type": "string",
+                        "defaultValue": "[parameters('embeddingDeploymentName')]"
+                    },
+                    "dataRefreshIntervalInMinutes": {
+                        "type": "string",
+                        "defaultValue": "[parameters('dataRefreshIntervalInMinutes')]"
+                    },
+                    "chunkSize": {
+                        "type": "string",
+                        "defaultValue": "[parameters('chunkSize')]"
+                    },
+                    "storageAccountResourceId": {
+                        "type": "string",
+                        "defaultValue": "[parameters('storageAccountResourceId')]"
+                    },
+                    "documentIntelligenceAPI": {
+                        "type": "string",
+                        "defaultValue": "[parameters('documentIntelligenceAPI')]"
+                    },
+                    "modelId": {
+                        "type": "string",
+                        "defaultValue": "[parameters('modelId')]"
+                    }
+                },
+                "variables": {
+                    "top_p": {
+                        "type": "String"
+                    },
+                    "temperature": {
+                        "type": "String"
+                    },
+                    "resultID": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "Document Inteligence"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-05-21T09:23:58Z"
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/blob')]",
+                "[concat(variables('factoryId'), '/pipelines/onYourData')]",
+                "[concat(variables('factoryId'), '/pipelines/singleAnalyzeDocument')]",
+                "[concat(variables('factoryId'), '/datasets/blobfile')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/onYourData')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Check if success",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check and wait until ingestion complete",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(variables('openaiStatus'),'succeeded')",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "Fail1",
+                                    "type": "Fail",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "message": "Ingestion failed or timed out",
+                                        "errorCode": "500"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check and wait until ingestion complete",
+                        "type": "Until",
+                        "dependsOn": [
+                            {
+                                "activity": "Ingest to AI Search",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@or(equals(variables('openaiStatus'),'succeeded'),equals(variables('openaiStatus'),'failed'))",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "Check if OpenAI completed",
+                                    "type": "IfCondition",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "Set OpenAI ingestion status",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@or(equals(variables('openaiStatus'),'notRunning'),equals(variables('openaiStatus'),'running'))",
+                                            "type": "Expression"
+                                        },
+                                        "ifFalseActivities": [
+                                            {
+                                                "name": "Wait and check OpenAI again in a bit",
+                                                "type": "Wait",
+                                                "dependsOn": [],
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "waitTimeInSeconds": 10
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "Set OpenAI ingestion status",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "see if openai ingestion completed",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "openaiStatus",
+                                        "value": {
+                                            "value": "@activity('see if openai ingestion completed').output.status",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "see if openai ingestion completed",
+                                    "type": "WebActivity",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "0.12:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "method": "GET",
+                                        "headers": {},
+                                        "url": {
+                                            "value": "@{pipeline().parameters.openAIAPI}openai/extensions/on-your-data/ingestion-jobs/@{pipeline().parameters.aiSearchIndexName}?api-version=2023-10-01-preview",
+                                            "type": "Expression"
+                                        },
+                                        "authentication": {
+                                            "type": "MSI",
+                                            "resource": "https://cognitiveservices.azure.com"
+                                        }
+                                    }
+                                }
+                            ],
+                            "timeout": "0.00:15:00"
+                        }
+                    },
+                    {
+                        "name": "Ingest to AI Search",
+                        "type": "WebActivity",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if index exists",
+                                "dependencyConditions": [
+                                    "Failed"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "method": "PUT",
+                            "headers": {
+                                "Content-Type": "application/json",
+                                "storageEndpoint": {
+                                    "value": "@pipeline().parameters.storageaccounturl",
+                                    "type": "Expression"
+                                },
+                                "storageConnectionString": {
+                                    "value": "ResourceId=@{pipeline().parameters.storageAccountResourceId}",
+                                    "type": "Expression"
+                                },
+                                "storageContainer": "curated",
+                                "searchServiceEndpoint": {
+                                    "value": "@pipeline().parameters.searchServiceEndpoint",
+                                    "type": "Expression"
+                                },
+                                "embeddingDeploymentName": {
+                                    "value": "@pipeline().parameters.embeddingDeploymentName",
+                                    "type": "Expression"
+                                }
+                            },
+                            "url": {
+                                "value": "@{pipeline().parameters.openAIAPI}openai/extensions/on-your-data/ingestion-jobs/@{pipeline().parameters.aiSearchIndexName}?api-version=2023-10-01-preview",
+                                "type": "Expression"
+                            },
+                            "body": {
+                                "value": "{\"completionAction\":\"keepAllAssets\",\"dataRefreshIntervalInMinutes\":@{pipeline().parameters.dataRefreshIntervalInMinutes},\"chunkSize\": @{pipeline().parameters.chunkSize}}",
+                                "type": "Expression"
+                            },
+                            "authentication": {
+                                "type": "MSI",
+                                "resource": "https://cognitiveservices.azure.com"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Check if index exists",
+                        "type": "WebActivity",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "method": "GET",
+                            "headers": {},
+                            "url": {
+                                "value": "@{pipeline().parameters.searchServiceEndpoint}/indexes('@{pipeline().parameters.aiSearchIndexName}')?api-version=2023-11-01",
+                                "type": "Expression"
+                            },
+                            "authentication": {
+                                "type": "MSI",
+                                "resource": "https://search.azure.com"
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "ingestionStatus": {
+                        "type": "string",
+                        "defaultValue": "succeeded"
+                    },
+                    "storageaccountcontainer": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "batch": {
+                        "type": "bool",
+                        "defaultValue": false
+                    },
+                    "searchServiceEndpoint": {
+                        "type": "string"
+                    },
+                    "aiSearchIndexName": {
+                        "type": "string"
+                    },
+                    "openAIAPI": {
+                        "type": "string"
+                    },
+                    "dataRefreshIntervalInMinutes": {
+                        "type": "string"
+                    },
+                    "chunkSize": {
+                        "type": "string"
+                    },
+                    "storageaccounturl": {
+                        "type": "string"
+                    },
+                    "storageAccountResourceId": {
+                        "type": "string"
+                    },
+                    "embeddingDeploymentName": {
+                        "type": "string"
+                    }
+                },
+                "variables": {
+                    "openaiStatus": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "Create RAG"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-05-21T09:05:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/triggerDocBlob')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "singleAnalyzeDocument",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "fileName": "[parameters('triggerDocBlob_properties_singleAnalyzeDocument_parameters_fileName')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/docsintel/blobs/",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('triggerDocBlob_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/pipelines/singleAnalyzeDocument')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/triggerDocBlobWithoutIntel')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "singleAnalyzeDocument_withoutIntel",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "fileName": "[parameters('triggerDocBlobWithoutIntel_properties_singleAnalyzeDocument_withoutIntel_parameters_fileName')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/docs/blobs/",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('triggerDocBlobWithoutIntel_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/pipelines/singleAnalyzeDocument_withoutIntel')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/triggerBatchDoc')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "batchAnalyzeDocuments_withoutIntel",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    },
+                    {
+                        "pipelineReference": {
+                            "referenceName": "batchAnalyzeDocuments",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Minute",
+                        "interval": 15,
+                        "startTime": "2024-04-29T19:33:00",
+                        "timeZone": "W. Europe Standard Time"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/pipelines/batchAnalyzeDocuments_withoutIntel')]",
+                "[concat(variables('factoryId'), '/pipelines/batchAnalyzeDocuments')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/createMDfile')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DocIntel",
+                                "type": "DatasetReference"
+                            },
+                            "name": "DocumentIntelligence"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "linkedService": {
+                                "referenceName": "blobStoreDoc",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "storeMDfile"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "selectContent"
+                        }
+                    ],
+                    "scriptLines": [
+                        "parameters{",
+                        "     filename as string (\"layout.png.md\")",
+                        "}",
+                        "source(output(",
+                        "          body as (analyzeResult as (apiVersion as string, content as string, contentFormat as string, figures as (boundingRegions as (pageNumber as boolean, polygon as short[])[], spans as (length as short, offset as short)[])[], modelId as string, pages as (angle as boolean, height as short, lines as (content as string, polygon as short[], spans as (length as short, offset as short)[])[], pageNumber as boolean, selectionMarks as (confidence as double, polygon as short[], span as (length as short, offset as short), state as string)[], spans as (length as short, offset as boolean)[], unit as string, width as short, words as (confidence as double, content as string, polygon as short[], span as (length as short, offset as short))[])[], paragraphs as (boundingRegions as (pageNumber as boolean, polygon as short[])[], content as string, role as string, spans as (length as short, offset as short)[])[], sections as (elements as string[], spans as (length as short, offset as short)[])[], stringIndexType as string, tables as (boundingRegions as (pageNumber as boolean, polygon as short[])[], cells as (boundingRegions as (pageNumber as boolean, polygon as short[])[], columnIndex as short, content as string, elements as string[], kind as string, rowIndex as short, spans as (length as short, offset as short)[])[], columnCount as short, rowCount as short, spans as (length as short, offset as short)[])[]), createdDateTime as timestamp, lastUpdatedDateTime as timestamp, status as string),",
+                        "          headers as [string,string]",
+                        "     ),",
+                        "     allowSchemaDrift: true,",
+                        "     validateSchema: false,",
+                        "     httpMethod: 'GET',",
+                        "     timeout: 30,",
+                        "     requestInterval: 0,",
+                        "     paginationRules: ['supportRFC5988' -> 'true'],",
+                        "     responseFormat: ['type' -> 'json', 'documentForm' -> 'singleDocument']) ~> DocumentIntelligence",
+                        "DocumentIntelligence select(mapColumn(",
+                        "          content = body.analyzeResult.content",
+                        "     ),",
+                        "     skipDuplicateMapInputs: true,",
+                        "     skipDuplicateMapOutputs: true) ~> selectContent",
+                        "selectContent sink(allowSchemaDrift: true,",
+                        "     validateSchema: false,",
+                        "     format: 'delimited',",
+                        "     fileSystem: 'curated',",
+                        "     rowDelimiter: '',",
+                        "     columnDelimiter: '',",
+                        "     escapeChar: '',",
+                        "     quoteChar: '',",
+                        "     columnNamesAsHeader: false,",
+                        "     partitionFileNames:[($filename)],",
+                        "     saveOrder: 1,",
+                        "     partitionBy('hash', 1)) ~> storeMDfile"
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/DocIntel')]",
+                "[concat(variables('factoryId'), '/linkedServices/blobStoreDoc')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/blobStoreDoc')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "serviceEndpoint": "[parameters('blobStoreDoc_properties_typeProperties_serviceEndpoint')]",
+                    "accountKind": "StorageV2"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/onYourData')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "documentIntelligenceAPI": {
+                        "type": "string"
+                    },
+                    "modelId": {
+                        "type": "string"
+                    },
+                    "resultID": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "RestService",
+                "typeProperties": {
+                    "url": "[parameters('onYourData_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "ManagedServiceIdentity",
+                    "aadResourceId": "[parameters('onYourData_properties_typeProperties_aadResourceId')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/GPT4Deployment')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "open_ai_base": {
+                        "type": "string",
+                        "defaultValue": "@{linkedService().open_ai_base}"
+                    },
+                    "gpt4deployment": {
+                        "type": "string",
+                        "defaultValue": "[parameters('gpt4DeploymentName')]"
+                    }
+                },
+                "annotations": [],
+                "type": "RestService",
+                "typeProperties": {
+                    "url": "[parameters('GPT4Deployment_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "ManagedServiceIdentity",
+                    "aadResourceId": "[parameters('GPT4Deployment_properties_typeProperties_aadResourceId')]"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}
