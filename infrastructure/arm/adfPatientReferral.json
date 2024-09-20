@@ -67,18 +67,6 @@
             "type": "string",
             "defaultValue": "https://tf-switzerlandnorth-azopenai.openai.azure.com/"
         },
-        "documentIntelligenceEndpoint": {
-            "type": "string",
-            "defaultValue": "https://tf-westeurope-azdocintel.cognitiveservices.azure.com/"
-        },
-        "aiSearchServiceEndpoint": {
-            "type": "string",
-            "defaultValue": "https://tf-switzerlandnorth-azaisearch.search.windows.net/"
-        },
-        "embeddingsDeploymentName": {
-            "type": "string",
-            "defaultValue": "hub-embedding-text-embedding-ada-002"
-        },
         "gpt4DeploymentName": {
             "type": "string",
             "defaultValue": "hub-gpt4-gpt-4"
@@ -87,21 +75,9 @@
             "type": "string",
             "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/tf-rg-switzerlandnorth/providers/Microsoft.Storage/storageAccounts/tfswitzerlandnorthnzglm"
         },
-        "indexName": {
-            "type": "string",
-            "defaultValue": "eaoaiindex"
-        },
-        "aiSearchResourceId": {
-            "type": "string",
-            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/tf-rg-switzerlandnorth/providers/Microsoft.Search/searchServices/tf-switzerlandnorth-azaisearch"
-        },
         "azureOpenAiResourceId": {
             "type": "string",
             "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/tf-rg-switzerlandnorth/providers/Microsoft.CognitiveServices/accounts/tf-switzerlandnorth-azopenai"
-        },
-        "documentIntelligenceResourceId": {
-            "type": "string",
-            "defaultValue": "/subscriptions/be25820a-df86-4794-9e95-6a45cd5c0941/resourceGroups/tf-rg-switzerlandnorth/providers/Microsoft.CognitiveServices/accounts/tf-westeurope-azdocintel"
         }
     },
     "variables": {
@@ -109,7 +85,7 @@
         "name-compliant-df-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf-asg')]",
         "name-compliant-df-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azdf-pe')]",
         "name-compliant-df-nic": "[concat(variables('name-compliant-df'), '-nic')]",
-        "adfRgDeploymentUri": "[uri(deployment().properties.templateLink.uri, 'adfRgDeployment.json')]",
+        "adfRgDeploymentUri": "[uri(deployment().properties.templateLink.uri, 'adfRgPRDeployment.json')]",
         "factoryDeploymentName": "dataFactory",
         "adfRgDeploymentName": "adfResources",
         "dfIdentity": {
@@ -184,37 +160,11 @@
                         },
                         {
                             "condition": "[equals(parameters('dfDisableNetworkAccess'), 'Yes')]",
-                            "name": "[concat(variables('name-compliant-df'), '/default/AzureAiSearch')]",
-                            "type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
-                            "apiVersion": "2018-06-01",
-                            "properties": {
-                                "privateLinkResourceId": "[parameters('aiSearchResourceId')]",
-                                "groupId": "searchService"
-                            },
-                            "dependsOn": [
-                                "[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-                            ]
-                        },
-                        {
-                            "condition": "[equals(parameters('dfDisableNetworkAccess'), 'Yes')]",
                             "name": "[concat(variables('name-compliant-df'), '/default/AzureOpenAi')]",
                             "type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
                             "apiVersion": "2018-06-01",
                             "properties": {
                                 "privateLinkResourceId": "[parameters('azureOpenAiResourceId')]",
-                                "groupId": "account"
-                            },
-                            "dependsOn": [
-                                "[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-                            ]
-                        },
-                        {
-                            "condition": "[equals(parameters('dfDisableNetworkAccess'), 'Yes')]",
-                            "name": "[concat(variables('name-compliant-df'), '/default/DocumentIntelligence')]",
-                            "type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
-                            "apiVersion": "2018-06-01",
-                            "properties": {
-                                "privateLinkResourceId": "[parameters('documentIntelligenceResourceId')]",
                                 "groupId": "account"
                             },
                             "dependsOn": [
@@ -376,17 +326,8 @@
                     "storageaccounturl": {
                         "value": "[parameters('storageAccountBlobEndpoint')]"
                     },
-                    "searchServiceEndpoint": {
-                        "value": "[parameters('aiSearchServiceEndpoint')]"
-                    },
-                    "aiSearchIndexName": {
-                        "value": "[parameters('indexName')]"
-                    },
                     "openAIAPI": {
                         "value": "[parameters('azureOpenAiEndpoint')]"
-                    },
-                    "embeddingDeploymentName": {
-                        "value": "[parameters('embeddingsDeploymentName')]"
                     },
                     "dataRefreshIntervalInMinutes": {
                         "value": "60"
@@ -396,12 +337,6 @@
                     },
                     "storageAccountResourceId": {
                         "value": "[parameters('storageAccountResourceId')]"
-                    },
-                    "documentIntelligenceAPI": {
-                        "value": "[parameters('documentIntelligenceEndpoint')]"
-                    },
-                    "modelId": {
-                        "value": "prebuilt-layout"
                     },
                     "gpt4DeploymentName": {
                         "value": "[parameters('gpt4DeploymentName')]"
@@ -414,14 +349,6 @@
         "storagePrivateEndpointRequest": {
             "type": "string",
             "value": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), reference(parameters('storageAccountResourceId'), '2023-01-01', 'Full').properties.privateEndpointConnections[0].name, 'na')]"
-        },
-        "aiSearchPrivateEndpointRequest": {
-            "type": "string",
-            "value": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), reference(parameters('aiSearchResourceId'), '2022-09-01', 'Full').properties.privateEndpointConnections[0].name, 'na')]"
-        },
-        "docIntelPrivateEndpointRequest": {
-            "type": "string",
-            "value": "[if(equals(parameters('dfDisableNetworkAccess'), 'Yes'), last(split(reference(parameters('documentIntelligenceResourceId'), '2022-03-01', 'Full').properties.privateEndpointConnections[0].name, '/')), 'na')]"
         },
         "azureOpenAiPrivateEndpointRequest": {
             "type": "string",

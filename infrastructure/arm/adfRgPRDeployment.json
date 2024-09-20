@@ -54,14 +54,6 @@
             "type": "string",
             "defaultValue": ""
         },
-        "searchServiceEndpoint": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "aiSearchIndexName": {
-            "type": "string",
-            "defaultValue": ""
-        },
         "openAIAPI": {
             "type": "string",
             "defaultValue": ""
@@ -81,14 +73,6 @@
         "storageAccountResourceId": {
             "type": "string",
             "defaultValue": ""
-        },
-        "documentIntelligenceAPI": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "modelId": {
-            "type": "string",
-            "defaultValue": "prebuilt-layout"
         },
         "gpt4DeploymentName": {
             "type": "string",
@@ -1281,14 +1265,6 @@
                         "type": "string",
                         "defaultValue": "[parameters('storageaccounturl')]"
                     },
-                    "searchServiceEndpoint": {
-                        "type": "string",
-                        "defaultValue": "[parameters('searchServiceEndpoint')]"
-                    },
-                    "aiSearchIndexName": {
-                        "type": "string",
-                        "defaultValue": "[parameters('aiSearchIndexName')]"
-                    },
                     "dataRefreshIntervalInMinutes": {
                         "type": "string",
                         "defaultValue": "[parameters('dataRefreshIntervalInMinutes')]"
@@ -1645,14 +1621,6 @@
                         "type": "string",
                         "defaultValue": "[parameters('storageaccounturl')]"
                     },
-                    "searchServiceEndpoint": {
-                        "type": "string",
-                        "defaultValue": "[parameters('searchServiceEndpoint')]"
-                    },
-                    "aiSearchIndexName": {
-                        "type": "string",
-                        "defaultValue": "[parameters('aiSearchIndexName')]"
-                    },
                     "openAIAPI": {
                         "type": "string",
                         "defaultValue": "[parameters('openAIAPI')]"
@@ -1672,14 +1640,6 @@
                     "storageAccountResourceId": {
                         "type": "string",
                         "defaultValue": "[parameters('storageAccountResourceId')]"
-                    },
-                    "documentIntelligenceAPI": {
-                        "type": "string",
-                        "defaultValue": "[parameters('documentIntelligenceAPI')]"
-                    },
-                    "modelId": {
-                        "type": "string",
-                        "defaultValue": "[parameters('modelId')]"
                     }
                 },
                 "variables": {
@@ -1707,7 +1667,7 @@
             ]
         },
         {
-            "name": "[concat(parameters('factoryName'), '/onYourData')]",
+            "name": "[concat(parameters('factoryName'), '/patientReferral')]",
             "type": "Microsoft.DataFactory/factories/pipelines",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -2168,7 +2128,7 @@
             "dependsOn": []
         },
         {
-            "name": "[concat(parameters('factoryName'), '/onYourData')]",
+            "name": "[concat(parameters('factoryName'), '/patientReferral')]",
             "type": "Microsoft.DataFactory/factories/linkedServices",
             "apiVersion": "2018-06-01",
             "properties": {
