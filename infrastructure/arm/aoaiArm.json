@@ -674,6 +674,7 @@
             "cosmosDbTemplateUri": "[uri(deployment().properties.templateLink.uri, 'cosmosDb.json')]",
             "videoIndexerTemplateUri": "[uri(deployment().properties.templateLink.uri, 'azureVideoIndexer.json')]",
             "adfOnYourDataTemplateUri": "[uri(deployment().properties.templateLink.uri, 'adfOnYourData.json')]",
+            "adfPatientReferralTemplateUri": "[uri(deployment().properties.templateLink.uri, 'adfPatientReferral.json')]",
             "rgCosmosRbacTemplateUri": "[uri(deployment().properties.templateLink.uri, 'rgCosmosRbac.json')]"
         },
         "deploymentSuffix": "[concat('-', guid(parameters('prefix')))]",
@@ -730,6 +731,7 @@
             "aiSampleAppDeploymentName": "[take(concat(parameters('prefix'), '-aiSampleApp-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "cosmosDbDeploymentName": "[take(concat(parameters('prefix'), '-cosmos-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "adfOnYourDataDeploymentName": "[take(concat(parameters('prefix'), '-adfOnYourData-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "adfPatientReferralDeploymentName": "[take(concat(parameters('prefix'), '-adfPatientReferral-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "azVideoIndexerDeploymentName": "[take(concat(parameters('prefix'), '-videoIndexer-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "rgCosmosRbacDeploymentName": "[take(concat(parameters('prefix'), '-cosmos-rbac-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "azVideoIndexerRbacForBlobOwnerDeploymentName": "[take(concat(parameters('prefix'), '-videoIndexer-rbac-for-blobOwner-', parameters('location'), variables('deploymentSuffix')), 64)]"
@@ -2665,7 +2667,7 @@
         },
         // Deploying Data Factory into the primary region if 'on your data' use case is being select
         {
-            "condition": "[or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'patientreferral'))]",
+            "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').adfOnYourDataDeploymentName]",
@@ -2748,6 +2750,74 @@
                 }
             }
         },
+        // Deploying Data Factory into the primary region if 'patient referral' use case is being select
+        {
+            "condition": "[equals(parameters('aiUseCaseSelection'), 'patientreferral')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').adfPatientReferralDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').adfPatientReferralTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "dfSubnetId": {
+                        "value": "[parameters('dfSubnetId')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "dfNwLocation": {
+                        "value": "[parameters('dfNwLocation')]"
+                    },
+                    "dfDisableNetworkAccess": {
+                        "value": "[parameters('dfDisableNetworkAccess')]"
+                    },
+                    "dfSystemIdentity": {
+                        "value": "[parameters('dfSystemIdentity')]"
+                    },
+                    "dfMonCreation": {
+                        "value": "[parameters('dfMonCreation')]"
+                    },
+                    "azMonWorkspaceName": {
+                        "value": "[variables('resourceNames').azMonWorkspaceName]"
+                    },
+                    "storageAccountBlobEndpoint": {
+                        "value": "[variables('blobStorageEndpoint')]"
+                    },
+                    "azureOpenAiEndpoint": {
+                        "value": "[variables('aoaiEndpoint1')]"
+                    },
+                    "embeddingsDeploymentName": {
+                        "value": "[concat(variables('onYourDataSampleVariables').embeddingDeploymentName, '-', variables('onYourDataSampleVariables').embeddingModelName)]"
+                    },
+                    "gpt4DeploymentName": {
+                        "value": "[concat(variables('onYourDataSampleVariables').gptDeploymentName, '-', variables('onYourDataSampleVariables').gptModelName)]"
+                    },
+                    "storageAccountResourceId": {
+                        "value": "[variables('resourceIds').storageAccountResourceId]"
+                    },
+                    "azureOpenAiResourceId": {
+                        "value": "[variables('resourceIds').azureOpenAiResourceId]"
+                    },
+                }
+            }
+        },        
         // Retrieving the objectId from DF system identity
         {
             //"condition": "[and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'))]",
@@ -2757,7 +2827,8 @@
             "name": "[variables('deploymentNames').rgAzureDfObjectIdDeploymentName]",
             "resourceGroup": "[variables('resourceNames').rgName]",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').adfOnYourDataDeploymentName)]"
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').adfOnYourDataDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').adfPatientReferralDeploymentName)]",
             ],
             "properties": {
                 "mode": "Incremental",
