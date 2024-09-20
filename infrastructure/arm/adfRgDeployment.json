@@ -26,6 +26,10 @@
             "type": "string",
             "defaultValue": ""
         },
+        "mdfilestore_properties_typeProperties_serviceEndpoint": {
+            "type": "string",
+            "defaultValue": ""
+        },
         "onYourData_properties_typeProperties_url": {
             "type": "string",
             "defaultValue": "@{linkedService().documentIntelligenceAPI}documentintelligence/documentModels/@{linkedService().modelId}/analyzeResults/@{linkedService().resultID}?api-version=2023-10-31-preview"
@@ -295,6 +299,38 @@
             },
             "dependsOn": [
                 "[concat(variables('factoryId'), '/linkedServices/onYourData')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/mdfile')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "mdfilestore",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "container": "curated"
+                    }
+                },
+                "schema": {}
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/mdfilestore')]"
             ]
         },
         {
@@ -630,6 +666,71 @@
                                                     },
                                                     "traceLevel": "Fine"
                                                 }
+                                            },
+                                            {
+                                                "name": "Copy data from md",
+                                                "type": "Copy",
+                                                "dependsOn": [
+                                                    {
+                                                        "activity": "CreateMDfile",
+                                                        "dependencyConditions": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                ],
+                                                "policy": {
+                                                    "timeout": "0.12:00:00",
+                                                    "retry": 0,
+                                                    "retryIntervalInSeconds": 30,
+                                                    "secureOutput": false,
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "source": {
+                                                        "type": "BinarySource",
+                                                        "storeSettings": {
+                                                            "type": "AzureBlobStorageReadSettings",
+                                                            "recursive": true,
+                                                            "deleteFilesAfterCompletion": true
+                                                        },
+                                                        "formatSettings": {
+                                                            "type": "BinaryReadSettings"
+                                                        }
+                                                    },
+                                                    "sink": {
+                                                        "type": "BinarySink",
+                                                        "storeSettings": {
+                                                            "type": "AzureBlobStorageWriteSettings"
+                                                        }
+                                                    },
+                                                    "enableStaging": false
+                                                },
+                                                "inputs": [
+                                                    {
+                                                        "referenceName": "mdfile",
+                                                        "type": "DatasetReference",
+                                                        "parameters": {
+                                                            "filename": {
+                                                                "value": "@{pipeline().parameters.fileName}.md",
+                                                                "type": "Expression"
+                                                            }
+                                                        }
+                                                    }
+                                                ],
+                                                "outputs": [
+                                                    {
+                                                        "referenceName": "blob",
+                                                        "type": "DatasetReference",
+                                                        "parameters": {
+                                                            "container": "curated",
+                                                            "endpoint": {
+                                                                "value": "@pipeline().parameters.storageaccounturl",
+                                                                "type": "Expression"
+                                                            }
+                                                        }
+                                                    }
+                                                ]
                                             }
                                         ]
                                     }
@@ -2102,7 +2203,7 @@
                     "sinks": [
                         {
                             "linkedService": {
-                                "referenceName": "blobStoreDoc",
+                                "referenceName": "mdfilestore",
                                 "type": "LinkedServiceReference"
                             },
                             "name": "storeMDfile"
@@ -2162,6 +2263,20 @@
                 "type": "AzureBlobStorage",
                 "typeProperties": {
                     "serviceEndpoint": "[parameters('blobStoreDoc_properties_typeProperties_serviceEndpoint')]",
+                    "accountKind": "StorageV2"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/mdfilestore')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "serviceEndpoint": "[parameters('mdfilestore_properties_typeProperties_serviceEndpoint')]",
                     "accountKind": "StorageV2"
                 }
             },
