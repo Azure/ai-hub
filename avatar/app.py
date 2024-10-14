@@ -84,8 +84,8 @@ def speak() -> Response:
         return Response(result_id, status=200)
     except Exception as e:
         return Response(f"Speak failed. Error message: {e}", status=400)
- """
- 
+"""
+
 """ # The API route to stop avatar from speaking
 @app.route("/api/stopSpeaking", methods=["POST"])
 def stopSpeaking() -> Response:
