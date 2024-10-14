@@ -38,16 +38,8 @@ export function getSpeechToken() {
         .catch(error => console.log(error));
 }
 
-export function getSubscriptionKey() {
-    return fetch(`${AvatarConfig.apiUri}/api/getSubscriptionKey`, {
-        method: 'GET',
-    })
-        .then(response => response.json())
-        .catch(error => console.log(error));
-}
-
-export function createAvatar(subscriptionKey, region) {
-    const speechSynthesisConfig = SpeechSDK.SpeechConfig.fromSubscription(subscriptionKey, region);
+export function createAvatar(token, region) {
+    const speechSynthesisConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(token, region)
     speechSynthesisConfig.speechSynthesisVoiceName = voiceName;
     const videoFormat = new SpeechSDK.AvatarVideoFormat()
 
@@ -59,9 +51,9 @@ export function createAvatar(subscriptionKey, region) {
     const talkingAvatarCharacter = avatarCharacter
     const talkingAvatarStyle = avatarStyle
 
-    const avatarConfig = new SpeechSDK.AvatarConfig(talkingAvatarCharacter, talkingAvatarStyle, videoFormat)
-    avatarConfig.backgroundColor = avatarBackgroundColor;
-    let avatarSynth = new SpeechSDK.AvatarSynthesizer(speechSynthesisConfig, avatarConfig)
+    const config = new SpeechSDK.AvatarConfig(talkingAvatarCharacter, talkingAvatarStyle, videoFormat)
+    config.backgroundColor = avatarBackgroundColor;
+    let avatarSynth = new SpeechSDK.AvatarSynthesizer(speechSynthesisConfig, config)
 
     avatarSynth.avatarEventReceived = function (s, e) {
         var offsetMessage = ", offset from session start: " + e.offset / 10000 + "ms."

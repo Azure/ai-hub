@@ -17,9 +17,12 @@ import uuid
 from flask import Flask, Response, render_template, request
 from azure.identity import DefaultAzureCredential
 from conversation_orchestrator import PF_Orchestrator
+from flask_cors import CORS, cross_origin
 
-# Create the Flask app
+# Create the Flask app with CORS enabled
 app = Flask(__name__, template_folder='.')
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Environment variables
 # Speech resource (required)
@@ -44,33 +47,23 @@ client_contexts = {} # Client contexts
 speech_token = None # Speech token
 ice_token = None # ICE token
 
-# The default route, which shows the default web page (basic.html)
-@app.route("/")
-def index():
-    return render_template("basic.html", methods=["GET"], client_id=initializeClient())
-
-# The basic route, which shows the basic web page
-@app.route("/basic")
-def basicView():
-    return render_template("basic.html", methods=["GET"], client_id=initializeClient())
-
-# The chat route, which shows the chat web page
-@app.route("/chat")
-def chatView():
-    return render_template("chat.html", methods=["GET"], client_id=initializeClient())
-
 # The API route to get the speech token
 @app.route("/api/getSpeechToken", methods=["GET"])
+@cross_origin()
 def getSpeechToken() -> Response:
     global speech_token
-    response = Response(speech_token, status=200)
-    response.headers['SpeechRegion'] = speech_region
+    speech_auth = json.dumps({
+        'token': speech_token,
+        'region': speech_region
+    })
+    response = Response(speech_auth, status=200)
     if speech_private_endpoint:
         response.headers['SpeechPrivateEndpoint'] = speech_private_endpoint
     return response
 
 # The API route to get the ICE token
 @app.route("/api/getIceToken", methods=["GET"])
+@cross_origin()
 def getIceToken() -> Response:
     # Apply customized ICE server if provided
     if ice_server_url and ice_server_username and ice_server_password:
@@ -80,109 +73,6 @@ def getIceToken() -> Response:
             'Password': ice_server_password
         })
     return Response(ice_token, status=200)
-
-# The API route to connect the TTS avatar
-@app.route("/api/connectAvatar", methods=["POST"])
-def connectAvatar() -> Response:
-    global client_contexts
-    client_id = uuid.UUID(request.headers.get('ClientId'))
-    client_context = client_contexts[client_id]
-
-    client_context['tts_voice'] = request.headers.get('TtsVoice') if request.headers.get('TtsVoice') else default_tts_voice
-    client_context['custom_voice_endpoint_id'] = request.headers.get('CustomVoiceEndpointId')
-    client_context['personal_voice_speaker_profile_id'] = request.headers.get('PersonalVoiceSpeakerProfileId')
-
-    custom_voice_endpoint_id = client_context['custom_voice_endpoint_id']
-
-    try:
-        if speech_private_endpoint:
-            speech_private_endpoint_wss = speech_private_endpoint.replace('https://', 'wss://')
-            speech_config = speechsdk.SpeechConfig(subscription=speech_key, endpoint=f'{speech_private_endpoint_wss}/tts/cognitiveservices/websocket/v1?enableTalkingAvatar=true')
-        else:
-            speech_config = speechsdk.SpeechConfig(subscription=speech_key, endpoint=f'wss://{speech_region}.tts.speech.microsoft.com/cognitiveservices/websocket/v1?enableTalkingAvatar=true')
-
-        if custom_voice_endpoint_id:
-            speech_config.endpoint_id = custom_voice_endpoint_id
-
-        client_context['speech_synthesizer'] = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=None)
-        speech_synthesizer = client_context['speech_synthesizer']
-        
-        ice_token_obj = json.loads(ice_token)
-        # Apply customized ICE server if provided
-        if ice_server_url and ice_server_username and ice_server_password:
-            ice_token_obj = {
-                'Urls': [ ice_server_url_remote ] if ice_server_url_remote else [ ice_server_url ],
-                'Username': ice_server_username,
-                'Password': ice_server_password
-            }
-        local_sdp = request.data.decode('utf-8')
-        avatar_character = request.headers.get('AvatarCharacter')
-        avatar_style = request.headers.get('AvatarStyle')
-        background_color = '#FFFFFFFF' if request.headers.get('BackgroundColor') is None else request.headers.get('BackgroundColor')
-        background_image_url = request.headers.get('BackgroundImageUrl')
-        is_custom_avatar = request.headers.get('IsCustomAvatar')
-        transparent_background = 'false' if request.headers.get('TransparentBackground') is None else request.headers.get('TransparentBackground')
-        video_crop = 'false' if request.headers.get('VideoCrop') is None else request.headers.get('VideoCrop')
-        avatar_config = {
-            'synthesis': {
-                'video': {
-                    'protocol': {
-                        'name': "WebRTC",
-                        'webrtcConfig': {
-                            'clientDescription': local_sdp,
-                            'iceServers': [{
-                                'urls': [ ice_token_obj['Urls'][0] ],
-                                'username': ice_token_obj['Username'],
-                                'credential': ice_token_obj['Password']
-                            }]
-                        },
-                    },
-                    'format':{
-                        'crop':{
-                            'topLeft':{
-                                'x': 600 if video_crop.lower() == 'true' else 0,
-                                'y': 0
-                            },
-                            'bottomRight':{
-                                'x': 1320 if video_crop.lower() == 'true' else 1920,
-                                'y': 1080
-                            }
-                        },
-                        'bitrate': 1000000
-                    },
-                    'talkingAvatar': {
-                        'customized': is_custom_avatar.lower() == 'true',
-                        'character': avatar_character,
-                        'style': avatar_style,
-                        'background': {
-                            'color': '#00FF00FF' if transparent_background.lower() == 'true' else background_color,
-                            'image': {
-                                'url': background_image_url
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        connection = speechsdk.Connection.from_speech_synthesizer(speech_synthesizer)
-        connection.set_message_property('speech.config', 'context', json.dumps(avatar_config))
-
-        speech_sythesis_result = speech_synthesizer.speak_text_async('').get()
-        print(f'Result id for avatar connection: {speech_sythesis_result.result_id}')
-        if speech_sythesis_result.reason == speechsdk.ResultReason.Canceled:
-            cancellation_details = speech_sythesis_result.cancellation_details
-            print(f"Speech synthesis canceled: {cancellation_details.reason}")
-            if cancellation_details.reason == speechsdk.CancellationReason.Error:
-                print(f"Error details: {cancellation_details.error_details}")
-                raise Exception(cancellation_details.error_details)
-        turn_start_message = speech_synthesizer.properties.get_property_by_name('SpeechSDKInternal-ExtraTurnStartMessage')
-        remoteSdp = json.loads(turn_start_message)['webrtc']['connectionString']
-
-        return Response(remoteSdp, status=200)
-
-    except Exception as e:
-        return Response(f"Result ID: {speech_sythesis_result.result_id}. Error message: {e}", status=400)
 
 # The API route to speak a given SSML
 @app.route("/api/speak", methods=["POST"])
@@ -194,12 +84,13 @@ def speak() -> Response:
         return Response(result_id, status=200)
     except Exception as e:
         return Response(f"Speak failed. Error message: {e}", status=400)
-
-# The API route to stop avatar from speaking
+ """
+ 
+""" # The API route to stop avatar from speaking
 @app.route("/api/stopSpeaking", methods=["POST"])
 def stopSpeaking() -> Response:
     return Response('Speaking stopped.', status=200)
-
+ 
 # The API route for chat
 # It receives the user query and return the chat response.
 # It returns response in stream, which yields the chat response in chunks.
@@ -224,20 +115,6 @@ def clearChatHistory() -> Response:
     initializeChatContext(client_id) #initializeChatContext(request.headers.get('SystemPrompt'), client_id)
     client_context['chat_initiated'] = True
     return Response('Chat history cleared.', status=200)
-
-# The API route to disconnect the TTS avatar
-@app.route("/api/disconnectAvatar", methods=["POST"])
-def disconnectAvatar() -> Response:
-    global client_contexts
-    client_id = uuid.UUID(request.headers.get('ClientId'))
-    client_context = client_contexts[client_id]
-    speech_synthesizer = client_context['speech_synthesizer']
-    try:
-        connection = speechsdk.Connection.from_speech_synthesizer(speech_synthesizer)
-        connection.close()
-        return Response('Disconnected avatar', status=200)
-    except:
-        return Response(traceback.format_exc(), status=400)
 
 # Initialize the client by creating a client id and an initial context
 def initializeClient() -> uuid.UUID:
@@ -286,7 +163,6 @@ def initializeChatContext(client_id: uuid.UUID) -> None:
     global client_contexts
     client_contexts[client_id]['orchestrator']=None
         
-
 # Handle the user query and return the assistant reply. For chat scenario.
 # The function is a generator, which yields the assistant reply in chunks.
 def handleUserQuery(user_query: str, client_id: uuid.UUID):

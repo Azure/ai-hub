@@ -1,6 +1,5 @@
 import * as SpeechSDK from "microsoft-cognitiveservices-speech-sdk";
-import { createAvatar, createWebRTCConnection, getIceToken, getSubscriptionKey } from "../services/services.ts";
-import { AvatarConfig } from "../config/config.ts";
+import { createAvatar, createWebRTCConnection, getIceToken, getSpeechToken } from "../services/services.ts";
 import { useState } from "react";
 import { useRef } from "react";
 import React from "react";
@@ -164,9 +163,9 @@ export default function Avatar() {
     }
 
     async function startSession() {
-        let [token, key] = await Promise.all([getIceToken(), getSubscriptionKey()]);
+        let [iceToken, speech] = await Promise.all([getIceToken(), getSpeechToken()]);
         setErrorText('');
-        var peerConnection = createWebRTCConnection(token)
+        var peerConnection = createWebRTCConnection(iceToken)
 
         if (peerConnection === undefined || peerConnection === null) {
             console.log("WebRTC connection is not initialized");
@@ -178,7 +177,7 @@ export default function Avatar() {
         peerConnection.addTransceiver('video', { direction: 'sendrecv' })
         peerConnection.addTransceiver('audio', { direction: 'sendrecv' })
 
-        var avatarSynth = createAvatar(key.key, AvatarConfig.cogSvcRegion);
+        var avatarSynth = createAvatar(speech.token, speech.region);
         setAvatarSynth(avatarSynth);
         console.log("starting session...")
         setSessionState(Status.STARTING);
