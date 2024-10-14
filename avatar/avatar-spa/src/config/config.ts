@@ -1,0 +1,18 @@
+export const AvatarConfig = {
+    sttLocales: ['en-US', 'en-GB', 'en-AU'],
+    apiUri: 'http://127.0.0.1:8080',
+    avatarCharacter: 'lisa',
+    ttsVoice: 'en-US-JennyNeural',
+    avatarStyle : "casual-sitting",
+    avatarBackgroundColor : "#FFFFFFFF",
+    firstTokenLatencyRegex: new RegExp(/<FTL>(\d+)<\/FTL>/),
+    firstSentenceLatencyRegex: new RegExp(/<FSL>(\d+)<\/FSL>/),
+    speechRegion: 'southeastasia',
+    speechSubscriptionKey: 'YOUR_SPEECH_SUBSCRIPTION_KEY',
+    speechPrivateEndpoint: 'YOUR_SPEECH_PRIVATE_ENDPOINT',
+    cogSvcRegion: 'southeastasia',
+    region: 'southeastasia',
+    isCustomAvatar: false,
+    aoaiDeploymentName: '',
+    cognitiveSearchIndexName: '',
+ }
