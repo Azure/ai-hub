@@ -51,6 +51,10 @@
     "type": "String",
     "value": "@appsetting('AZURE_OPENAI_DEPLOYMENT_NAME')"
   },
+  "DELETE_ASSISTANT_ENABLED": {
+    "type": "string",
+    "value": "@appsetting('DELETE_ASSISTANT_ENABLED')"
+  },
   "VIDEO_INDEXER_ID": {
     "type": "String",
     "value": "@appsetting('VIDEO_INDEXER_ID')"
