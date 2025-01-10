@@ -9,12 +9,12 @@ This article provides instructions for how to leverage and validate the use case
 - [Production Deployment](#production-deployment)
     - ['On Your Data'](#azure-native-rag-on-your-own-data)
         - [PowerShell script for RAG enablement](#powershell-script-for-rag-enablement)
-        - [Ingestion job using Azure Open AI, AI Search, and Storage Account](#ingestion-job-using-azure-open-ai-ai-search-and-storage-account)
-        - [Content generation using Azure Open AI API endpoint](#content-generation-using-azure-open-ai-api-endpoint)
+        - [Ingestion job using Azure OpenAI, AI Search, and Storage Account](#ingestion-job-using-azure-open-ai-ai-search-and-storage-account)
+        - [Content generation using Azure OpenAI API endpoint](#content-generation-using-azure-open-ai-api-endpoint)
     - [Image and Video recognition](#image-and-video-recognition)
         - [PowerShell script for image and video recognition](#powershell-script-for-image-and-video-recognition)
-        - [Image recognition using Azure Open AI API endpoint](#image-recognition-using-azure-open-ai-api-endpoint)
-        - [Video recognition using Azure Open AI API endpoint](#video-recognition-using-azure-open-ai-api-endpoint)
+        - [Image recognition using Azure OpenAI API endpoint](#image-recognition-using-azure-open-ai-api-endpoint)
+        - [Video recognition using Azure OpenAI API endpoint](#video-recognition-using-azure-open-ai-api-endpoint)
 - [Proof of Concept Deployment](#proof-of-concept-deployment)
     - ['On Your Data' with sample Web App](#on-your-data-with-sample-web-app)
         - [Post deployment configuration for Sample Web App](#post-deployment-configuration-for-sample-web-app)
@@ -46,23 +46,23 @@ If we assume you will take care of the connectivity aspect, such as accessing th
 
 1. Upload files, such as text, images, and videos, to the storage account that you have created as part of the deployment, subject to the configuration you have selected (e.g., the setup highly recommends using Azure RBAC, disabling SAS tokens, and using customer-managed keys for encryption at rest, but if you have selected anything differently, you need to cater for that while getting the data into your storage account).
 
-2. Use the Azure Open AI ingestion API to create one or more indexes in Azure AI Search, to start indexing the data that you have uploaded to the storage account, and make it available for the Azure Open AI instance to enable typical RAG use cases.
+2. Use the Azure OpenAI ingestion API to create one or more indexes in Azure AI Search, to start indexing the data that you have uploaded to the storage account, and make it available for the Azure OpenAI instance to enable typical RAG use cases.
 
-3. Use the Azure Open AI API to interact with the Azure Open AI instance, and start generating content based on the data that you have uploaded to the storage account, and indexed in Azure AI Search.
+3. Use the Azure OpenAI API to interact with the Azure OpenAI instance, and start generating content based on the data that you have uploaded to the storage account, and indexed in Azure AI Search.
 
 #### PowerShell script for RAG enablement
 
-The following PowerShell scripts can be used to 1) start an ingestion job on Azure Open AI to ingest the data from the storage account into Azure AI Search, and 2) access the Azure Open AI API to start generating content based on the data that you have ingested.
+The following PowerShell scripts can be used to 1) start an ingestion job on Azure OpenAI to ingest the data from the storage account into Azure AI Search, and 2) access the Azure OpenAI API to start generating content based on the data that you have ingested.
 
-#### Ingestion job using Azure Open AI, AI Search, and Storage Account
+#### Ingestion job using Azure OpenAI, AI Search, and Storage Account
 
-Modify this script to provide the necessary values for the Azure Open AI endpoint, the embedding deployment name, the ingestion job name, the storage account endpoint, the storage container name, the storage resource ID, and the Azure AI Search endpoint.
+Modify this script to provide the necessary values for the Azure OpenAI endpoint, the embedding deployment name, the ingestion job name, the storage account endpoint, the storage container name, the storage resource ID, and the Azure AI Search endpoint.
 
 ```powershell
 
-# Ingestion job using Azure Open AI, AI Search, and Storage Account. The following snippet assumes Managed Identity is properly configured and has the necessary permissions to access the resources, and that the user has Open AI contributor role on the Azure Open AI resource.
+# Ingestion job using Azure OpenAI, AI Search, and Storage Account. The following snippet assumes Managed Identity is properly configured and has the necessary permissions to access the resources, and that the user has Open AI contributor role on the Azure OpenAI resource.
 
-# Azure Open AI configuration
+# Azure OpenAI configuration
 
 $AzureOpenAIEndpoint = ""
 $EmbeddingDeploymentName = ""
@@ -122,15 +122,15 @@ $GetResponse = Invoke-WebRequest @GetStatusRequest
 
 ```
 
-#### Content generation using Azure Open AI API endpoint
+#### Content generation using Azure OpenAI API endpoint
 
-Modify this script to provide the necessary values for the Azure Open AI endpoint, the embedding deployment name, and the model name.
+Modify this script to provide the necessary values for the Azure OpenAI endpoint, the embedding deployment name, and the model name.
 
 ```powershell
 
-#T he following snippet assumes Managed Identity is properly configured and has the necessary permissions to access the resources, and that the user has Open AI reader role on the Azure Open AI resource.
+#T he following snippet assumes Managed Identity is properly configured and has the necessary permissions to access the resources, and that the user has Open AI reader role on the Azure OpenAI resource.
 
-# Azure Open AI configuration
+# Azure OpenAI configuration
 
 $AzureOpenAIEndpoint = ""
 $DeploymentName = ""
@@ -146,7 +146,7 @@ $IndexName = ""
 $TokenRequest = Get-AzAccessToken -ResourceUrl "https://cognitiveservices.azure.com"
 $MyToken = $TokenRequest.token
 
-# Form the request body towards the Azure Open AI API endpoint, with AzureCognitiveSearch added as dataSource for RAG
+# Form the request body towards the Azure OpenAI API endpoint, with AzureCognitiveSearch added as dataSource for RAG
 $Body = @"
 {
 "dataSources": [
