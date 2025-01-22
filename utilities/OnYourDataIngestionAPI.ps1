@@ -2,21 +2,21 @@
 
 # Azure Open AI configuration
 
-$AzureOpenAIEndpoint = "knop-swedencentral-azopenai.openai.azure.com"
-$EmbeddingDeploymentName = "hub-embedding-text-embedding-ada-002"
+$AzureOpenAIEndpoint = ""
+$EmbeddingDeploymentName = ""
 
 # Azure AI search configuraton
 
-$AzureAiSearchEndpoint = "knop-swedencentral-azaisearch.search.windows.net"
+$AzureAiSearchEndpoint = ""
 
 # Azure Open AI Ingestion job configuration which will create the index and subsequent blobs in the storage account with the same name
-$IngestionJob = "ingestion2"
+$IngestionJob = "ingestion1"
 
 # Storage Configuration
 
-$StorageAccountEndpoint = "knopswedencentralhn4u4k.blob.core.windows.net"
-$StorageContainer = "docs"
-$StorageConnection = "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-rg-swedencentral/providers/Microsoft.Storage/storageAccounts/knopswedencentralhn4u4k/blobServices/default"
+$StorageAccountEndpoint = ""
+$StorageContainer = ""
+$StorageConnection = ""
 
 # Get Token
 
