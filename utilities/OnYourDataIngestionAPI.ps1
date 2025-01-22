@@ -2,21 +2,21 @@
 
 # Azure Open AI configuration
 
-$AzureOpenAIEndpoint = "<resource-name>.openai.azure.com"
-$EmbeddingDeploymentName = "embedding"
+$AzureOpenAIEndpoint = "knop-swedencentral-azopenai.openai.azure.com"
+$EmbeddingDeploymentName = "hub-embedding-text-embedding-ada-002"
 
 # Azure AI search configuraton
 
-$AzureAiSearchEndpoint = "<resource-name>.search.windows.net"
+$AzureAiSearchEndpoint = "knop-swedencentral-azaisearch.search.windows.net"
 
 # Azure Open AI Ingestion job configuration which will create the index and subsequent blobs in the storage account with the same name
-$IngestionJob = "ingestion1"
+$IngestionJob = "ingestion2"
 
 # Storage Configuration
 
-$StorageAccountEndpoint = "<resourec-name>blob.core.windows.net"
+$StorageAccountEndpoint = "knopswedencentralhn4u4k.blob.core.windows.net"
 $StorageContainer = "docs"
-$StorageConnection = "<full resourceId of the storage account>"
+$StorageConnection = "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-rg-swedencentral/providers/Microsoft.Storage/storageAccounts/knopswedencentralhn4u4k/blobServices/default"
 
 # Get Token
 
@@ -24,49 +24,49 @@ $TokenRequest = Get-AzAccessToken -ResourceUrl "https://cognitiveservices.azure.
 $MyToken = $TokenRequest.token
 
 # Set Body
-$Body = @'  
-{
-    "completionAction": "keepAllAssets",
-    "dataRefreshIntervalInMinutes": 60,
-    "chunkSize": 1024
-}  
-'@  
+$requestBody = @{
+    kind = "SystemCompute"
+    overrides = @{
+        useFr = $false
+        useVision = $false
+    }
+    searchServiceConnection = @{
+        kind = "EndpointWithManagedIdentity"
+        endpoint = "https://$($AzureAiSearchEndpoint)"
+    }
+    datasource = @{
+        kind = "Storage"
+        storageAccountConnection = @{
+            kind = "EndpointWithManagedIdentity"
+            resourceId = "ResourceId=$($StorageConnection)"
+            endpoint = "https://$($StorageAccountEndpoint)"
+        }
+        containerName = $StorageContainer
+        embeddingsSettings = @(
+            @{
+                embeddingResourceConnection = @{
+                    kind = "RelativeConnection"
+                }
+                deploymentName = $EmbeddingDeploymentName
+            }
+        )
+        chunkingSettings = @{
+            maxChunkSizeInTokens = 1024
+        }
+    }
+    dataRefreshIntervalInHours = 3
+}
 
 # AI Ingestion Request
 $AzureOAIRequest = @{
-    Uri = "https://$($AzureOpenAIEndpoint)/openai/extensions/on-your-data/ingestion-jobs/$($IngestionJob)?api-version=2023-10-01-preview"
+    Uri = "https://$($AzureOpenAIEndpoint)/openai/ingestion/jobs/$($IngestionJob)?api-version=2024-05-01-preview"
     Headers = @{
         Authorization = "Bearer $($MyToken)"
         'Content-Type' = 'application/json'
-        'storageEndpoint' = "https://$($StorageAccountEndpoint)"
-        'storageConnectionString' = "ResourceId=$($StorageConnection)"
-        'storageContainer' = $StorageContainer
-        'searchServiceEndpoint' = "https://$($AzureAiSearchEndpoint)"
-        'embeddingDeploymentName' = $EmbeddingDeploymentName
         }
-    Body = $Body
+    Body = $requestBody | ConvertTo-Json -Depth 100
     Method = 'PUT'
     }
     
 $Response = Invoke-WebRequest @AzureOAIRequest
 [Newtonsoft.Json.Linq.JObject]::Parse($Response.Content).ToString()
-
-# Get Status on the ingestion job
-
-    $GetStatusRequest = @{
-        Uri = "https://$($AzureOpenAIEndpoint)/openai/extensions/on-your-data/ingestion-jobs/$($IngestionJob)?api-version=2023-10-01-preview"
-        Headers = @{
-            Authorization = "Bearer $($MyToken)"
-        }
-    Method = 'GET'
-    }
-    $GetResponse = Invoke-WebRequest @GetStatusRequest
-    [Newtonsoft.Json.Linq.JObject]::Parse($GetResponse.Content).ToString()
-
-    # Wait for the ingestion job to complete
-$State = $GetResponse | ConvertFrom-Json
-while ($State.status -match "notRunning" -or $state.status -match "running") {
-    Start-Sleep -Seconds 10
-    $GetResponse = Invoke-WebRequest @GetStatusRequest
-    $State = $GetResponse | ConvertFrom-Json
-}
