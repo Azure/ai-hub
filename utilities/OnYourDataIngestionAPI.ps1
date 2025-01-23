@@ -7,7 +7,7 @@ $EmbeddingDeploymentName = ""
 
 # Azure AI search configuraton
 
-$AzureAiSearchEndpoint = ""
+$AzureAiSearchEndpoint = "<resource-name>.search.windows.net"
 
 # Azure Open AI Ingestion job configuration which will create the index and subsequent blobs in the storage account with the same name
 $IngestionJob = "ingestion1"
