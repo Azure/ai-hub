@@ -506,7 +506,9 @@
                             "name": "[variables('name-compliant-webAppName-pe')]",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[concat('Microsoft.Web/sites/', variables('name-compliant-webAppName'))]"
+                                "[concat('Microsoft.Web/sites/', variables('name-compliant-webAppName'))]",
+                                "[concat(variables('name-compliant-webAppName'), '/authsettingsv2')]",
+                                "[concat(variables('name-compliant-webAppName'), '/appsettings')]"
                             ],
                             "properties": {
                                 "customNetworkInterfaceName": "[variables('name-compliant-webAppName-nic')]",
