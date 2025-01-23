@@ -2,7 +2,7 @@
 
 # Azure Open AI configuration
 
-$AzureOpenAIEndpoint = ""
+$AzureOpenAIEndpoint = "<resource-name>.openai.azure.com"
 $EmbeddingDeploymentName = ""
 
 # Azure AI search configuraton
