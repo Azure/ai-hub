@@ -1,0 +1,120 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "value": "foo1"
+        },
+        "rgName": {
+            "value": "foo1-aiapp-rg-swedencentral"
+        },
+        "location": {
+            "value": "swedencentral"
+        },
+        "linuxFxVersion": {
+            "value": "PYTHON|3.11"
+        },
+        "searchServiceName": {
+            "value": "foo1-swedencentral-azaisearch"
+        },
+        "searchIndexName": {
+            "value": "eaoaiindex"
+        },
+        "searchAdminKey": {
+            "value": null
+        },
+        "useSemanticSearch": {
+            "value": true
+        },
+        "searchTopK": {
+            "value": 5
+        },
+        "searchEnableInDomain": {
+            "value": false
+        },
+        "azureOpenAIResource": {
+            "value": "foo1-swedencentral-azopenai"
+        },
+        "azureOpenAIModelDeployment": {
+            "value": "hub-gpt4-gpt-4"
+        },
+        "azureOpenAIModelName": {
+            "value": "gpt-4"
+        },
+        "azureOpenAIEndpoint": {
+            "value": "https://foo1-swedencentral-azopenai.openai.azure.com/"
+        },
+        "azureOpenAIKey": {
+            "value": ""
+        },
+        "azureOpenAIEmbeddingName": {
+            "value": "hub-embedding-text-embedding-ada-002"
+        },
+        "azureOpenAITemperature": {
+            "value": "0.7"
+        },
+        "azureOpenAITopP": {
+            "value": "0.95"
+        },
+        "azureOpenAIMaxTokens": {
+            "value": 800
+        },
+        "azureOpenAIStopSequence": {
+            "value": ""
+        },
+        "azureOpenAISystemMessage": {
+            "value": "Please extract and provide precise information from the provided documents that directly addresses the specific inquiry. Avoid including any additional commentary not found within the documents supplied."
+        },
+        "repoUrl": {
+            "value": "https://github.com/microsoft/sample-app-aoai-chatGPT.git"
+        },
+        "sku": {
+            "value": "S1"
+        },
+        "azureSearchSemanticSearchConfig": {
+            "value": "default"
+        },
+        "azureSearchQueryType": {
+            "value": "vectorSimpleHybrid"
+        },
+        "azureSearchContentColumns": {
+            "value": ""
+        },
+        "azureSearchFilenameColumn": {
+            "value": ""
+        },
+        "azureSearchTitleColumn": {
+            "value": ""
+        },
+        "azureSearchUrlColumn": {
+            "value": ""
+        },
+        "azureSearchVectorColumns": {
+            "value": ""
+        },
+        "azureSearchPermittedGroupsColumn": {
+            "value": ""
+        },
+        "authClientId": {
+            "value": "insert client id here"
+        },
+        "authClientSecret": {
+            "value": "insert client secret here"
+        },
+        "searchStrictness": {
+            "value": ""
+        },
+        "datasourceType": {
+            "value": "AzureCognitiveSearch"
+        },
+        "aiMonCreation": {
+            "value": "Yes"
+        },
+        "azMonRgName": {
+            "value": "foo1-rg-swedencentral"
+        },
+        "subnetResourceId": {
+            "value": "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-aiapp-rg-swedencentral/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
+        }
+    }
+}

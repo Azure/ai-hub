@@ -1,0 +1,294 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "location": {
+        "value": "swedencentral"
+      },
+      "prefix": {
+        "value": "foo1"
+      },
+      "userIdentity": {
+        "value": null
+      },
+      "kvNwLocation": {
+        "value": "swedencentral"
+      },
+      "kvSubnetId": {
+        "value": "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-aiapp-rg-swedencentral/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
+      },
+      "stCmkKeyName": {
+        "value": "CmkStorage"
+      },
+      "aiCmkKeyName": {
+        "value": "CmkAOAI"
+      },
+      "aiOrchCmkKeyName": {
+        "value": null
+      },
+      "kvKeyExpiration": {
+        "value": null
+      },
+      "kvDisableNetworkAccess": {
+        "value": "Yes"
+      },
+      "kvRbacAuthZ": {
+        "value": null
+      },
+      "kvPurgeProtection": {
+        "value": "Yes"
+      },
+      "kvSoftDelete": {
+        "value": "Yes"
+      },
+      "kvSoftDeleteRetention": {
+        "value": 7
+      },
+      "kvExpiryTime": {
+        "value": null
+      },
+      "kvTimeAfterCreate": {
+        "value": null
+      },
+      "kvTimeBeforeExpiry": {
+        "value": null
+      },
+      "stHttpsOnly": {
+        "value": "Yes"
+      },
+      "stSubnetId": {
+        "value": "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-aiapp-rg-swedencentral/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
+      },
+      "stDisableNetworkAccess": {
+        "value": "Yes"
+      },
+      "stNwLocation": {
+        "value": "swedencentral"
+      },
+      "stRbacAuthz": {
+        "value": "Yes"
+      },
+      "aiRbacAuthz": {
+        "value": "Yes"
+      },
+      "aiSubnetId": {
+        "value": "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-aiapp-rg-swedencentral/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
+      },
+      "aiDisableNetworkAccess": {
+        "value": "Yes"
+      },
+      "aiNwLocation": {
+        "value": "swedencentral"
+      },
+      "aiSystemIdentity": {
+        "value": "Yes"
+      },
+      "aiRestrictOutboundNetworkAccess": {
+        "value": "Yes"
+      },
+      "aiModelDeployment": {
+        "value": "No"
+      },
+      "aiModelDeploymentName": {
+        "value": null
+      },
+      "aiModelVersion": {
+        "value": null
+      },
+      "aiContentFilter": {
+        "value": "No"
+      },
+      "aiContentFilterName": {
+        "value": null
+      },
+      "aiContentHateFilterPrompt": {
+        "value": null
+      },
+      "aiContentSexualFilterPrompt": {
+        "value": null
+      },
+      "aiContentViolenceFilterPrompt": {
+        "value": null
+      },
+      "aiContentHarmFilterPrompt": {
+        "value": null
+      },
+      "aiContentHateFilterCompletion": {
+        "value": null
+      },
+      "aiContentHarmFilterCompletion": {
+        "value": null
+      },
+      "aiContentSexualFilterCompletion": {
+        "value": null
+      },
+      "aiContentViolenceFilterCompletion": {
+        "value": null
+      },
+      "aiProtectedMaterialText": {
+        "value": null
+      },
+      "aiProtectedMaterialCode": {
+        "value": null
+      },
+      "aiProtectedJailbreak": {
+        "value": null
+      },
+      "aiSearchSubnetId": {
+        "value": "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-aiapp-rg-swedencentral/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
+      },
+      "aiSearchSystemIdentity": {
+        "value": "Yes"
+      },
+      "aiSearchNwLocation": {
+        "value": "swedencentral"
+      },
+      "aiSearchDisableNetworkAccess": {
+        "value": "Yes"
+      },
+      "aiSearchRbacAuthz": {
+        "value": "Yes"
+      },
+      "aiSearchEncryption": {
+        "value": null
+      },
+      "aiSearchReplicas": {
+        "value": "1"
+      },
+      "aiSearchPartitions": {
+        "value": "1"
+      },
+      "aiUseCaseDeployment": {
+        "value": "Yes"
+      },
+      "kvMonCreation": {
+        "value": "Yes"
+      },
+      "stMonCreation": {
+        "value": "Yes"
+      },
+      "aiMonCreation": {
+        "value": "Yes"
+      },
+      "aiSearchMonCreation": {
+        "value": "Yes"
+      },
+      "visionRbacAuthz": {
+        "value": null
+      },
+      "visionSubnetId": {
+        "value": null
+      },
+      "visionDisableNetworkAccess": {
+        "value": null
+      },
+      "visionNwLocation": {
+        "value": null
+      },
+      "visionSystemIdentity": {
+        "value": null
+      },
+      "visionRestrictOutboundNetworkAccess": {
+        "value": null
+      },
+      "visionMonCreation": {
+        "value": null
+      },
+      "docDisableNetworkAccess": {
+        "value": "Yes"
+      },
+      "docRestrictOutboundNetworkAccess": {
+        "value": "Yes"
+      },
+      "docNwLocation": {
+        "value": "swedencentral"
+      },
+      "docRbacAuthz": {
+        "value": "Yes"
+      },
+      "docSubnetId": {
+        "value": "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-aiapp-rg-swedencentral/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
+      },
+      "docSystemIdentity": {
+        "value": "Yes"
+      },
+      "docMonCreation": {
+        "value": "Yes"
+      },
+      "aiUseCaseSelection": {
+        "value": "onyourdata"
+      },
+      "aiAddEmbeddingInstance": {
+        "value": null
+      },
+      "aiDedicatedSubnetId": {
+        "value": null
+      },
+      "aiDedicatedSubscriptionId": {
+        "value": null
+      },
+      "aiMultiLocation": {
+        "value": null
+      },
+      "apimLocation": {
+        "value": null
+      },
+      "aiSampleAppDeployment": {
+        "value": "YesWithAppRegistration"
+      },
+      "aiSampleAppSubnetId": {
+        "value": "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-aiapp-rg-swedencentral/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
+      },
+      "aiAppId": {
+        "value": "insert client id here"
+      },
+      "aiAppSecret": {
+        "value": "insert client secret here"
+      },
+      "createDataPlaneRbacDef": {
+        "value": null
+      },
+      "cosmosDbDisableNetworkAccess": {
+        "value": "Yes"
+      },
+      "cosmosDbRbacAuthz": {
+        "value": "Yes"
+      },
+      "cosmosDbSubnetId": {
+        "value": "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-aiapp-rg-swedencentral/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
+      },
+      "cosmosDbSystemIdentity": {
+        "value": "Yes"
+      },
+      "cosmosDbNwLocation": {
+        "value": "swedencentral"
+      },
+      "cosmosDbMonCreation": {
+        "value": "Yes"
+      },
+      "dfDisableNetworkAccess": {
+        "value": "Yes"
+      },
+      "dfSubnetId": {
+        "value": "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-aiapp-rg-swedencentral/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
+      },
+      "dfSystemIdentity": {
+        "value": "Yes"
+      },
+      "dfNwLocation": {
+        "value": "swedencentral"
+      },
+      "dfMonCreation": {
+        "value": "Yes"
+      },
+      "videoMonCreation": {
+        "value": null
+      },
+      "videoSystemIdentity": {
+        "value": null
+      },
+      "docLocation": {
+        "value": "swedencentral"
+      }
+    }
+  }
