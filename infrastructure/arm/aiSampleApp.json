@@ -254,7 +254,7 @@
         },
         "subnetResourceId": {
             "type": "string",
-            "defaultValue": "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-aiapp-rg-swedencentral/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
+            "defaultValue": ""
         }
     },
     "variables": {
