@@ -14,7 +14,7 @@ $IngestionJob = "ingestion1"
 
 # Storage Configuration
 
-$StorageAccountEndpoint = ""
+$StorageAccountEndpoint = "<resourec-name>blob.core.windows.net"
 $StorageContainer = ""
 $StorageConnection = ""
 
