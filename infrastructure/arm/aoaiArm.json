@@ -542,6 +542,10 @@
                 "No"
             ]
         },
+        "aiSampleAppSubnetId": {
+            "type": "string",
+            "defaultValue": ""
+        },
         "aiAppId": {
             "type": "string",
             "defaultValue": ""
@@ -2607,6 +2611,9 @@
                     },
                     "azureOpenAISystemMessage": {
                         "value": "[base64ToString(variables('azureOpenAISystemMessage'))]"
+                    },
+                    "subnetResourceId": {
+                        "value": "[parameters('aiSampleAppSubnetId')]"
                     }
                 }
             }
