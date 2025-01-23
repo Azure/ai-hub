@@ -3,7 +3,7 @@
 # Azure Open AI configuration
 
 $AzureOpenAIEndpoint = "<resource-name>.openai.azure.com"
-$EmbeddingDeploymentName = "embedding"
+$EmbeddingDeploymentName = ""
 
 # Azure AI search configuraton
 
@@ -15,7 +15,7 @@ $IngestionJob = "ingestion1"
 # Storage Configuration
 
 $StorageAccountEndpoint = "<resourec-name>blob.core.windows.net"
-$StorageContainer = "docs"
+$StorageContainer = ""
 $StorageConnection = "<full resourceId of the storage account>"
 
 # Get Token
@@ -24,49 +24,49 @@ $TokenRequest = Get-AzAccessToken -ResourceUrl "https://cognitiveservices.azure.
 $MyToken = $TokenRequest.token
 
 # Set Body
-$Body = @'  
-{
-    "completionAction": "keepAllAssets",
-    "dataRefreshIntervalInMinutes": 60,
-    "chunkSize": 1024
-}  
-'@  
+$requestBody = @{
+    kind = "SystemCompute"
+    overrides = @{
+        useFr = $false
+        useVision = $false
+    }
+    searchServiceConnection = @{
+        kind = "EndpointWithManagedIdentity"
+        endpoint = "https://$($AzureAiSearchEndpoint)"
+    }
+    datasource = @{
+        kind = "Storage"
+        storageAccountConnection = @{
+            kind = "EndpointWithManagedIdentity"
+            resourceId = "ResourceId=$($StorageConnection)"
+            endpoint = "https://$($StorageAccountEndpoint)"
+        }
+        containerName = $StorageContainer
+        embeddingsSettings = @(
+            @{
+                embeddingResourceConnection = @{
+                    kind = "RelativeConnection"
+                }
+                deploymentName = $EmbeddingDeploymentName
+            }
+        )
+        chunkingSettings = @{
+            maxChunkSizeInTokens = 1024
+        }
+    }
+    dataRefreshIntervalInHours = 3
+}
 
 # AI Ingestion Request
 $AzureOAIRequest = @{
-    Uri = "https://$($AzureOpenAIEndpoint)/openai/extensions/on-your-data/ingestion-jobs/$($IngestionJob)?api-version=2023-10-01-preview"
+    Uri = "https://$($AzureOpenAIEndpoint)/openai/ingestion/jobs/$($IngestionJob)?api-version=2024-05-01-preview"
     Headers = @{
         Authorization = "Bearer $($MyToken)"
         'Content-Type' = 'application/json'
-        'storageEndpoint' = "https://$($StorageAccountEndpoint)"
-        'storageConnectionString' = "ResourceId=$($StorageConnection)"
-        'storageContainer' = $StorageContainer
-        'searchServiceEndpoint' = "https://$($AzureAiSearchEndpoint)"
-        'embeddingDeploymentName' = $EmbeddingDeploymentName
         }
-    Body = $Body
+    Body = $requestBody | ConvertTo-Json -Depth 100
     Method = 'PUT'
     }
     
 $Response = Invoke-WebRequest @AzureOAIRequest
 [Newtonsoft.Json.Linq.JObject]::Parse($Response.Content).ToString()
-
-# Get Status on the ingestion job
-
-    $GetStatusRequest = @{
-        Uri = "https://$($AzureOpenAIEndpoint)/openai/extensions/on-your-data/ingestion-jobs/$($IngestionJob)?api-version=2023-10-01-preview"
-        Headers = @{
-            Authorization = "Bearer $($MyToken)"
-        }
-    Method = 'GET'
-    }
-    $GetResponse = Invoke-WebRequest @GetStatusRequest
-    [Newtonsoft.Json.Linq.JObject]::Parse($GetResponse.Content).ToString()
-
-    # Wait for the ingestion job to complete
-$State = $GetResponse | ConvertFrom-Json
-while ($State.status -match "notRunning" -or $state.status -match "running") {
-    Start-Sleep -Seconds 10
-    $GetResponse = Invoke-WebRequest @GetStatusRequest
-    $State = $GetResponse | ConvertFrom-Json
-}

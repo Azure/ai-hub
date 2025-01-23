@@ -251,12 +251,18 @@
         "azMonRgName": {
             "type": "string",
             "defaultValue": ""
+        },
+        "subnetResourceId": {
+            "type": "string",
+            "defaultValue": "/subscriptions/3abc6ba0-af7f-4bec-a87b-27fecc2be361/resourceGroups/knop-aiapp-rg-swedencentral/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
         }
     },
     "variables": {
         "name-compliant-webAppName": "[concat(parameters('prefix'), '-', parameters('location'), '-wa')]",
         "name-compliant-appPlan": "[concat(parameters('prefix'), '-', parameters('location'), '-plan')]",
-        "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]"
+        "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
+        "name-compliant-webAppName-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-wa-pe')]",
+        "name-compliant-webAppName-nic": "[concat(variables('name-compliant-webAppName'), '-nic')]"
     },
     "resources": [
         {
@@ -492,6 +498,33 @@
                                 }
                             },
                             "condition": "[not(empty(parameters('authClientId')))]"
+                        },
+                        {
+                            "condition": "[not(empty(parameters('subnetResourceId')))]",
+                            "type": "Microsoft.Network/privateEndpoints",
+                            "apiVersion": "2021-05-01",
+                            "name": "[variables('name-compliant-webAppName-pe')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.Web/sites/', variables('name-compliant-webAppName'))]"
+                            ],
+                            "properties": {
+                                "customNetworkInterfaceName": "[variables('name-compliant-webAppName-nic')]",
+                                "privateLinkServiceConnections": [
+                                    {
+                                        "name": "[variables('name-compliant-webAppName')]",
+                                        "properties": {
+                                            "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.Web/sites/', variables('name-compliant-webAppName'))]",
+                                            "groupIds": [
+                                                "sites"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "subnet": {
+                                    "id": "[parameters('subnetResourceId')]"
+                                }
+                            }
                         }
                     ]
                 }
