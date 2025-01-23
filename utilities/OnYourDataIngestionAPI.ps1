@@ -16,7 +16,7 @@ $IngestionJob = "ingestion1"
 
 $StorageAccountEndpoint = "<resourec-name>blob.core.windows.net"
 $StorageContainer = ""
-$StorageConnection = ""
+$StorageConnection = "<full resourceId of the storage account>"
 
 # Get Token
 
